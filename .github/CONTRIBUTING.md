@@ -21,5 +21,5 @@ Run `npm run test:mp` for the fastest runtime/compiler feedback loop.
 
 - Submit to `master` with a clear description of the behavior change.
 - Add or update regression coverage for runtime, compiler, or adapter changes.
-- Follow the [commit convention](COMMIT_CONVENTION.md) (`git-cz` is configured).
+- Follow the [commit convention](COMMIT_CONVENTION.md).
 - Rebuild generated bundles (`npm run build:mpvue`) when `src/` changes affect them.
