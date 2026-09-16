@@ -156,7 +156,7 @@ describe('events', function () {
     const ev1 = JSON.parse(`{"type":"tap","timeStamp":8938,"target":{"id":"testEventId1","offsetLeft":0,"offsetTop":100,"dataset":{"comkey":"0","eventid":"0"}},"currentTarget":{"id":"testEventId1","offsetLeft":0,"offsetTop":100,"dataset":{"comkey":"0","eventid":"0"}},"detail":{"x":186,"y":112},"touches":[{"identifier":0,"pageX":186,"pageY":112,"clientX":186,"clientY":112}],"changedTouches":[{"identifier":0,"pageX":186,"pageY":112,"clientX":186,"clientY":112}]}`)
     app.$mp.page._callHook('handleProxy', ev1)
 
-    const ev2 = JSON.parse(`{"type":"tap","timeStamp":152060,"target":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0,0","eventid":"0"}},"currentTarget":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0,0","eventid":"0"}},"detail":{"x":215,"y":301},"touches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}],"changedTouches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}]}`)
+    const ev2 = JSON.parse(`{"type":"tap","timeStamp":152060,"target":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0_0","eventid":"0"}},"currentTarget":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0_0","eventid":"0"}},"detail":{"x":215,"y":301},"touches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}],"changedTouches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}]}`)
     app.$mp.page._callHook('handleProxy', ev2)
   })
 

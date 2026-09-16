@@ -16,6 +16,11 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - `npm run build:mpvue` completes on Node 24 after rebuilding generated artifacts.
 - The original generated runtime bundle was out of sync with source. Rebuilding exposed and fixed the compiler's missing default platform and the runtime bundle's stale export shape.
 - The original lint gate had 29 existing errors. The modernization branch now clears `npm run lint`.
+- The runtime now exports the Vue constructor with `Vue.createMP` attached, and the platform lifecycle adapter mounts pages and components at their native ready points without repeating root hooks.
+- The compiler declares its Babel, Prettier, and Lodash runtime dependencies explicitly, so mini-program builds no longer emit unresolved-import warnings.
+- The mini-program compiler/runtime integration suite now passes all 71 specs, including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing.
+- `npm run flow` now passes with zero errors after typing the observer metadata used by mini-program data diffing.
+- The aggregate `npm test` gate still stops in its legacy Flow/browser chain before the later suites; the maintained focused suites are run separately until PhantomJS and the old Karma stack are replaced.
 - `yarn audit --level high` reports 746 vulnerabilities in the legacy development graph. PhantomJS, Selenium 2, old Karma integrations, and abandoned upload utilities must be removed before calling the toolchain production-ready.
 
 ## Issue review

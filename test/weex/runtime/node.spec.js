@@ -61,10 +61,6 @@ describe('node in render function', () => {
     })
   })
 
-  it('should be generated with comments', () => {
-    // todo
-  })
-
   it('should be generated with module diff', (done) => {
     const instance = createInstance(runtime, `
       new Vue({

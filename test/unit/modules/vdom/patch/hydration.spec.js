@@ -3,7 +3,7 @@ import VNode from 'core/vdom/vnode'
 import { patch } from 'web/runtime/patch'
 import { SSR_ATTR } from 'shared/constants'
 
-function createMockSSRDOM (innerHTML) {
+function createSSRDOM (innerHTML) {
   const dom = document.createElement('div')
   dom.setAttribute(SSR_ATTR, 'true')
   dom.innerHTML = innerHTML
@@ -96,7 +96,7 @@ describe('vdom patch: hydration', () => {
 
   // component hydration is better off with a more e2e approach
   it('should hydrate components when server-rendered DOM tree is same as virtual DOM tree', done => {
-    const dom = createMockSSRDOM('<span>foo</span><div class="b a"><span>foo qux</span></div><!---->')
+    const dom = createSSRDOM('<span>foo</span><div class="b a"><span>foo qux</span></div><!---->')
     const originalNode1 = dom.children[0]
     const originalNode2 = dom.children[1]
 
@@ -136,7 +136,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should warn failed hydration for non-matching DOM in child component', () => {
-    const dom = createMockSSRDOM('<div><span></span></div>')
+    const dom = createSSRDOM('<div><span></span></div>')
 
     new Vue({
       template: '<div><test></test></div>',
@@ -151,7 +151,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should overwrite textNodes in the correct position but with mismatching text without warning', () => {
-    const dom = createMockSSRDOM('<div><span>foo</span></div>')
+    const dom = createSSRDOM('<div><span>foo</span></div>')
 
     new Vue({
       template: '<div><test></test></div>',
@@ -170,7 +170,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should pick up elements with no children and populate without warning', done => {
-    const dom = createMockSSRDOM('<div><span></span></div>')
+    const dom = createSSRDOM('<div><span></span></div>')
     const span = dom.querySelector('span')
 
     const vm = new Vue({
@@ -196,7 +196,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should hydrate async component', done => {
-    const dom = createMockSSRDOM('<span>foo</span>')
+    const dom = createSSRDOM('<span>foo</span>')
     const span = dom.querySelector('span')
 
     const Foo = resolve => setTimeout(() => {
@@ -227,7 +227,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should hydrate async component without showing loading', done => {
-    const dom = createMockSSRDOM('<span>foo</span>')
+    const dom = createSSRDOM('<span>foo</span>')
     const span = dom.querySelector('span')
 
     const Foo = () => ({
@@ -270,7 +270,7 @@ describe('vdom patch: hydration', () => {
   })
 
   it('should hydrate async component by replacing DOM if error occurs', done => {
-    const dom = createMockSSRDOM('<span>foo</span>')
+    const dom = createSSRDOM('<span>foo</span>')
 
     const Foo = () => ({
       component: new Promise((resolve, reject) => {

@@ -179,7 +179,6 @@ describe('Observer', () => {
   it('observing object prop change', () => {
     const obj = { a: { b: 2 }, c: NaN }
     observe(obj)
-    // mock a watcher!
     const watcher = {
       deps: [],
       addDep (dep) {
@@ -226,7 +225,6 @@ describe('Observer', () => {
     })
 
     observe(obj)
-    // mock a watcher!
     const watcher = {
       deps: [],
       addDep: function (dep) {

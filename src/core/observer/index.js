@@ -35,6 +35,7 @@ export class Observer {
   value: any;
   dep: Dep;
   vmCount: number; // number of vms that has this object as root $data
+  key: any;
 
   constructor (value: any, key: any) {
     this.value = value
@@ -248,9 +249,10 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
   defineReactive(ob.value, key, val)
   // Vue.set 添加对象属性，渲染时候把 val 传给小程序渲染
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false)
+    def((target: any), '__keyPath', {}, false)
   }
-  target.__keyPath[key] = true
+  const targetWithKeyPath: any = target
+  targetWithKeyPath.__keyPath[key] = true
   ob.dep.notify()
   return val
 }
@@ -279,10 +281,11 @@ export function del (target: Array<any> | Object, key: any) {
     return
   }
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false)
+    def((target: any), '__keyPath', {}, false)
   }
   // Vue.del 删除对象属性，渲染时候把这个属性设置为 undefined
-  target.__keyPath[key] = 'del'
+  const targetWithKeyPath: any = target
+  targetWithKeyPath.__keyPath[key] = 'del'
   ob.dep.notify()
 }
 

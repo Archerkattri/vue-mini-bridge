@@ -25,7 +25,7 @@ describe('instance', function () {
         0: {
           msg: 233,
           $k: '0',
-          $kk: '0,',
+          $kk: '0_',
           $p: ''
         }
       }
@@ -38,25 +38,25 @@ describe('instance', function () {
         0: {
           items: [111, 222, 333],
           $k: '0',
-          $kk: '0,',
+          $kk: '0_',
           $p: ''
         },
-        '0,1-0': {
+        '0_1-0': {
           info: 111,
-          $k: '0,1-0',
-          $kk: '0,1-0,',
+          $k: '0_1-0',
+          $kk: '0_1-0_',
           $p: '0'
         },
-        '0,1-1': {
+        '0_1-1': {
           info: 222,
-          $k: '0,1-1',
-          $kk: '0,1-1,',
+          $k: '0_1-1',
+          $kk: '0_1-1_',
           $p: '0'
         },
-        '0,1-2': {
+        '0_1-2': {
           info: 333,
-          $k: '0,1-2',
-          $kk: '0,1-2,',
+          $k: '0_1-2',
+          $kk: '0_1-2_',
           $p: '0'
         }
       }
@@ -184,13 +184,13 @@ describe('instance', function () {
           0: {
             msg: 233,
             $k: '0',
-            $kk: '0,',
+            $kk: '0_',
             $p: ''
           },
-          '0,0': {
+          '0_0': {
             info: 233,
-            $k: '0,0',
-            $kk: '0,0,',
+            $k: '0_0',
+            $kk: '0_0_',
             $p: '0'
           }
         }
@@ -302,7 +302,7 @@ describe('instance', function () {
     setTimeout(function () {
       const appData = getDefAppDataByVfor()
       appData['$root']['0']['items']['1'] = 'hello 222'
-      appData['$root']['0,1-1']['info'] = 'hello 222'
+      appData['$root']['0_1-1']['info'] = 'hello 222'
       expect(app.$mp.page.data).toEqual(appData)
       done()
     }, 300)
@@ -364,9 +364,9 @@ describe('instance', function () {
 
     setTimeout(function () {
       const appData = getDefAppDataByVfor()
-      appData['$root']['0,1-0']['msg'] = 'hello card'
-      appData['$root']['0,1-1']['msg'] = 'hello card with 222'
-      appData['$root']['0,1-2']['msg'] = 'hello card'
+      appData['$root']['0_1-0']['msg'] = 'hello card'
+      appData['$root']['0_1-1']['msg'] = 'hello card with 222'
+      appData['$root']['0_1-2']['msg'] = 'hello card'
       expect(app.$mp.page.data).toEqual(appData)
       done()
     }, 300)

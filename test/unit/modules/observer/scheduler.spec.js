@@ -5,7 +5,7 @@ import {
 } from 'core/observer/scheduler'
 
 function queueWatcher (watcher) {
-  watcher.vm = {} // mock vm
+  watcher.vm = {}
   _queueWatcher(watcher)
 }
 

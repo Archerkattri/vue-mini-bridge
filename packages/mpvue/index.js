@@ -988,9 +988,10 @@ function set (target, key, val) {
   defineReactive$$1(ob.value, key, val);
   // Vue.set 添加对象属性，渲染时候把 val 传给小程序渲染
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false);
+    def((target), '__keyPath', {}, false);
   }
-  target.__keyPath[key] = true;
+  var targetWithKeyPath = target;
+  targetWithKeyPath.__keyPath[key] = true;
   ob.dep.notify();
   return val
 }
@@ -1019,10 +1020,11 @@ function del (target, key) {
     return
   }
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false);
+    def((target), '__keyPath', {}, false);
   }
   // Vue.del 删除对象属性，渲染时候把这个属性设置为 undefined
-  target.__keyPath[key] = 'del';
+  var targetWithKeyPath = target;
+  targetWithKeyPath.__keyPath[key] = 'del';
   ob.dep.notify();
 }
 
@@ -5238,11 +5240,13 @@ function initMP (mpType, next) {
   // Please do not register multiple Pages
   // if (mp.registered) {
   if (mp.status) {
-    if (mpType === 'app') {
-      callHook$1(this, 'onLaunch', mp.appOptions);
-    } else {
-      callHook$1(this, 'onLoad', mp.query);
-      callHook$1(this, 'onReady');
+    if (this !== rootVueVM) {
+      if (mpType === 'app') {
+        callHook$1(this, 'onLaunch', mp.appOptions);
+      } else {
+        callHook$1(this, 'onLoad', mp.query);
+        callHook$1(this, 'onReady');
+      }
     }
     return next()
   }
@@ -5281,6 +5285,7 @@ function createMP (ref) {
         mp.app = this;
         mp.status = 'launch';
         this.globalData.appOptions = mp.appOptions = options;
+        callHook$1(this.rootVueVM, 'onLaunch', options);
         this.rootVueVM.$mount();
       },
 
@@ -5338,7 +5343,7 @@ function createMP (ref) {
         mp.query = query;
         mp.status = 'load';
         getGlobalData(app, this.rootVueVM);
-        this.rootVueVM.$mount();
+        callHook$1(this.rootVueVM, 'onLoad', query);
       },
 
       // 生命周期函数--监听页面显示
@@ -5359,6 +5364,7 @@ function createMP (ref) {
       onReady: function onReady () {
         var mp = this.rootVueVM.$mp;
         mp.status = 'ready';
+        callHook$1(this.rootVueVM, 'onReady');
         return _next(this.rootVueVM)
       },
 
@@ -5391,7 +5397,7 @@ function createMP (ref) {
       // 用户点击右上角分享
       onShareAppMessage: function onShareAppMessage (options) {
         if (this.rootVueVM.$options.onShareAppMessage) {
-          callHook$1(this.rootVueVM, 'onShareAppMessage', options);
+          return callHook$1(this.rootVueVM, 'onShareAppMessage', options)
         }
       },
 
@@ -5429,8 +5435,6 @@ function createMP (ref) {
         mp.mpType = 'component';
         mp.status = 'created';
         mp.page = this;
-        this.rootVueVM.$mount();
-        callHook$1(this.rootVueVM, 'created');
       },
       // 组件生命周期函数，在组件实例进入页面节点树时执行
       attached: function attached () {

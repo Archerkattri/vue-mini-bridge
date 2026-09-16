@@ -1040,9 +1040,10 @@ function set (target, key, val) {
   defineReactive$$1(ob.value, key, val);
   // Vue.set 添加对象属性，渲染时候把 val 传给小程序渲染
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false);
+    def((target), '__keyPath', {}, false);
   }
-  target.__keyPath[key] = true;
+  var targetWithKeyPath = target;
+  targetWithKeyPath.__keyPath[key] = true;
   ob.dep.notify();
   return val
 }
@@ -1071,10 +1072,11 @@ function del (target, key) {
     return
   }
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false);
+    def((target), '__keyPath', {}, false);
   }
   // Vue.del 删除对象属性，渲染时候把这个属性设置为 undefined
-  target.__keyPath[key] = 'del';
+  var targetWithKeyPath = target;
+  targetWithKeyPath.__keyPath[key] = 'del';
   ob.dep.notify();
 }
 

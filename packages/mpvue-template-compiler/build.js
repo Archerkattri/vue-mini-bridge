@@ -3023,9 +3023,10 @@ function set (target, key, val) {
   defineReactive$$1(ob.value, key, val);
   // Vue.set 添加对象属性，渲染时候把 val 传给小程序渲染
   if (!target.__keyPath) {
-    def(target, '__keyPath', {}, false);
+    def((target), '__keyPath', {}, false);
   }
-  target.__keyPath[key] = true;
+  var targetWithKeyPath = target;
+  targetWithKeyPath.__keyPath[key] = true;
   ob.dep.notify();
   return val
 }
@@ -4397,7 +4398,7 @@ function transformDynamicClass (staticClass, clsBinding) {
   var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
@@ -4405,7 +4406,7 @@ function transformDynamicStyle (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
   var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 
@@ -5093,7 +5094,7 @@ function transformDynamicClass$1 (staticClass, clsBinding) {
   var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
@@ -5101,7 +5102,7 @@ function transformDynamicStyle$1 (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
   var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 
@@ -5493,7 +5494,7 @@ function transformDynamicClass$2 (staticClass, clsBinding) {
   var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
@@ -5501,7 +5502,7 @@ function transformDynamicStyle$2 (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
   var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 
@@ -5889,7 +5890,7 @@ function transformDynamicClass$3 (staticClass, clsBinding) {
   var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
@@ -5897,7 +5898,7 @@ function transformDynamicStyle$3 (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
   var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
-  var cls = prettier.format(result.code, { semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 

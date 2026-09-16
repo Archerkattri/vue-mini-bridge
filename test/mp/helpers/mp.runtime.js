@@ -1,19 +1,19 @@
 // 因为没办法直接跑小程序的开发者工具做测试，所以简单的模拟一下小程序 runtime ，满足我们需要的功能即可
 
-function getObjByPath (obj = {}, path, op = '.') {
-  if (!obj) return obj
-  const arr = (path || '').split(op)
-
-  return arr.reduce((res, k) => {
-    if (k) {
-      if (!res[k]) res[k] = {}
-      res = res[k]
-    }
-    return res
+function setObjByPath (obj, path, value) {
+  const keys = (path || '').replace(/\[(\d+)\]/g, '$1').split('.').filter(Boolean)
+  const lastKey = keys.pop()
+  if (lastKey === undefined) return
+  const target = keys.reduce((res, key) => {
+    if (!res[key]) res[key] = {}
+    return res[key]
   }, obj)
+  target[lastKey] = value
 }
 
 let appVM = null
+let pageVM = null
+let componentVM = null
 
 class MPPage {
   constructor (config) {
@@ -25,8 +25,6 @@ class MPPage {
       scene: 1001,
       query: {}
     }
-
-    this._initLifecycle()
   }
 
   // 此处只做简单的对象参数模拟
@@ -37,7 +35,7 @@ class MPPage {
     this.data = this.data || {}
     Object.keys(obj).forEach(key => {
       const val = obj[key]
-      Object.assign(getObjByPath(this.data, key), val)
+      setObjByPath(this.data, key, val)
     })
   }
 
@@ -85,7 +83,8 @@ class MPComponent extends MPPage {
 }
 
 function Page (config) {
-  return new MPPage(config)
+  pageVM = new MPPage(config)
+  return pageVM
 }
 
 function App (config) {
@@ -98,12 +97,23 @@ function getApp () {
 }
 
 function Component (config) {
-  return new MPComponent(config)
+  componentVM = new MPComponent(config)
+  return componentVM
+}
+
+function getPage () {
+  return pageVM
+}
+
+function getComponent () {
+  return componentVM
 }
 
 module.exports = {
   Page,
   App,
   getApp,
-  Component
+  Component,
+  getPage,
+  getComponent
 }

@@ -183,11 +183,13 @@ export function initMP (mpType, next) {
   // Please do not register multiple Pages
   // if (mp.registered) {
   if (mp.status) {
-    if (mpType === 'app') {
-      callHook(this, 'onLaunch', mp.appOptions)
-    } else {
-      callHook(this, 'onLoad', mp.query)
-      callHook(this, 'onReady')
+    if (this !== rootVueVM) {
+      if (mpType === 'app') {
+        callHook(this, 'onLaunch', mp.appOptions)
+      } else {
+        callHook(this, 'onLoad', mp.query)
+        callHook(this, 'onReady')
+      }
     }
     return next()
   }
@@ -221,6 +223,7 @@ export function createMP ({ mpType, init }) {
         mp.app = this
         mp.status = 'launch'
         this.globalData.appOptions = mp.appOptions = options
+        callHook(this.rootVueVM, 'onLaunch', options)
         this.rootVueVM.$mount()
       },
 
@@ -276,7 +279,7 @@ export function createMP ({ mpType, init }) {
         mp.query = query
         mp.status = 'load'
         getGlobalData(app, this.rootVueVM)
-        this.rootVueVM.$mount()
+        callHook(this.rootVueVM, 'onLoad', query)
       },
 
       // 生命周期函数--监听页面显示
@@ -295,6 +298,7 @@ export function createMP ({ mpType, init }) {
       onReady () {
         const mp = this.rootVueVM.$mp
         mp.status = 'ready'
+        callHook(this.rootVueVM, 'onReady')
         return _next(this.rootVueVM)
       },
 
@@ -327,7 +331,7 @@ export function createMP ({ mpType, init }) {
       // 用户点击右上角分享
       onShareAppMessage (options) {
         if (this.rootVueVM.$options.onShareAppMessage) {
-          callHook(this.rootVueVM, 'onShareAppMessage', options)
+          return callHook(this.rootVueVM, 'onShareAppMessage', options)
         }
       },
 
@@ -365,8 +369,6 @@ export function createMP ({ mpType, init }) {
         mp.mpType = 'component'
         mp.status = 'created'
         mp.page = this
-        this.rootVueVM.$mount()
-        callHook(this.rootVueVM, 'created')
       },
       // 组件生命周期函数，在组件实例进入页面节点树时执行
       attached () {

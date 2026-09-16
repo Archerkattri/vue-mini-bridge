@@ -24,8 +24,14 @@
   },
   "homepage": "https://github.com/Archerkattri/vue-mini-bridge/",
   "dependencies": {
+    "babel-core": "^6.25.0",
+    "babel-generator": "^6.25.0",
+    "babel-template": "^6.25.0",
+    "babel-types": "^6.25.0",
     "he": "^1.1.0",
-    "de-indent": "^1.0.2"
+    "de-indent": "^1.0.2",
+    "lodash": "^4.17.4",
+    "prettier": "^1.19.1"
   },
   "peerDependencies": {
     "vue-mini-bridge": "2.0.6"
