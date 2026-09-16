@@ -1,7 +1,7 @@
 {
-  "name": "vue",
+  "name": "vue-mini-bridge",
   "version": "2.4.1",
-  "description": "Vue.js in mini program",
+  "description": "Vue-compatible runtime and compiler for mini-program targets",
   "main": "dist/vue.runtime.common.js",
   "module": "dist/vue.runtime.esm.js",
   "unpkg": "dist/vue.js",
@@ -46,7 +46,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meituan-Dianping/mpvue.git"
+    "url": "git+https://github.com/Archerkattri/vue-mini-bridge.git"
   },
   "keywords": [
     "vue"
@@ -61,10 +61,14 @@
     }
   ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Meituan-Dianping/mpvue/issues"
+  "engines": {
+    "node": ">=22"
   },
-  "homepage": "https://github.com/Meituan-Dianping/mpvue",
+  "packageManager": "yarn@1.22.22",
+  "bugs": {
+    "url": "https://github.com/Archerkattri/vue-mini-bridge/issues"
+  },
+  "homepage": "https://github.com/Archerkattri/vue-mini-bridge",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",

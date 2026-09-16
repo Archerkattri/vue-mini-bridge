@@ -1,3 +1,3 @@
-# mpvue-template-compiler
+# Vue Mini Bridge Template Compiler
 
-> This package is auto-generated. For pull requests please see [src/platforms/mp/entry-compiler.js](https://github.com/Meituan-Dianping/mpvue/blob/master/src/platforms/mp/entry-compiler.js).
+This package is generated from [`src/platforms/mp/entry-compiler.js`](https://github.com/Archerkattri/vue-mini-bridge/blob/master/src/platforms/mp/entry-compiler.js). Changes belong in the source tree.

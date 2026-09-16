@@ -11,6 +11,7 @@ var prettier = _interopDefault(require('prettier'));
 var t = require('babel-types');
 var generate = _interopDefault(require('babel-generator'));
 var template = _interopDefault(require('babel-template'));
+var _ = _interopDefault(require('lodash'));
 
 /*  */
 
@@ -133,7 +134,7 @@ function cached (fn) {
  */
 var camelizeRE = /-(\w)/g;
 var camelize = cached(function (str) {
-  return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
+  return str.replace(camelizeRE, function (_$$1, c) { return c ? c.toUpperCase() : ''; })
 });
 
 /**
@@ -192,7 +193,7 @@ var no = function (a, b, c) { return false; };
 /**
  * Return same value
  */
-var identity = function (_) { return _; };
+var identity = function (_$$1) { return _$$1; };
 
 /**
  * Generate a static keys string from compiler modules.
@@ -704,8 +705,8 @@ var isUnaryTag$1 = makeMap(
   true
 );
 
-function mustUseProp () { /* console.log('mustUseProp') */ }
-function getTagNamespace () { /* console.log('getTagNamespace') */ }
+function mustUseProp () {}
+function getTagNamespace () {}
 
 
 
@@ -862,7 +863,7 @@ function pluckModuleFunction (
   key
 ) {
   return modules
-    ? modules.map(function (m) { return m[key]; }).filter(function (_) { return _; })
+    ? modules.map(function (m) { return m[key]; }).filter(function (_$$1) { return _$$1; })
     : []
 }
 
@@ -2823,6 +2824,12 @@ var Observer = function Observer (value, key) {
       ? protoAugment
       : copyAugment;
     augment(value, arrayMethods, arrayKeys);
+    // 微信小程序中使用插件，数组对象上会直接挂载`push、pop、sort`等方法
+    // 导致mpvue对隐式原型的覆盖无效，无法感知用户对数组的操作
+    if (hasProto) {
+      var ownMethods = hasOwnArrayMethods(value, arrayKeys);
+      ownMethods.length && copyAugment(value, arrayMethods, ownMethods);
+    }
     this.observeArray(value);
   } else {
     this.walk(value);
@@ -2849,6 +2856,21 @@ Observer.prototype.observeArray = function observeArray (items) {
     observe(items[i]);
   }
 };
+
+/**
+ * 判断当前数组上是否被挂载了数组方法
+ */
+function hasOwnArrayMethods (value, keys) {
+  var ownMethods = [];
+  /* eslint-disable no-proto */
+  keys.forEach(function (key) {
+    if (value[key] !== value.__proto__[key]) {
+      ownMethods.push(key);
+    }
+  });
+  /* eslint-enable no-proto */
+  return ownMethods
+}
 
 // helpers
 
@@ -4181,7 +4203,13 @@ function mark (path, options, deps, iteratorArr) {
   var needEventsID = events || hasModel;
 
   if (needEventsID) {
-    var eventId = getWxEleId(deps.eventIndex, currentArr);
+    var level = 0;
+    var _path = Object.assign({}, path);
+    while (_path && _path.parent) {
+      level++;
+      _path = _path.parent;
+    }
+    var eventId = getWxEleId(level + '_' + deps.eventIndex, currentArr);
     // const eventId = getWxEleId(eIndex, currentArr)
     addAttr$1(path, 'eventid', eventId);
     path.attrsMap['data-comkey'] = '{{$k}}';
@@ -4580,20 +4608,20 @@ function getSlotsName (obj) {
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
   return tmplateSlotsObj(obj)
     .concat(
-      Object.keys(obj).map(function(k) {
+      Object.keys(obj).map(function (k) {
         return '$slot' + k + ":'" + obj[k] + "'"
       })
     )
     .join(',')
 }
 
-function tmplateSlotsObj(obj) {
+function tmplateSlotsObj (obj) {
   if (!obj) {
     return []
   }
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a1不能写成 'a1' 带引号的形式，会出错
   var $for = Object.keys(obj)
-    .map(function(k) {
+    .map(function (k) {
       return (k + ":'" + (obj[k]) + "'")
     })
     .join(',');
@@ -4612,13 +4640,13 @@ var component = {
     var mpcomid = ast.mpcomid;
     var slots = ast.slots;
     if (slotName) {
-      attrsMap['data'] = "{{...$root[$p], ...$root[$k], $root}}";
+      attrsMap['data'] = '{{...$root[$p], ...$root[$k], $root}}';
       // bindedName is available when rendering slot in v-for
       var bindedName = attrsMap['v-bind:name'];
-      if(bindedName) {
-        attrsMap['is'] = "{{$for[" + bindedName + "]}}";
+      if (bindedName) {
+        attrsMap['is'] = '{{$for[' + bindedName + ']}}';
       } else {
-        attrsMap['is'] = "{{" + slotName + "}}";
+        attrsMap['is'] = '{{' + slotName + '}}';
       }
     } else {
       var slotsName = getSlotsName(slots);
@@ -4664,7 +4692,7 @@ var convertFor = function (ast) {
 };
 
 // import component from './component'
-var tag = function (ast, options, component) {
+var tag = function (ast, options, component, attrs) {
   var tag = ast.tag;
   var elseif = ast.elseif;
   var elseText = ast.else;
@@ -4698,6 +4726,45 @@ var tag = function (ast, options, component) {
     delete ast.attrsMap.name;
     ast = component.convertComponent(ast, components, slotName);
     ast.tag = 'template';
+    if (isSlot) {
+      var originParent = ast.parent;
+      var _copyAstOne = _.cloneDeep(ast);
+      var _copyAstTwo = _.cloneDeep(ast);
+      var baseObject = {
+        type: ast.type,
+        tag: 'block'
+      };
+      var childOne = attrs.convertAttr(Object.assign({
+        if: ("$slot" + originSlotName),
+        attrsMap: {
+          'v-if': ("$slot" + originSlotName)
+        }
+      }, baseObject));
+      var childTwo = attrs.convertAttr(Object.assign({
+        else: ("'" + originSlotName + "'"),
+        attrsMap: {
+          'v-else': ''
+        }
+      }, baseObject));
+      _copyAstOne.attrsMap['is'] = '{{' + "$slot" + originSlotName + '}}';
+      _copyAstTwo.attrsMap['is'] = '{{' + "'" + originSlotName + "'" + '}}';
+      _copyAstOne.parent = childOne;
+      _copyAstTwo.parent = childTwo;
+      childOne.children = [_copyAstOne];
+      childTwo.children = [_copyAstTwo];
+      var parentObject = {
+        type: ast.type,
+        tag: 'block',
+        parent: originParent
+      };
+      childOne.parent = parentObject;
+      childTwo.parent = parentObject;
+      parentObject.children = [
+        childOne,
+        childTwo
+      ];
+      ast = parentObject;
+    }
   } else if (tag === 'a' && !(href || bindHref)) {
     ast.tag = 'view';
   } else if (ast.events && ast.events.scroll) {
@@ -4777,11 +4844,12 @@ function convertAst (node, options, util, conventRule) {
         var isDefault = Array.isArray(n);
         var slotName = isDefault ? 'default' : n.attrsMap.slot;
         var slotId = moduleId + "-" + slotName + "-" + (mpcomid.replace(/\'/g, ''));
-        var node = isDefault ? { tag: 'slot', attrsMap: {}, children: n } : n;
-
+        if (!isDefault) {
+          delete n.attrsMap.slot;
+        }
+        var node = { tag: 'slot', attrsMap: {}, children: isDefault ? n : [n] };
         node.tag = 'template';
         node.attrsMap.name = slotId;
-        delete node.attrsMap.slot;
         // 缓存，会集中生成一个 slots 文件
         slots[slotId] = { node: convertAst(node, options, util, conventRule), name: slotName, slotId: slotId };
         mpmlAst.slots[slotName] = slotId;
@@ -4792,7 +4860,7 @@ function convertAst (node, options, util, conventRule) {
   }
 
   mpmlAst.attrsMap = conventRule.attrs.format(mpmlAst.attrsMap);
-  mpmlAst = tag(mpmlAst, options, conventRule.component);
+  mpmlAst = tag(mpmlAst, options, conventRule.component, conventRule.attrs);
   mpmlAst = conventRule.convertFor(mpmlAst, options);
   mpmlAst = conventRule.attrs.convertAttr(mpmlAst, log);
   if (children && !isSlot) {
@@ -4903,18 +4971,11 @@ function generateCode (nodeAst, options) {
     return ("<" + tag + attrs + " />" + (ifConditionsArr.join('')))
   }
   return ("<" + tag + attrs + ">" + childrenContent + "</" + tag + ">" + (ifConditionsArr.join('')))
-
-  // if (autoEndTags.indexOf(tag) > -1 && !children.length) {
-  //   return `<${tag}${attrs ? ' ' + attrs : ''} />${ifConditionsArr.join('')}`
-  // }
-  // return `<${tag}${attrs ? ' ' + attrs : ''}>${childrenContent}</${tag}>${ifConditionsArr.join('')}`
 }
-
 
 function compileToMPMLCommon (compiled, options, getAst) {
   if ( options === void 0 ) options = {};
 
-  // TODO, compiled is undefined
   var components = options.components; if ( components === void 0 ) components = {};
   var log = utils.log(compiled);
 
@@ -4934,7 +4995,6 @@ function compileToMPMLCommon (compiled, options, getAst) {
     slot.code = generateCode(slot.node, options);
   });
 
-  // TODO: 后期优化掉这种暴力全部 import，虽然对性能没啥大影响
   return { code: code, compiled: compiled, slots: slots, importCode: importCode }
 }
 
@@ -5288,7 +5348,7 @@ var component$1 = {
     var mpcomid = ast.mpcomid;
     var slots = ast.slots;
     if (slotName) {
-      attrsMap['data'] = '{{{...$root[$k], $root}}}';
+      attrsMap['data'] = '{{{...$root[$p], ...$root[$k], $root}}}';
       // bindedName is available when rendering slot in v-for
       var bindedName = attrsMap['v-bind:name'];
       if (bindedName) {
@@ -5317,7 +5377,6 @@ var astMap$1 = {
 var convertFor$1 = function (ast) {
   var iterator1 = ast.iterator1;
   var forText = ast.for;
-  var key = ast.key;
   var alias = ast.alias;
   var attrsMap = ast.attrsMap;
 
@@ -5326,19 +5385,8 @@ var convertFor$1 = function (ast) {
 
   if (forText) {
     attrsMap[astMap$1['v-for']] = alias + "," + iterator1 + " in " + forText;
-    // attrsMap[astMap['v-for']] = forText
-    // if (iterator1) {
-    //   attrsMap[astMap['iterator1']] = iterator1
-    // }
-    // if (alias) {
-    //   attrsMap[astMap['alias']] = alias
-    // }
-    // if (key) {
-    //   attrsMap[astMap['key']] = key
-    // }
     delete attrsMap['v-for'];
   }
-
 
   return ast
 };
@@ -5656,20 +5704,20 @@ function getSlotsName$2 (obj) {
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
   return tmplateSlotsObj$2(obj)
     .concat(
-      Object.keys(obj).map(function(k) {
+      Object.keys(obj).map(function (k) {
         return '$slot' + k + ":'" + obj[k] + "'"
       })
     )
     .join(',')
 }
 
-function tmplateSlotsObj$2(obj) {
+function tmplateSlotsObj$2 (obj) {
   if (!obj) {
     return []
   }
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a1不能写成 'a1' 带引号的形式，会出错
   var $for = Object.keys(obj)
-    .map(function(k) {
+    .map(function (k) {
       return (k + ":'" + (obj[k]) + "'")
     })
     .join(',');
@@ -5688,13 +5736,13 @@ var component$2 = {
     var mpcomid = ast.mpcomid;
     var slots = ast.slots;
     if (slotName) {
-      attrsMap['data'] = "{{...$root[$p], ...$root[$k], $root}}";
+      attrsMap['data'] = '{{...$root[$p], ...$root[$k], $root}}';
       // bindedName is available when rendering slot in v-for
       var bindedName = attrsMap['v-bind:name'];
-      if(bindedName) {
-        attrsMap['is'] = "{{$for[" + bindedName + "]}}";
+      if (bindedName) {
+        attrsMap['is'] = '{{$for[' + bindedName + ']}}';
       } else {
-        attrsMap['is'] = "{{" + slotName + "}}";
+        attrsMap['is'] = '{{' + slotName + '}}';
       }
     } else {
       var slotsName = getSlotsName$2(slots);
@@ -6082,13 +6130,13 @@ var component$3 = {
     var mpcomid = ast.mpcomid;
     var slots = ast.slots;
     if (slotName) {
-      attrsMap['data'] = "{{...$root[$p], ...$root[$k], $root}}";
+      attrsMap['data'] = '{{...$root[$p], ...$root[$k], $root}}';
       // bindedName is available when rendering slot in v-for
       var bindedName = attrsMap['v-bind:name'];
       if (bindedName) {
-        attrsMap['is'] = "{{$for[" + bindedName + "]}}";
+        attrsMap['is'] = '{{$for[' + bindedName + ']}}';
       } else {
-        attrsMap['is'] = "{{" + slotName + "}}";
+        attrsMap['is'] = '{{' + slotName + '}}';
       }
     } else {
       var slotsName = getSlotsName$3(slots);
@@ -6147,6 +6195,8 @@ function compileToMPML$4 (compiled, options) {
 }
 
 function compileToMPML (compiled, options, fileExt) {
+  if ( fileExt === void 0 ) fileExt = { platform: 'wx' };
+
   var code;
   switch (fileExt.platform) {
     case 'swan':

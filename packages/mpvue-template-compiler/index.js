@@ -1,6 +1,13 @@
+var vueVersion
 try {
-  var vueVersion = require('mpvue/package.json').version
-} catch (e) {}
+  vueVersion = require('vue-mini-bridge/package.json').version
+} catch (e) {
+  try {
+    vueVersion = require('../mpvue/package.json').version
+  } catch (e) {
+    vueVersion = null
+  }
+}
 
 var packageName = require('./package.json').name
 var packageVersion = require('./package.json').version

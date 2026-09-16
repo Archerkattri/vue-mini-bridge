@@ -167,6 +167,7 @@ const builds = {
     entry: resolve('mp/entry-runtime.js'),
     dest: resolve('packages/mpvue/index.js'),
     format: 'umd',
+    exports: 'default',
     env: 'production',
     banner: mpBanner
   },
@@ -186,6 +187,7 @@ function genConfig (opts) {
     dest: opts.dest,
     external: opts.external,
     format: opts.format,
+    exports: opts.exports,
     banner: opts.banner,
     moduleName: opts.moduleName || 'Vue',
     plugins: [
@@ -211,7 +213,7 @@ function genConfig (opts) {
   // hack fix MP LIFECYCLE_HOOKS
   if (opts.mp) {
     config.plugins.push(replace({
-      "'deactivated'\n]": `'deactivated', ${mpLifecycleHooks}\n]`
+      "'deactivated'": `'deactivated', ${mpLifecycleHooks}`
     }))
     config.plugins.push(replace({
       'inBrowser && window.navigator.userAgent.toLowerCase': `['mpvue-runtime'].join`

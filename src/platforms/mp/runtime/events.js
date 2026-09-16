@@ -17,7 +17,7 @@ function getVM (vm, comkeys = []) {
   if (!keys.length) return vm
 
   // bugfix #1375: 虚拟dom的compid和真实dom的comkey在组件嵌套时匹配出错，comid会丢失前缀，需要从父节点补充
-  let comkey = keys.join(KEY_SEP)
+  const comkey = keys.join(KEY_SEP)
   let comidPrefix = ''
   return keys.reduce((res, key) => {
     const len = res.$children.length
@@ -79,7 +79,7 @@ function getHandle (vnode, eventid, eventTypes = []) {
 }
 
 function getWebEventByMP (e) {
-  const { type, timeStamp, touches, detail = {}, target = {}, currentTarget = {} } = e
+  const { type, timeStamp, touches, detail = {}, target = {}, currentTarget = {}} = e
   const { x, y } = detail
   const event = {
     mp: e,
@@ -104,7 +104,7 @@ const KEY_SEP = '_'
 export function handleProxyWithVue (e) {
   const rootVueVM = this.$root
   const { type, target = {}, currentTarget } = e
-  const { dataset = {} } = currentTarget || target
+  const { dataset = {}} = currentTarget || target
   const { comkey = '', eventid } = dataset
   const vm = getVM(rootVueVM, comkey.split(KEY_SEP))
 
@@ -115,8 +115,6 @@ export function handleProxyWithVue (e) {
   const webEventTypes = eventTypeMap[type] || [type]
   const handles = getHandle(vm._vnode, eventid, webEventTypes)
 
-  // TODO, enevt 还需要处理更多
-  // https://developer.mozilla.org/zh-CN/docs/Web/API/Event
   if (handles.length) {
     const event = getWebEventByMP(e)
     if (handles.length === 1) {

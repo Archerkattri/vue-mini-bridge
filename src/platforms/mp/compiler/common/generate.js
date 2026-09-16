@@ -35,16 +35,9 @@ function generateCode (nodeAst, options = {}) {
     return `<${tag}${attrs} />${ifConditionsArr.join('')}`
   }
   return `<${tag}${attrs}>${childrenContent}</${tag}>${ifConditionsArr.join('')}`
-
-  // if (autoEndTags.indexOf(tag) > -1 && !children.length) {
-  //   return `<${tag}${attrs ? ' ' + attrs : ''} />${ifConditionsArr.join('')}`
-  // }
-  // return `<${tag}${attrs ? ' ' + attrs : ''}>${childrenContent}</${tag}>${ifConditionsArr.join('')}`
 }
 
-
 export default function compileToMPMLCommon (compiled, options = {}, getAst) {
-  // TODO, compiled is undefined
   const { components = {}} = options
   const log = utils.log(compiled)
 
@@ -61,7 +54,6 @@ export default function compileToMPMLCommon (compiled, options = {}, getAst) {
     slot.code = generateCode(slot.node, options)
   })
 
-  // TODO: 后期优化掉这种暴力全部 import，虽然对性能没啥大影响
   return { code, compiled, slots, importCode }
 }
 

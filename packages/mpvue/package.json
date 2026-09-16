@@ -1,11 +1,11 @@
 {
-  "name": "mpvue",
+  "name": "vue-mini-bridge",
   "version": "2.0.6",
-  "description": "Vue Runtime for mini program",
+  "description": "Vue-compatible runtime for mini-program targets",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meituan-Dianping/mpvue.git"
+    "url": "git+https://github.com/Archerkattri/vue-mini-bridge.git"
   },
   "keywords": [
     "vue",
@@ -14,10 +14,13 @@
     "mp",
     "antmp"
   ],
-  "author": "meituan.com",
+  "author": "Archerkattri",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Meituan-Dianping/mpvue/issues"
+  "engines": {
+    "node": ">=22"
   },
-  "homepage": "https://github.com/Meituan-Dianping/mpvue/"
+  "bugs": {
+    "url": "https://github.com/Archerkattri/vue-mini-bridge/issues"
+  },
+  "homepage": "https://github.com/Archerkattri/vue-mini-bridge/"
 }

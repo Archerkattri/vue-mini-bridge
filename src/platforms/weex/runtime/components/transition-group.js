@@ -60,8 +60,6 @@ export default {
       prevChildren.forEach(c => {
         c.data.transition = transitionData
 
-        // TODO: record before patch positions
-
         if (map[c.key]) {
           kept.push(c)
         } else {
@@ -93,39 +91,6 @@ export default {
     if (!moveData) {
       return
     }
-
-    // TODO: finish implementing move animations once
-    // we have access to sync getComponentRect()
-
-    // children.forEach(callPendingCbs)
-
-    // Promise.all(children.map(c => {
-    //   const oldPos = c.data.pos
-    //   const newPos = c.data.newPos
-    //   const dx = oldPos.left - newPos.left
-    //   const dy = oldPos.top - newPos.top
-    //   if (dx || dy) {
-    //     c.data.moved = true
-    //     return this.animate(c.elm, {
-    //       styles: {
-    //         transform: `translate(${dx}px,${dy}px)`
-    //       }
-    //     })
-    //   }
-    // })).then(() => {
-    //   children.forEach(c => {
-    //     if (c.data.moved) {
-    //       this.animate(c.elm, {
-    //         styles: {
-    //           transform: ''
-    //         },
-    //         duration: moveData.duration || 0,
-    //         delay: moveData.delay || 0,
-    //         timingFunction: moveData.timingFunction || 'linear'
-    //       })
-    //     }
-    //   })
-    // })
   },
 
   methods: {
@@ -136,13 +101,3 @@ export default {
   }
 }
 
-// function callPendingCbs (c) {
-//   /* istanbul ignore if */
-//   if (c.elm._moveCb) {
-//     c.elm._moveCb()
-//   }
-//   /* istanbul ignore if */
-//   if (c.elm._enterCb) {
-//     c.elm._enterCb()
-//   }
-// }

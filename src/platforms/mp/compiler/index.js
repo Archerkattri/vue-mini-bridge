@@ -6,7 +6,7 @@ import codeGenSwan from './swan/index'
 import codeGenTt from './tt/index'
 import codeGenMy from './my/index'
 
-function compileToMPML (compiled, options, fileExt) {
+function compileToMPML (compiled, options, fileExt = { platform: 'wx' }) {
   let code
   switch (fileExt.platform) {
     case 'swan':
