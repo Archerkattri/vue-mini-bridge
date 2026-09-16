@@ -1,7 +1,8 @@
 {
-  "name": "vue-mini-bridge",
+  "name": "vue-mini-bridge-workspace",
+  "private": true,
   "version": "2.4.1",
-  "description": "Vue-compatible runtime and compiler for mini-program targets",
+  "description": "Build workspace for the Vue Mini Bridge runtime and compiler",
   "main": "dist/vue.runtime.common.js",
   "module": "dist/vue.runtime.esm.js",
   "unpkg": "dist/vue.js",

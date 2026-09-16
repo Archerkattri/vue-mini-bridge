@@ -30,14 +30,16 @@ export const isUnaryTag = makeMap(
   true
 )
 
+// Mini-program nodes do not bind through browser DOM properties or namespaces.
 export function mustUseProp () {}
 export function getTagNamespace () {}
 export function isUnknownElement () {}
 
 export function query (el, document) {
-  // renderer is injected by weex factory wrapper
+  // The renderer supplies the root node used by the platform patcher.
   const placeholder = new renderer.Comment('root')
-  placeholder.hasAttribute = placeholder.removeAttribute = function () {} // hack for patch
+  // The patcher probes these DOM-like methods during mount.
+  placeholder.hasAttribute = placeholder.removeAttribute = function () {}
   document.documentElement.appendChild(placeholder)
   return placeholder
 }

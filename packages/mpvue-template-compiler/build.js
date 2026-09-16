@@ -180,7 +180,7 @@ function extend (to, _from) {
 
 /**
  * Perform no operation.
- * Stubbing args to make Flow happy without leaving useless transpiled code
+ * Optional parameters preserve Flow's function-call arity without adding runtime work
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/)
  */
 function noop (a, b, c) {}
@@ -705,6 +705,7 @@ var isUnaryTag$1 = makeMap(
   true
 );
 
+// Mini-program nodes do not bind through browser DOM properties or namespaces.
 function mustUseProp () {}
 function getTagNamespace () {}
 
