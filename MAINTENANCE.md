@@ -20,7 +20,7 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - The compiler declares its Babel, Prettier, and Lodash runtime dependencies explicitly, so mini-program builds no longer emit unresolved-import warnings.
 - The mini-program compiler/runtime integration suite now passes all 71 specs, including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing.
 - `npm run flow` now passes with zero errors after typing the observer metadata used by mini-program data diffing.
-- The aggregate `npm test` gate still stops in its legacy Flow/browser chain before the later suites; the maintained focused suites are run separately until PhantomJS and the old Karma stack are replaced.
+- The aggregate `npm test` gate reaches the legacy Karma coverage stage but cannot load `karma-phantomjs-launcher` on the current Node runtime; the maintained focused suites are run separately until PhantomJS and the old Karma stack are replaced.
 - `yarn audit --level high` reports 746 vulnerabilities in the legacy development graph. PhantomJS, Selenium 2, old Karma integrations, and abandoned upload utilities must be removed before calling the toolchain production-ready.
 
 ## Issue review
