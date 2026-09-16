@@ -3729,8 +3729,8 @@ var isUnaryTag$1 = makeMap(
   true
 );
 
-function mustUseProp () { /* console.log('mustUseProp') */ }
-function getTagNamespace () { /* console.log('getTagNamespace') */ }
+function mustUseProp () {}
+function getTagNamespace () {}
 
 /*  */
 

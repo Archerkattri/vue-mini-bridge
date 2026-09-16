@@ -24,6 +24,7 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is fully removed from `devDependencies` (17 packages, 248 lockfile entries). The aggregate `npm test` gate is green end to end: lint, flow (0 errors), type tests, ssr (92 specs), weex (67 specs), and mpvue (76 specs).
 - `yarn audit --summary` went from 746 to 70 vulnerabilities (high+critical 461 to 38) after the removal plus in-range upgrades. The remainder lives in the Babel 6 / Webpack 2 / old-loader chains and needs the major migrations on the roadmap below.
 - The obsolete CircleCI 1.0 config is removed; GitHub Actions runs the aggregate gate and `build/ci.sh` is a local alias for it.
+- Stray `console.log` calls in the mini-program data-diff hot path now go through the dev-only `warn()` channel, and dead commented-out debug lines are removed.
 
 ## Issue review
 

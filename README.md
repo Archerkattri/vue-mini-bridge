@@ -2,7 +2,7 @@
 
 Vue Mini Bridge is an independently maintained Vue-compatible runtime and template compiler for mini-program targets.
 
-It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, translating the documentation, and adding regression coverage for current developer environments.
+It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, documenting behavior in English, and adding regression coverage for current developer environments.
 
 ## Status
 
@@ -24,9 +24,47 @@ The independent package names are:
 
 Both packages are generated from the source tree during a release build. Make changes under `src/`, then run the build before publishing.
 
+```mermaid
+flowchart LR
+    src[src/ Vue 2 runtime + compiler] --> build[rollup build]
+    build --> runtime[vue-mini-bridge runtime]
+    build --> compiler[vue-mini-bridge-template-compiler]
+    runtime --> wx[WeChat wx]
+    runtime --> swan[Baidu swan]
+    runtime --> tt[Toutiao tt]
+    runtime --> my[Alipay my]
+    compiler --> loader[compatible mpvue loader]
+```
+
+## Usage
+
+Inside a mini-program project (where the platform provides `App` and `Page`),
+mount a page through the runtime entry point:
+
+```js
+const Vue = require('vue-mini-bridge');
+
+const page = new Vue({
+  data: { msg: 'hello' }
+});
+
+Vue.createMP({
+  mpType: 'page', // 'app' | 'page' | 'component'
+  init: () => page
+});
+```
+
+Compile a template to mini-program markup:
+
+```js
+const { compile, compileToMPML } = require('vue-mini-bridge-template-compiler');
+
+const output = compileToMPML(compile('<div>{{msg}}</div>', {}), { name: 'page' });
+```
+
 ## Development
 
-Requirements: Node.js 22 or newer and Corepack-enabled Yarn 1.x while the dependency graph is being migrated.
+Requirements: Node.js 22 or newer and Yarn 1.x (via Corepack) while the dependency graph is being migrated.
 
 ```sh
 corepack yarn install

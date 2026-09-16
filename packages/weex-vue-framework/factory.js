@@ -6471,9 +6471,9 @@ var isUnaryTag = makeMap(
   true
 );
 
-function mustUseProp () { /* console.log('mustUseProp') */ }
+function mustUseProp () {}
 
-function isUnknownElement () { /* console.log('isUnknownElement') */ }
+function isUnknownElement () {}
 
 function query (el, document) {
   // renderer is injected by weex factory wrapper

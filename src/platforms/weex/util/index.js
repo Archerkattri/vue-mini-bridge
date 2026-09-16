@@ -24,9 +24,9 @@ export const isUnaryTag = makeMap(
   true
 )
 
-export function mustUseProp () { /* console.log('mustUseProp') */ }
-export function getTagNamespace () { /* console.log('getTagNamespace') */ }
-export function isUnknownElement () { /* console.log('isUnknownElement') */ }
+export function mustUseProp () {}
+export function getTagNamespace () {}
+export function isUnknownElement () {}
 
 export function query (el, document) {
   // renderer is injected by weex factory wrapper

@@ -1,6 +1,6 @@
 import Vue from 'core/index'
 import { diffLog } from './runtime-trace'
-import { def } from 'core/util/index'
+import { def, warn } from 'core/util/index'
 
 const KEY_SEP = '_'
 
@@ -85,7 +85,7 @@ function compareAndSetDeepData (key, newData, vm, data) {
     }
     deepDiff(oldData, newData, data, key)
   } catch (e) {
-    console.log(e, key, newData, vm)
+    warn('Failed to diff key "' + key + '": ' + (e && e.message), vm)
   }
 }
 
@@ -137,7 +137,7 @@ function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
       def(vmData, '__newReference', false, false)
     }
   } catch (e) {
-    console.log(e, rootKey, originKey, vmData, data)
+    warn('Failed to minify data at "' + rootKey + '.' + originKey + '": ' + (e && e.message), vm)
   }
 }
 
@@ -163,7 +163,6 @@ export function diffData (vm, data) {
   Vue.nextTick(() => {
     cleanKeyPath(vm)
   })
-  // console.log(rootKey)
 
   // 值类型变量不考虑优化，还是直接更新
   const __keyPathOnThis = vmData.__keyPath || vm.__keyPath || {}
@@ -211,8 +210,6 @@ export function diffData (vm, data) {
     vm._mpValueSet = 'done'
   }
   if (Vue.config._mpTrace) {
-    // console.log('更新VM节点', vm)
-    // console.log('实际传到Page.setData数据', data)
     diffLog(data)
   }
 }
