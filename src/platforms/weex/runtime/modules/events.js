@@ -1,6 +1,7 @@
 /* @flow */
 
 import { updateListeners } from 'core/vdom/helpers/update-listeners'
+import { warn } from 'core/util/index'
 
 let target: any
 
@@ -11,7 +12,7 @@ function add (
   capture: boolean
 ) {
   if (capture) {
-    console.log('Weex do not support event in bubble phase.')
+    warn('Weex does not support events in the capture phase.')
     return
   }
   if (once) {

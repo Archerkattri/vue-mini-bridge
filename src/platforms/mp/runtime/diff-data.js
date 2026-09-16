@@ -26,7 +26,7 @@ function deepDiff (oldData, newData, data, key) {
   if (oldData === newData) {
     return
   }
-  // 新旧数据如果存在值为null则添加到需要更新的表中
+  // If either the old or new value is null, queue the new value for update.
   if (oldData === null || newData === null) {
     data[key] = newData
     return
@@ -35,20 +35,20 @@ function deepDiff (oldData, newData, data, key) {
     data[key] = newData
     return
   }
-  // 如果新旧数据均为数组，则进行diff
+  // Diff when both the old and new values are arrays.
   if (Array.isArray(newData) && Array.isArray(oldData)) {
     if (newData.length === oldData.length) {
       for (let i = 0, len = newData.length; i < len; i++) {
-        // 递归处理，处理数据中包含数据或者包含对象的情况
+        // Recurse into nested arrays and objects.
         deepDiff(oldData[i], newData[i], data, key + '[' + i + ']')
       }
     } else {
-      // 数组长度不一样直接setData
+      // Differing lengths are written out directly via setData.
       data[key] = newData
     }
     return
   }
-  // 如果新旧数据均为对象，进行diff
+  // Diff when both the old and new values are objects.
   if (typeof oldData === 'object' && typeof newData === 'object') {
     var newKeys = Object.keys(newData)
     var oldKeys = Object.keys(oldData)
@@ -74,10 +74,10 @@ function deepDiff (oldData, newData, data, key) {
 }
 
 function compareAndSetDeepData (key, newData, vm, data) {
-  // 比较引用类型数据
+  // Compare reference-type data.
   try {
     const keyList = key.split('.')
-    // page.__viewData__老版小程序不存在，使用mpvue里绑的data比对
+    // Old mini-program runtimes lack page.__viewData__, so diff against the data bound by mpvue.
     const oldData = getDeepData(keyList, vm.$root.$mp.page.data)
     if (!oldData) {
       data[key] = newData
@@ -100,23 +100,23 @@ function cleanKeyPath (vm) {
 function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
   try {
     if (vmData instanceof Array) {
-       // 数组
+       // Array.
       compareAndSetDeepData(rootKey + '.' + originKey, vmData, vm, data)
     } else {
       // Object
-      let __keyPathOnThis = {} // 存储这层对象的keyPath
+      let __keyPathOnThis = {} // Collect this level's keyPath entries.
       if (vmData.__keyPath && !vmData.__newReference) {
-        // 有更新列表 ，按照更新列表更新
+        // An update list exists, so update from the list.
         __keyPathOnThis = vmData.__keyPath
         Object.keys(vmData).forEach((_key) => {
           if (vmData[_key] instanceof Object) {
-            // 引用类型 递归
+            // Reference type: recurse.
             if (_key === '__keyPath') {
               return
             }
             minifyDeepData(rootKey + '.' + originKey, _key, vmData[_key], data, null, vm)
           } else {
-            // 更新列表中的 加入data
+            // Add listed entries to the update payload.
             if (__keyPathOnThis[_key] === true) {
               if (originKey) {
                 data[rootKey + '.' + originKey + '.' + _key] = vmData[_key]
@@ -126,14 +126,14 @@ function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
             }
           }
         })
-         // 根节点可能有父子引用同一个引用类型数据，依赖树都遍历完后清理
+         // Root and child may share one reference; clean up after the dependency tree is fully walked.
         vm['__mpKeyPath'] = vm['__mpKeyPath'] || {}
         vm['__mpKeyPath'][vmData.__ob__.dep.id] = vmData
       } else {
-        // 没有更新列表
+        // No update list.
         compareAndSetDeepData(rootKey + '.' + originKey, vmData, vm, data)
       }
-      // 标记是否是通过this.Obj = {} 赋值印发的改动，解决少更新问题#1305
+      // Flag whole-object (this.obj = {}) replacements to fix under-updating, see #1305.
       def(vmData, '__newReference', false, false)
     }
   } catch (e) {
@@ -164,19 +164,19 @@ export function diffData (vm, data) {
     cleanKeyPath(vm)
   })
 
-  // 值类型变量不考虑优化，还是直接更新
+  // Value-type variables skip optimization and update directly.
   const __keyPathOnThis = vmData.__keyPath || vm.__keyPath || {}
   delete vm.__keyPath
   delete vmData.__keyPath
   delete vmProps.__keyPath
   if (vm._mpValueSet === 'done') {
-    // 第二次赋值才进行缩减操作
+    // Minimization runs from the second assignment on.
     Object.keys(vmData).forEach((vmDataItemKey) => {
       if (vmData[vmDataItemKey] instanceof Object) {
-        // 引用类型
+        // Reference type.
         minifyDeepData(rootKey, vmDataItemKey, vmData[vmDataItemKey], data, vm._mpValueSet, vm)
       } else if (vmData[vmDataItemKey] !== undefined) {
-        // _data上的值属性只有要更新的时候才赋值
+        // Value props on _data are assigned only when flagged for update.
         if (__keyPathOnThis[vmDataItemKey] === true) {
           data[rootKey + '.' + vmDataItemKey] = vmData[vmDataItemKey]
         }
@@ -185,15 +185,15 @@ export function diffData (vm, data) {
 
     Object.keys(vmProps).forEach((vmPropsItemKey) => {
       if (vmProps[vmPropsItemKey] instanceof Object) {
-        // 引用类型
+        // Reference type.
         minifyDeepData(rootKey, vmPropsItemKey, vmProps[vmPropsItemKey], data, vm._mpValueSet, vm)
       } else if (vmProps[vmPropsItemKey] !== undefined) {
         data[rootKey + '.' + vmPropsItemKey] = vmProps[vmPropsItemKey]
       }
-      // _props上的值属性只有要更新的时候才赋值
+      // Value props on _props are assigned only when flagged for update.
     })
 
-    // 检查完data和props,最后补上_mpProps & _computedWatchers
+    // After data and props, append _mpProps and _computedWatchers.
     const vmMpProps = vm._mpProps || {}
     const vmComputedWatchers = vm._computedWatchers || {}
     Object.keys(vmMpProps).forEach((mpItemKey) => {
@@ -202,11 +202,11 @@ export function diffData (vm, data) {
     Object.keys(vmComputedWatchers).forEach((computedItemKey) => {
       data[rootKey + '.' + computedItemKey] = vm[computedItemKey]
     })
-    // 更新的时候要删除$root.0:{},否则会覆盖原正确数据
+    // Drop the $root.0 placeholder on update or it would overwrite correct data.
     delete data[rootKey]
   }
   if (vm._mpValueSet === undefined) {
-    // 第一次设置数据成功后，标记位置true,再更新到这个节点如果没有keyPath数组认为不需要更新
+    // After the first successful set, mark done; later updates to this node without a keyPath list are skipped.
     vm._mpValueSet = 'done'
   }
   if (Vue.config._mpTrace) {

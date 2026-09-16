@@ -5698,14 +5698,14 @@ var target$1;
 function add$1 (
   event,
   handler,
-  once,
+  once$$1,
   capture
 ) {
   if (capture) {
-    console.log('Weex do not support event in bubble phase.');
+    warn('Weex does not support events in the capture phase.');
     return
   }
-  if (once) {
+  if (once$$1) {
     var oldHandler = handler;
     var _target = target$1; // save current target element in closure
     handler = function (ev) {
