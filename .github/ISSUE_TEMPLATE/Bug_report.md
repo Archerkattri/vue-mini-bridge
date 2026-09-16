@@ -9,7 +9,7 @@ about: Describe a problem and help reproduce it
 
 ## Environment
 
-- Package and version: [e.g. vue-mini-bridge from master @ c75f8f6]
+- Package and version: [e.g. branch and commit hash]
 - Target platform: [wx / swan / tt / my]
 - Node.js version: [e.g. 22.14.0]
 - Mini-program developer tools version (if relevant):
