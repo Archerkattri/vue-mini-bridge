@@ -95,7 +95,11 @@ The maintenance record, live upstream issue/PR review, and upgrade sequence are 
 
 ## Relationship to upstream
 
-This repository preserves the original MIT license and attribution. The historical source is available as the `upstream` Git remote. Vue Mini Bridge is not affiliated with Meituan, Vue, or any mini-program platform vendor.
+This repository continues [mpvue](https://github.com/Meituan-Dianping/mpvue)
+by Meituan, itself a fork of [vuejs/vue@2.4.1](https://github.com/vuejs/vue).
+The original MIT license and attribution are preserved in [`LICENSE`](LICENSE),
+and the historical source is available as the `upstream` Git remote. Vue Mini
+Bridge is not affiliated with Meituan, Vue, or any mini-program platform vendor.
 
 ## License
 
