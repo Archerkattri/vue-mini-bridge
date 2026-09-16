@@ -1,34 +1,34 @@
 ---
-name: 报告问题（Bug report）
-about: 描述你遇到的问题并寻求社区帮助
+name: Bug report
+about: Describe a problem and help reproduce it
 ---
-<!--
-    注意：为更好的解决你的问题，请参考模板提供完整信息，准确描述问题，信息不全的 issue 将被关闭。
--->
-## [扼要问题描述]
 
-**mpvue 版本号：**
+## Summary
 
-[mpvue@x.x.x]
+[One or two sentences: what breaks?]
 
-**最小化复现代码：**
+## Environment
 
-[建议提供最小化可运行的代码：附件或文本代码]
+- Package and version: [e.g. vue-mini-bridge from master @ c75f8f6]
+- Target platform: [wx / swan / tt / my]
+- Node.js version: [e.g. 22.14.0]
+- Mini-program developer tools version (if relevant):
 
+## Reproduction
+
+[Minimal component code plus the steps that trigger the bug.]
+
+```js
+// Minimal page or component:
 ```
-// 示例代码：
-```
 
-**问题复现步骤：**
+1. [First step]
+2. [Second step]
 
-1. [第一步]
-2. [第二步]
-3. [其它...]
+## Observed behavior
 
-**观察到的表现：**
+[What happens, including full stack traces and `setData` payloads when available.]
 
-[在这里描述观察到的表现]
+## Expected behavior
 
-**截图或动态图：**
-
-![复现步骤截图或gif图片](图片的 url)
+[What should happen instead.]
