@@ -20,6 +20,4 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: npm run lint
-      - run: npm run build:mpvue
-      - run: npm run build:weex
+      - run: npm test

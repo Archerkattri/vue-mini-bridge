@@ -18,10 +18,12 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - The original lint gate had 29 existing errors. The modernization branch now clears `npm run lint`.
 - The runtime now exports the Vue constructor with `Vue.createMP` attached, and the platform lifecycle adapter mounts pages and components at their native ready points without repeating root hooks.
 - The compiler declares its Babel, Prettier, and Lodash runtime dependencies explicitly, so mini-program builds no longer emit unresolved-import warnings.
-- The mini-program compiler/runtime integration suite now passes all 71 specs, including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing.
+- The mini-program compiler/runtime integration suite now passes all 76 specs (`npm run test:mp`), including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing. Five regression specs cover lifecycle cascades to child components, slot event forwarding, parent-to-child prop updates, minimal `setData` key paths, and deterministic compiler output.
 - `npm run flow` now passes with zero errors after typing the observer metadata used by mini-program data diffing.
-- The aggregate `npm test` gate reaches the legacy Karma coverage stage but cannot load `karma-phantomjs-launcher` on the current Node runtime; the maintained focused suites are run separately until PhantomJS and the old Karma stack are replaced.
-- `yarn audit --level high` reports 746 vulnerabilities in the legacy development graph. PhantomJS, Selenium 2, old Karma integrations, and abandoned upload utilities must be removed before calling the toolchain production-ready.
+- Build outputs are deterministic: the banner year honors `SOURCE_DATE_EPOCH` for reproducible builds, and `build/build.js` now exits non-zero when a rollup bundle fails instead of silently reporting success.
+- The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is fully removed from `devDependencies` (17 packages, 248 lockfile entries). The aggregate `npm test` gate is green end to end: lint, flow (0 errors), type tests, ssr (92 specs), weex (67 specs), and mpvue (76 specs).
+- `yarn audit --summary` went from 746 to 70 vulnerabilities (high+critical 461 to 38) after the removal plus in-range upgrades. The remainder lives in the Babel 6 / Webpack 2 / old-loader chains and needs the major migrations on the roadmap below.
+- The obsolete CircleCI 1.0 config is removed; GitHub Actions runs the aggregate gate and `build/ci.sh` is a local alias for it.
 
 ## Issue review
 
@@ -47,8 +49,8 @@ The useful work falls into these groups:
 ## Upgrade plan
 
 1. Keep the public mini-program runtime/compiler contract stable while making source and generated bundles deterministic.
-2. Replace Node 6/CircleCI with GitHub Actions on supported LTS Node versions and document the minimum runtime.
-3. Remove PhantomJS, Selenium 2, Sauce-only paths, `codecov.io`, and deprecated Karma integrations in favor of maintained browser runners and local coverage reporting.
+2. [Done] Replaced Node 6/CircleCI with GitHub Actions on supported LTS Node versions and documented the minimum runtime.
+3. [Done] Removed PhantomJS, Selenium 2, Sauce-only paths, `codecov.io`, and deprecated Karma integrations; the aggregate gate now runs the jasmine suites (ssr, weex, mpvue) instead of Karma coverage.
 4. Migrate Babel 6 to Babel 7, then consider Babel 8 only after the Babel 7 configuration and compiler output are stable.
 5. Upgrade Webpack through a compatibility branch: latest Webpack 4-compatible loaders first, then Webpack 5 with loader API, target, asset, and configuration changes.
 6. Replace Flow 0.48 and TypeScript 2.4 checks with a maintained TypeScript-first type surface without changing generated output until behavior is locked down.

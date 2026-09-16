@@ -9,10 +9,16 @@ const version = process.env.VERSION || require('../package.json').version
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 const mpVueVersion = process.env.MP_VUE_VERSION || require('../packages/mpvue/package.json').version
 
+// Deterministic banner year: SOURCE_DATE_EPOCH pins the year for reproducible
+// builds (https://reproducible-builds.org/specs/source-date-epoch/).
+const bannerYear = process.env.SOURCE_DATE_EPOCH
+  ? new Date(parseInt(process.env.SOURCE_DATE_EPOCH, 10) * 1000).getUTCFullYear()
+  : new Date().getFullYear()
+
 const banner =
   '/*!\n' +
   ' * Vue.js v' + version + '\n' +
-  ' * (c) 2014-' + new Date().getFullYear() + ' Evan You\n' +
+  ' * (c) 2014-' + bannerYear + ' Evan You\n' +
   ' * Released under the MIT License.\n' +
   ' */'
 

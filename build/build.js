@@ -89,6 +89,9 @@ function getSize (code) {
 }
 
 function logError (e) {
+  // Surface build failures to the shell: without a non-zero exit code a
+  // failed rollup bundle would still report success to CI on modern Node.
+  process.exitCode = 1
   console.log(e)
 }
 

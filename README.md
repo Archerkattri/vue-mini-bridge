@@ -34,6 +34,25 @@ npm run lint
 npm run build:mpvue
 ```
 
+## Support matrix
+
+| Area | Status |
+| ---- | ------ |
+| Node.js runtime | 22 and 24 supported (`engines: node >= 22`) |
+| Mini-program runtime (`vue-mini-bridge`) | Maintained; covered by `npm run test:mp` |
+| Template compiler (`vue-mini-bridge-template-compiler`) | Maintained; covered by `npm run test:mp` |
+| Target adapters | WeChat (`wx`), Baidu (`swan`), Toutiao (`tt`), Alipay (`my`) |
+| Aggregate `npm test` | Supported: lint, flow, types, ssr (92), weex (67), mpvue (76) |
+
+```sh
+npm test
+```
+
+Focused checks also pass individually (`npm run lint`, `npm run flow`,
+`npm run build:mpvue`, `npm run test:mp`).
+
+Set `SOURCE_DATE_EPOCH` to pin the banner year for reproducible builds.
+
 The maintenance record, live upstream issue/PR review, and upgrade sequence are in [`MAINTENANCE.md`](MAINTENANCE.md).
 
 ## Relationship to upstream

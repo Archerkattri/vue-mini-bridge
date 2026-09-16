@@ -13,16 +13,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "Releasing $VERSION ..."
 
   if [[ -z $SKIP_TESTS ]]; then
-    npm run lint
-    npm run flow
-    npm run test:cover
-    npm run test:e2e
-    npm run test:ssr
-  fi
-
-  if [[ -z $SKIP_SAUCE ]]; then
-    export SAUCE_BUILD_ID=$VERSION:`date +"%s"`
-    npm run test:sauce
+    npm test
   fi
 
   # build
