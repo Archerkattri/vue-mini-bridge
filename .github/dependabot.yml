@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm_and_yarn:
+        patterns:
+          - "*"
+    # rollup 0.45 cannot take the 2.x line: the build config and its
+    # rollup 0.x/1.x-era plugins are incompatible. Major rollup upgrades
+    # stay on the MAINTENANCE.md roadmap instead of arriving via bot PR.
+    ignore:
+      - dependency-name: rollup
+        update-types:
+          - version-update:semver-major
