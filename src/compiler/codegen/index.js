@@ -10,14 +10,14 @@ type DataGenFunction = (el: ASTElement) => string;
 type DirectiveFunction = (el: ASTElement, dir: ASTDirective, warn: Function) => boolean;
 
 export class CodegenState {
-  options: CompilerOptions;
-  warn: Function;
-  transforms: Array<TransformFunction>;
-  dataGenFns: Array<DataGenFunction>;
-  directives: { [key: string]: DirectiveFunction };
-  maybeComponent: (el: ASTElement) => boolean;
-  onceId: number;
-  staticRenderFns: Array<string>;
+  options: CompilerOptions
+  warn: Function
+  transforms: Array<TransformFunction>
+  dataGenFns: Array<DataGenFunction>
+  directives: { [key: string]: DirectiveFunction }
+  maybeComponent: (el: ASTElement) => boolean
+  onceId: number
+  staticRenderFns: Array<string>
 
   constructor (options: CompilerOptions) {
     this.options = options
@@ -346,7 +346,7 @@ function genScopedSlot (
     `return ${el.tag === 'template'
       ? genChildren(el, state) || 'void 0'
       : genElement(el, state)
-  }}}`
+    }}}`
 }
 
 function genForScopedSlot (

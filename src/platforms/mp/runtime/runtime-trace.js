@@ -11,6 +11,7 @@ export function diffLog (updateData) {
       updateDataTotal = 0
     }, 500)
   } else if (Vue._mpvueTraceTimer) {
+    // eslint-disable-next-line no-control-regex -- \u0000 lower bound is intentional for latin1-range matching
     updateData = updateData.replace(/[^\u0000-\u00ff]/g, 'aa') // Non-ASCII chars count as 2 bytes; replaced with two letters for size estimation.
     updateDataTotal += updateData.length
   }

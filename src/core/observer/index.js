@@ -32,10 +32,10 @@ export const observerState = {
  * collect dependencies and dispatches updates.
  */
 export class Observer {
-  value: any;
-  dep: Dep;
-  vmCount: number; // number of vms that has this object as root $data
-  key: any;
+  value: any
+  dep: Dep
+  vmCount: number // number of vms that has this object as root $data
+  key: any
 
   constructor (value: any, key: any) {
     this.value = value

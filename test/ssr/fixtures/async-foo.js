@@ -1,7 +1,7 @@
 // import image and font
-import './test.css'
-import font from './test.woff2'
-import image from './test.png'
+require('./test.css')
+const font = require('./test.woff2')
+const image = require('./test.png')
 
 module.exports = {
   beforeCreate () {

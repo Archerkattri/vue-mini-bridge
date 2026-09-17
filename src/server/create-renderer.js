@@ -33,7 +33,7 @@ export type RenderOptions = {
 export function createRenderer ({
   modules = [],
   directives = {},
-  isUnaryTag = (() => false),
+  isUnaryTag = () => false,
   template,
   inject,
   cache,

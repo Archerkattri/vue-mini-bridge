@@ -93,7 +93,7 @@ export function createInstance (
     Vue,
     weex: weexInstanceVar,
     // deprecated
-    __weex_require_module__: weexInstanceVar.requireModule // eslint-disable-line
+    __weex_require_module__: weexInstanceVar.requireModule
   }, timerAPIs, env.services)
 
   if (!callFunctionNative(instanceVars, appCode)) {

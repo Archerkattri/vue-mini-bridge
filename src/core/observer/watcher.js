@@ -22,22 +22,22 @@ let uid = 0
  * This is used for both the $watch() api and directives.
  */
 export default class Watcher {
-  vm: Component;
-  expression: string;
-  cb: Function;
-  id: number;
-  deep: boolean;
-  user: boolean;
-  lazy: boolean;
-  sync: boolean;
-  dirty: boolean;
-  active: boolean;
-  deps: Array<Dep>;
-  newDeps: Array<Dep>;
-  depIds: ISet;
-  newDepIds: ISet;
-  getter: Function;
-  value: any;
+  vm: Component
+  expression: string
+  cb: Function
+  id: number
+  deep: boolean
+  user: boolean
+  lazy: boolean
+  sync: boolean
+  dirty: boolean
+  active: boolean
+  deps: Array<Dep>
+  newDeps: Array<Dep>
+  depIds: ISet
+  newDepIds: ISet
+  getter: Function
+  value: any
 
   constructor (
     vm: Component,

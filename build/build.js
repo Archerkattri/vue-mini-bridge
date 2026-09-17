@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
-const rollup = require('rollup')
+const { rollup } = require('rollup')
 const uglify = require('uglify-js')
 
 if (!fs.existsSync('dist')) {
@@ -15,13 +15,13 @@ if (process.argv[2]) {
   const filters = process.argv[2].split(',')
   builds = builds.filter(b => {
     // fix the project name === floder name
-    // return filters.some(f => b.dest.indexOf(f) > -1)
-    return filters.some(f => b.dest.slice(path.resolve(__dirname, '../').length).indexOf(f) > -1)
+    // return filters.some(f => b.output.file.indexOf(f) > -1)
+    return filters.some(f => b.output.file.slice(path.resolve(__dirname, '../').length).indexOf(f) > -1)
   })
 } else {
   // filter out weex builds by default
   builds = builds.filter(b => {
-    return b.dest.indexOf('weex') === -1
+    return b.output.file.indexOf('weex') === -1
   })
 }
 
@@ -43,22 +43,26 @@ function build (builds) {
 }
 
 function buildEntry (config) {
-  const isProd = /min\.js$/.test(config.dest)
-  return rollup.rollup(config)
-    .then(bundle => bundle.generate(config))
-    .then(({ code }) => {
+  const isProd = /min\.js$/.test(config.output.file)
+  return rollup(config)
+    .then(bundle => bundle.generate(config.output))
+    .then(({ output }) => {
+      const code = output[0].code
       if (isProd) {
-        var minified = (config.banner ? config.banner + '\n' : '') + uglify.minify(code, {
+        const minified = uglify.minify(code, {
           output: {
             ascii_only: true
           },
           compress: {
             pure_funcs: ['makeMap']
           }
-        }).code
-        return write(config.dest, minified, true)
+        })
+        if (minified.error) {
+          throw minified.error
+        }
+        return write(config.output.file, (config.output.banner ? config.output.banner + '\n' : '') + minified.code, true)
       } else {
-        return write(config.dest, code)
+        return write(config.output.file, code)
       }
     })
 }

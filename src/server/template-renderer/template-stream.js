@@ -5,11 +5,11 @@ import type TemplateRenderer from './index'
 import type { ParsedTemplate } from './parse-template'
 
 export default class TemplateStream extends Transform {
-  started: boolean;
-  renderer: TemplateRenderer;
-  template: ParsedTemplate;
-  context: Object;
-  inject: boolean;
+  started: boolean
+  renderer: TemplateRenderer
+  template: ParsedTemplate
+  context: Object
+  inject: boolean
 
   constructor (
     renderer: TemplateRenderer,

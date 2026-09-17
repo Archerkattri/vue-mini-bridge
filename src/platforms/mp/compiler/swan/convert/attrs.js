@@ -1,12 +1,12 @@
 import directiveMap from '../config/directiveMap'
 import tagConfig from '../../common/config'
 
-import babel from 'babel-core'
+import babel from '@babel/core'
 import prettier from 'prettier'
 
 import { transformObjectToTernaryOperator, transformObjectToString } from '../../common/babel-plugins'
 function transformDynamicClass (staticClass = '', clsBinding) {
-  const result = babel.transform(`!${clsBinding}`, { plugins: [transformObjectToTernaryOperator] })
+  const result = babel.transform(`!${clsBinding}`, { configFile: false, babelrc: false, plugins: [transformObjectToTernaryOperator] })
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
   const cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '')
@@ -14,7 +14,7 @@ function transformDynamicClass (staticClass = '', clsBinding) {
 }
 
 function transformDynamicStyle (staticStyle = '', styleBinding) {
-  const result = babel.transform(`!${styleBinding}`, { plugins: [transformObjectToString] })
+  const result = babel.transform(`!${styleBinding}`, { configFile: false, babelrc: false, plugins: [transformObjectToString] })
   const cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '')
   return `${staticStyle} {{${cls}}}`
 }

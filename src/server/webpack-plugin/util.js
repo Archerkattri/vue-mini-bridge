@@ -9,8 +9,10 @@ export const validate = compiler => {
     warn('webpack config `target` should be "node".')
   }
 
-  if (compiler.options.output && compiler.options.output.libraryTarget !== 'commonjs2') {
-    warn('webpack config `output.libraryTarget` should be "commonjs2".')
+  const output = compiler.options.output || {}
+  const libraryType = (output.library && output.library.type) || output.libraryTarget
+  if (libraryType !== 'commonjs2') {
+    warn('webpack config `output.library.type` should be "commonjs2".')
   }
 
   if (!compiler.options.externals) {

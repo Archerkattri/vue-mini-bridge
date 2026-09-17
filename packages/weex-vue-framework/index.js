@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var latestNodeId = 1;
 
 function TextNode (text) {
@@ -109,7 +107,7 @@ function createInstance (
     Vue: Vue,
     weex: weexInstanceVar,
     // deprecated
-    __weex_require_module__: weexInstanceVar.requireModule // eslint-disable-line
+    __weex_require_module__: weexInstanceVar.requireModule
   }, timerAPIs, env.services);
 
   if (!callFunctionNative(instanceVars, appCode)) {
@@ -511,15 +509,15 @@ function callFunctionNative (globalObjects, body) {
   return isNativeCompileOk
 }
 
-exports.init = init;
-exports.reset = reset;
 exports.createInstance = createInstance;
 exports.destroyInstance = destroyInstance;
-exports.refreshInstance = refreshInstance;
 exports.getRoot = getRoot;
-exports.receiveTasks = receiveTasks;
-exports.registerModules = registerModules;
-exports.isRegisteredModule = isRegisteredModule;
-exports.registerComponents = registerComponents;
+exports.init = init;
 exports.isRegisteredComponent = isRegisteredComponent;
+exports.isRegisteredModule = isRegisteredModule;
+exports.receiveTasks = receiveTasks;
+exports.refreshInstance = refreshInstance;
+exports.registerComponents = registerComponents;
+exports.registerModules = registerModules;
+exports.reset = reset;
 exports.supports = supports;

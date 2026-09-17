@@ -27,9 +27,9 @@ function createInstance (options) {
 
   const nativeInstance = mpType === 'app'
     ? getApp()
-      : mpType === 'component'
-        ? runtime.getComponent()
-        : runtime.getPage()
+    : mpType === 'component'
+      ? runtime.getComponent()
+      : runtime.getPage()
 
   const mount = instance.$mount
   let started = false

@@ -36,10 +36,10 @@ export function installSSRHelpers (vm: Component) {
 }
 
 class StringNode {
-  isString: boolean;
-  open: string;
-  close: ?string;
-  children: ?Array<any>;
+  isString: boolean
+  open: string
+  close: ?string
+  children: ?Array<any>
 
   constructor (
     open: string,

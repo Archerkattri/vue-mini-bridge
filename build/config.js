@@ -1,10 +1,9 @@
 const path = require('path')
-const buble = require('rollup-plugin-buble')
-const alias = require('rollup-plugin-alias')
-const cjs = require('rollup-plugin-commonjs')
-const replace = require('rollup-plugin-replace')
-const node = require('rollup-plugin-node-resolve')
-const flow = require('rollup-plugin-flow-no-whitespace')
+const alias = require('@rollup/plugin-alias')
+const cjs = require('@rollup/plugin-commonjs')
+const replace = require('@rollup/plugin-replace')
+const node = require('@rollup/plugin-node-resolve')
+const { flow, bubleTransform } = require('./rollup-plugins')
 const version = process.env.VERSION || require('../package.json').version
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 const mpVueVersion = process.env.MP_VUE_VERSION || require('../packages/mpvue/package.json').version
@@ -25,6 +24,7 @@ const banner =
 const { mpBanner, mpLifecycleHooks } = require('../src/platforms/mp/join-code-in-build')
 
 const weexFactoryPlugin = {
+  name: 'weex-factory',
   intro () {
     return 'module.exports = function weexFactory (exports, renderer) {'
   },
@@ -187,17 +187,24 @@ const builds = {
   }
 }
 
+// The modern replace plugin defaults to word-boundary delimiters and warns
+// about assignment guards; the old pipeline replaced bare substrings, so
+// replicate that exactly.
+function replaceValues (values) {
+  return replace({
+    values,
+    delimiters: ['', ''],
+    preventAssignment: false
+  })
+}
+
 function genConfig (opts) {
+  const aliasMap = Object.assign({}, aliases, opts.alias)
   const config = {
-    entry: opts.entry,
-    dest: opts.dest,
+    input: opts.entry,
     external: opts.external,
-    format: opts.format,
-    exports: opts.exports,
-    banner: opts.banner,
-    moduleName: opts.moduleName || 'Vue',
     plugins: [
-      replace({
+      replaceValues({
         __WEEX__: !!opts.weex,
         __MPVUE__: !!opts.mp,
         __WEEX_VERSION__: weexVersion,
@@ -205,23 +212,35 @@ function genConfig (opts) {
         __VERSION__: version
       }),
       flow(),
-      buble(),
-      alias(Object.assign({}, aliases, opts.alias))
-    ].concat(opts.plugins || [])
+      bubleTransform(),
+      alias({
+        entries: Object.keys(aliasMap).map(find => ({
+          find,
+          replacement: aliasMap[find]
+        }))
+      })
+    ].concat(opts.plugins || []),
+    output: {
+      file: opts.dest,
+      format: opts.format,
+      exports: opts.exports,
+      banner: opts.banner,
+      name: opts.moduleName || 'Vue'
+    }
   }
 
   if (opts.env) {
-    config.plugins.push(replace({
+    config.plugins.push(replaceValues({
       'process.env.NODE_ENV': JSON.stringify(opts.env)
     }))
   }
 
   // hack fix MP LIFECYCLE_HOOKS
   if (opts.mp) {
-    config.plugins.push(replace({
+    config.plugins.push(replaceValues({
       "'deactivated'": `'deactivated', ${mpLifecycleHooks}`
     }))
-    config.plugins.push(replace({
+    config.plugins.push(replaceValues({
       'inBrowser && window.navigator.userAgent.toLowerCase': `['mpvue-runtime'].join`
     }))
   }

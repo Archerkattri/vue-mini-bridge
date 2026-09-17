@@ -2,7 +2,9 @@
 
 const SourceMapConsumer = require('source-map').SourceMapConsumer
 
-const filenameRE = /\(([^)]+\.js):(\d+):(\d+)\)$/
+// Matches both `at fn (bundle.js:1:2)` and bare `at bundle.js:1:2` frames;
+// the latter is what newer webpack output produces for module top levels.
+const filenameRE = /[\s(]([^)\s]+\.js):(\d+):(\d+)\)?$/
 
 export function createSourceMapConsumers (rawMaps: Object) {
   const maps = {}
@@ -34,7 +36,12 @@ function rewriteTraceLine (trace: string, mapConsumers: {
     })
     if (originalPosition.source != null) {
       const { source, line, column } = originalPosition
-      const mappedPosition = `(${source.replace(/^webpack:\/\/\//, '')}:${String(line)}:${String(column)})`
+      // Normalize both webpack 5 (`webpack://namespace/./path`) and
+      // webpack 2 (`webpack:///path`) source URL formats.
+      const file = source
+        .replace(/^webpack:\/\/.*\/\.\//, '')
+        .replace(/^webpack:\/\/\//, '')
+      const mappedPosition = `(${file}:${String(line)}:${String(column)})`
       return trace.replace(filenameRE, mappedPosition)
     } else {
       return trace

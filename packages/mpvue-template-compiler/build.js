@@ -1,33 +1,34 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+var deindent = require('de-indent');
+var he = require('he');
+var babel = require('@babel/core');
+var prettier = require('prettier');
+var t = require('@babel/types');
+var generateModule = require('@babel/generator');
+var templateModule = require('@babel/template');
+var _ = require('lodash');
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+function _interopNamespaceDefault(e) {
+  var n = Object.create(null);
+  if (e) {
+    Object.keys(e).forEach(function (k) {
+      if (k !== 'default') {
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () { return e[k]; }
+        });
+      }
+    });
+  }
+  n.default = e;
+  return Object.freeze(n);
+}
 
-var deindent = _interopDefault(require('de-indent'));
-var he = _interopDefault(require('he'));
-var babel = _interopDefault(require('babel-core'));
-var prettier = _interopDefault(require('prettier'));
-var t = require('babel-types');
-var generate = _interopDefault(require('babel-generator'));
-var template = _interopDefault(require('babel-template'));
-var _ = _interopDefault(require('lodash'));
+var t__namespace = /*#__PURE__*/_interopNamespaceDefault(t);
 
 /*  */
-
-// these helpers produces better vm code in JS engines due to their
-// explicitness and function inlining
-
-
-
-
-
-
-
-
-/**
- * Check if value is primitive
- */
 
 
 /**
@@ -49,8 +50,6 @@ function isPlainObject (obj) {
   return _toString.call(obj) === '[object Object]'
 }
 
-
-
 /**
  * Check if val is a valid array index.
  */
@@ -58,17 +57,6 @@ function isValidArrayIndex (val) {
   var n = parseFloat(val);
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
-
-/**
- * Convert a value to a string that is actually rendered.
- */
-
-
-/**
- * Convert a input value to a number for persistence.
- * If the conversion fails, return original string.
- */
-
 
 /**
  * Make a map and return a function for checking if a key
@@ -96,7 +84,7 @@ var isBuiltInTag = makeMap('slot,component', true);
 /**
  * Check if a attribute is a reserved attribute.
  */
-var isReservedAttribute = makeMap('key,ref,slot,is');
+makeMap('key,ref,slot,is');
 
 /**
  * Remove an item from an array
@@ -134,13 +122,8 @@ function cached (fn) {
  */
 var camelizeRE = /-(\w)/g;
 var camelize = cached(function (str) {
-  return str.replace(camelizeRE, function (_$$1, c) { return c ? c.toUpperCase() : ''; })
+  return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
 });
-
-/**
- * Capitalize a string.
- */
-
 
 /**
  * Hyphenate a camelCase string.
@@ -154,16 +137,6 @@ var hyphenate = cached(function (str) {
 });
 
 /**
- * Simple bind, faster than native
- */
-
-
-/**
- * Convert an Array-like object to a real Array.
- */
-
-
-/**
  * Mix properties into target object.
  */
 function extend (to, _from) {
@@ -172,11 +145,6 @@ function extend (to, _from) {
   }
   return to
 }
-
-/**
- * Merge an Array of Objects into a single Object.
- */
-
 
 /**
  * Perform no operation.
@@ -191,41 +159,25 @@ function noop (a, b, c) {}
 var no = function (a, b, c) { return false; };
 
 /**
- * Return same value
- */
-var identity = function (_$$1) { return _$$1; };
-
-/**
  * Generate a static keys string from compiler modules.
  */
-function genStaticKeys (modules) {
+function genStaticKeys$1 (modules) {
   return modules.reduce(function (keys, m) {
     return keys.concat(m.staticKeys || [])
   }, []).join(',')
 }
 
-/**
- * Check if two values are loosely equal - that is,
- * if they are plain objects, do they have the same shape?
- */
-
-
-
-
-/**
- * Ensure a function is called only once.
- */
-
 /*  */
 
-var isUnaryTag = makeMap(
+
+makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
   'link,meta,param,source,track,wbr'
 );
 
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
-var canBeLeftOpenTag = makeMap(
+makeMap(
   'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
 );
 
@@ -243,12 +195,6 @@ var isNonPhrasingTag = makeMap(
  * Not type-checking this file because it's mostly vendor code.
  */
 
-/*!
- * HTML Parser By John Resig (ejohn.org)
- * Modified by Juriy "kangax" Zaytsev
- * Original code by Erik Arvidsson, Mozilla Public License
- * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
- */
 
 // Regular Expressions for parsing tags and attributes
 var singleAttrIdentifier = /([^\s"'<>/=]+)/;
@@ -309,8 +255,8 @@ function decodeAttr (value, shouldDecodeNewlines) {
 function parseHTML (html, options) {
   var stack = [];
   var expectHTML = options.expectHTML;
-  var isUnaryTag$$1 = options.isUnaryTag || no;
-  var canBeLeftOpenTag$$1 = options.canBeLeftOpenTag || no;
+  var isUnaryTag = options.isUnaryTag || no;
+  var canBeLeftOpenTag = options.canBeLeftOpenTag || no;
   var index = 0;
   var last, lastTag;
   while (html) {
@@ -468,12 +414,12 @@ function parseHTML (html, options) {
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag);
       }
-      if (canBeLeftOpenTag$$1(tagName) && lastTag === tagName) {
+      if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
         parseEndTag(tagName);
       }
     }
 
-    var unary = isUnaryTag$$1(tagName) || !!unarySlash;
+    var unary = isUnaryTag(tagName) || !!unarySlash;
 
     var l = match.attrs.length;
     var attrs = new Array(l);
@@ -562,6 +508,7 @@ function parseHTML (html, options) {
 
 /*  */
 
+
 var splitRE = /\r?\n/g;
 var replaceRE = /./g;
 var isSpecialTag = makeMap('script,style,template', true);
@@ -574,7 +521,7 @@ var isSpecialTag = makeMap('script,style,template', true);
 function parseComponent (
   content,
   options
- ) {
+) {
   if ( options === void 0 ) options = {};
 
   var sfc = {
@@ -677,6 +624,7 @@ function parseComponent (
 
 /* globals renderer */
 
+
 var isPreTag = function (tag) { return tag === 'pre'; };
 
 var isReservedTag = makeMap(
@@ -690,17 +638,17 @@ var isReservedTag = makeMap(
 
 // these are reserved for web because they are directly compiled away
 // during template compilation
-var isReservedAttr = makeMap('style,class');
+makeMap('style,class');
 
 // Elements that you can, intentionally, leave open (and which close themselves)
 // more flexable than web
-var canBeLeftOpenTag$1 = makeMap(
+makeMap(
   'web,spinner,switch,video,textarea,canvas,' +
   'indicator,marquee,countdown',
   true
 );
 
-var isUnaryTag$1 = makeMap(
+makeMap(
   'embed,img,image,input,link,meta',
   true
 );
@@ -708,13 +656,6 @@ var isUnaryTag$1 = makeMap(
 // Mini-program nodes do not bind through browser DOM properties or namespaces.
 function mustUseProp () {}
 function getTagNamespace () {}
-
-
-
-
-
-
-// 用于小程序的 event type 到 web 的 event
 
 /*  */
 
@@ -757,15 +698,15 @@ function parseFilters (exp) {
       }
     } else {
       switch (c) {
-        case 0x22: inDouble = true; break         // "
-        case 0x27: inSingle = true; break         // '
+        case 0x22: inDouble = true; break // "
+        case 0x27: inSingle = true; break // '
         case 0x60: inTemplateString = true; break // `
-        case 0x28: paren++; break                 // (
-        case 0x29: paren--; break                 // )
-        case 0x5B: square++; break                // [
-        case 0x5D: square--; break                // ]
-        case 0x7B: curly++; break                 // {
-        case 0x7D: curly--; break                 // }
+        case 0x28: paren++; break // (
+        case 0x29: paren--; break // )
+        case 0x5B: square++; break // [
+        case 0x5D: square--; break // ]
+        case 0x7B: curly++; break // {
+        case 0x7D: curly--; break // }
       }
       if (c === 0x2f) { // /
         var j = i - 1;
@@ -816,6 +757,7 @@ function wrapFilter (exp, filter) {
 
 /*  */
 
+
 var defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
 var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
 
@@ -855,6 +797,7 @@ function parseText (
 
 /*  */
 
+
 function baseWarn (msg) {
   console.error(("[Vue compiler]: " + msg));
 }
@@ -864,7 +807,7 @@ function pluckModuleFunction (
   key
 ) {
   return modules
-    ? modules.map(function (m) { return m[key]; }).filter(function (_$$1) { return _$$1; })
+    ? modules.map(function (m) { return m[key]; }).filter(function (_) { return _; })
     : []
 }
 
@@ -872,7 +815,7 @@ function addProp (el, name, value) {
   (el.props || (el.props = [])).push({ name: name, value: value });
 }
 
-function addAttr (el, name, value) {
+function addAttr$1 (el, name, value) {
   (el.attrs || (el.attrs = [])).push({ name: name, value: value });
 }
 
@@ -973,7 +916,8 @@ function getAndRemoveAttr (el, name) {
 
 /*  */
 
-function transformNode (el, options) {
+
+function transformNode$1 (el, options) {
   var warn = options.warn || baseWarn;
   var staticClass = getAndRemoveAttr(el, 'class');
   if (process.env.NODE_ENV !== 'production' && staticClass) {
@@ -996,7 +940,7 @@ function transformNode (el, options) {
   }
 }
 
-function genData (el) {
+function genData$2 (el) {
   var data = '';
   if (el.staticClass) {
     data += "staticClass:" + (el.staticClass) + ",";
@@ -1009,11 +953,12 @@ function genData (el) {
 
 var klass = {
   staticKeys: ['staticClass'],
-  transformNode: transformNode,
-  genData: genData
+  transformNode: transformNode$1,
+  genData: genData$2
 };
 
 /*  */
+
 
 var parseStyleText = cached(function (cssText) {
   var res = {};
@@ -1028,17 +973,10 @@ var parseStyleText = cached(function (cssText) {
   return res
 });
 
-// normalize possible array / string values into Object
-
-
-/**
- * parent component style should be after child's
- * so that parent component's style could override it
- */
-
 /*  */
 
-function transformNode$1 (el, options) {
+
+function transformNode (el, options) {
   var warn = options.warn || baseWarn;
   var staticStyle = getAndRemoveAttr(el, 'style');
   if (staticStyle) {
@@ -1076,7 +1014,7 @@ function genData$1 (el) {
 
 var style = {
   staticKeys: ['staticStyle'],
-  transformNode: transformNode$1,
+  transformNode: transformNode,
   genData: genData$1
 };
 
@@ -1115,21 +1053,33 @@ var LIFECYCLE_HOOKS = [
   'attached',
   'ready',
   'moved',
+  'detached', 'onLaunch',
+  'onLoad',
+  'onShow',
+  'onReady',
+  'onHide',
+  'onUnload',
+  'onPullDownRefresh',
+  'onReachBottom',
+  'onShareAppMessage',
+  'onPageScroll',
+  'onTabItemTap',
+  'attached',
+  'ready',
+  'moved',
   'detached'
 ];
 
 /*  */
+
+
+
 
 var config = ({
   /**
    * Option merge strategies (used in core/util/options)
    */
   optionMergeStrategies: Object.create(null),
-
-  /**
-   * Whether to suppress warnings.
-   */
-  silent: false,
 
   /**
    * Show production mode tip message on boot?
@@ -1139,72 +1089,7 @@ var config = ({
   /**
    * Whether to enable devtools
    */
-  devtools: process.env.NODE_ENV !== 'production',
-
-  /**
-   * Whether to record perf
-   */
-  performance: false,
-
-  /**
-   * Error handler for watcher errors
-   */
-  errorHandler: null,
-
-  /**
-   * Warn handler for watcher warns
-   */
-  warnHandler: null,
-
-  /**
-   * Ignore certain custom elements
-   */
-  ignoredElements: [],
-
-  /**
-   * Custom user key aliases for v-on
-   */
-  keyCodes: Object.create(null),
-
-  /**
-   * Check if a tag is reserved so that it cannot be registered as a
-   * component. This is platform-dependent and may be overwritten.
-   */
-  isReservedTag: no,
-
-  /**
-   * Check if an attribute is reserved so that it cannot be used as a component
-   * prop. This is platform-dependent and may be overwritten.
-   */
-  isReservedAttr: no,
-
-  /**
-   * Check if a tag is an unknown element.
-   * Platform-dependent.
-   */
-  isUnknownElement: no,
-
-  /**
-   * Get the namespace of an element
-   */
-  getTagNamespace: noop,
-
-  /**
-   * Parse the real tag name for the specific platform.
-   */
-  parsePlatformTagName: identity,
-
-  /**
-   * Check if an attribute must be bound using property, e.g. value
-   * Platform-dependent.
-   */
-  mustUseProp: no,
-
-  /**
-   * Exposed for legacy reasons
-   */
-  _lifecycleHooks: LIFECYCLE_HOOKS
-});
+  devtools: process.env.NODE_ENV !== 'production'});
 
 /*  */
 
@@ -1269,12 +1154,7 @@ function genAssignmentCode (
  *
  */
 
-var len;
-var str;
-var chr;
-var index;
-var expressionPos;
-var expressionEndPos;
+var len, str, chr, index, expressionPos, expressionEndPos;
 
 function parseModel (val) {
   str = val;
@@ -1346,7 +1226,8 @@ function parseString (chr) {
 
 /*  */
 
-var warn;
+
+var warn$2;
 
 // in some cases, the event used has to be determined at runtime
 // so we used some reserved tokens during compile.
@@ -1358,7 +1239,7 @@ function model (
   dir,
   _warn
 ) {
-  warn = _warn;
+  warn$2 = _warn;
   var value = dir.value;
   var modifiers = dir.modifiers;
   var tag = el.tag;
@@ -1367,7 +1248,7 @@ function model (
   if (process.env.NODE_ENV !== 'production') {
     var dynamicType = el.attrsMap['v-bind:type'] || el.attrsMap[':type'];
     if (tag === 'input' && dynamicType) {
-      warn(
+      warn$2(
         "<input :type=\"" + dynamicType + "\" v-model=\"" + value + "\">:\n" +
         "v-model does not support dynamic input types. Use v-if branches instead."
       );
@@ -1375,7 +1256,7 @@ function model (
     // inputs with type="file" are read only and setting the input's
     // value will throw an error.
     if (tag === 'input' && type === 'file') {
-      warn(
+      warn$2(
         "<" + (el.tag) + " v-model=\"" + value + "\" type=\"file\">:\n" +
         "File inputs are read only. Use a v-on:change listener instead."
       );
@@ -1394,17 +1275,10 @@ function model (
     genRadioModel(el, value, modifiers);
   } else if (tag === 'input' || tag === 'textarea') {
     genDefaultModel(el, value, modifiers);
-  } else if (!config.isReservedTag(tag)) {
+  } else {
     genComponentModel(el, value, modifiers);
     // component v-model doesn't need extra runtime
     return false
-  } else if (process.env.NODE_ENV !== 'production') {
-    warn(
-      "<" + (el.tag) + " v-model=\"" + value + "\">: " +
-      "v-model is not supported on this element type. " +
-      'If you are working with contenteditable, it\'s recommended to ' +
-      'wrap a library dedicated for that purpose inside a custom component.'
-    );
   }
 
   // ensure runtime directive metadata
@@ -1423,10 +1297,10 @@ function genCheckboxModel (
   addProp(el, 'checked',
     "Array.isArray(" + value + ")" +
       "?_i(" + value + "," + valueBinding + ")>-1" + (
-        trueValueBinding === 'true'
-          ? (":(" + value + ")")
-          : (":_q(" + value + "," + trueValueBinding + ")")
-      )
+      trueValueBinding === 'true'
+        ? (":(" + value + ")")
+        : (":_q(" + value + "," + trueValueBinding + ")")
+    )
   );
   addHandler(el, CHECKBOX_RADIO_TOKEN,
     "var $$a=" + value + "," +
@@ -1443,9 +1317,9 @@ function genCheckboxModel (
 }
 
 function genRadioModel (
-    el,
-    value,
-    modifiers
+  el,
+  value,
+  modifiers
 ) {
   var number = modifiers && modifiers.number;
   var valueBinding = getBindingAttr(el, 'value') || 'null';
@@ -1455,9 +1329,9 @@ function genRadioModel (
 }
 
 function genSelect (
-    el,
-    value,
-    modifiers
+  el,
+  value,
+  modifiers
 ) {
   var number = modifiers && modifiers.number;
   var selectedVal = "Array.prototype.filter" +
@@ -1510,6 +1384,7 @@ function genDefaultModel (
 
 /*  */
 
+
 function text (el, dir) {
   if (dir.value) {
     addProp(el, 'textContent', ("_s(" + (dir.value) + ")"));
@@ -1517,6 +1392,7 @@ function text (el, dir) {
 }
 
 /*  */
+
 
 function html (el, dir) {
   if (dir.value) {
@@ -1532,20 +1408,21 @@ var directives = {
 
 /*  */
 
-var isUnaryTag$2 = makeMap(
+
+var isUnaryTag = makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
   'link,meta,param,source,track,wbr'
 );
 
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
-var canBeLeftOpenTag$2 = makeMap(
+var canBeLeftOpenTag = makeMap(
   'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
 );
 
 // HTML5 tags https://html.spec.whatwg.org/multipage/indices.html#elements-3
 // Phrasing Content https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
-var isNonPhrasingTag$1 = makeMap(
+makeMap(
   'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +
   'details,dialog,div,dl,dt,fieldset,figcaption,figure,footer,form,' +
   'h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,html,legend,li,menuitem,meta,' +
@@ -1555,22 +1432,24 @@ var isNonPhrasingTag$1 = makeMap(
 
 /*  */
 
+
 var baseOptions = {
   expectHTML: true,
   modules: modules,
   directives: directives,
   isPreTag: isPreTag,
-  isUnaryTag: isUnaryTag$2,
+  isUnaryTag: isUnaryTag,
   mustUseProp: mustUseProp,
-  canBeLeftOpenTag: canBeLeftOpenTag$2,
+  canBeLeftOpenTag: canBeLeftOpenTag,
   isReservedTag: isReservedTag,
   getTagNamespace: getTagNamespace,
-  staticKeys: genStaticKeys(modules)
+  staticKeys: genStaticKeys$1(modules)
 };
 
 /*  */
 
-var warn$2 = noop;
+
+var warn$1 = noop;
 var tip = noop;
 var formatComponentName = (null); // work around flow check
 
@@ -1581,18 +1460,16 @@ if (process.env.NODE_ENV !== 'production') {
     .replace(classifyRE, function (c) { return c.toUpperCase(); })
     .replace(/[-_]/g, ''); };
 
-  warn$2 = function (msg, vm) {
+  warn$1 = function (msg, vm) {
     var trace = vm ? generateComponentTrace(vm) : '';
 
-    if (config.warnHandler) {
-      config.warnHandler.call(null, msg, vm, trace);
-    } else if (hasConsole && (!config.silent)) {
+    if (hasConsole && (true)) {
       console.error(("[Vue warn]: " + msg + trace));
     }
   };
 
   tip = function (msg, vm) {
-    if (hasConsole && (!config.silent)) {
+    if (hasConsole && (true)) {
       console.warn("[Vue tip]: " + msg + (
         vm ? generateComponentTrace(vm) : ''
       ));
@@ -1665,12 +1542,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 /*  */
 
+
 function handleError (err, vm, info) {
-  if (config.errorHandler) {
-    config.errorHandler.call(null, err, vm, info);
-  } else {
+  {
     if (process.env.NODE_ENV !== 'production') {
-      warn$2(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
+      warn$1(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
     }
     /* istanbul ignore else */
     if (inBrowser && typeof console !== 'undefined') {
@@ -1683,6 +1559,7 @@ function handleError (err, vm, info) {
 
 /*  */
 
+
 // can we use __proto__?
 var hasProto = '__proto__' in {};
 
@@ -1690,11 +1567,8 @@ var hasProto = '__proto__' in {};
 var inBrowser = typeof window !== 'undefined';
 var UA = ['mpvue-runtime'].join();
 var isIE = UA && /msie|trident/.test(UA);
-var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
 var isEdge = UA && UA.indexOf('edge/') > 0;
-var isAndroid = UA && UA.indexOf('android') > 0;
 var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
-var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
 
 // Firefix has a "watch" function on Object.prototype...
 var nativeWatch = ({}).watch;
@@ -1730,22 +1604,18 @@ var isServerRendering = function () {
   return _isServer
 };
 
-// detect devtools
-
-
 /* istanbul ignore next */
 function isNative (Ctor) {
   return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
 }
 
-var hasSymbol =
-  typeof Symbol !== 'undefined' && isNative(Symbol) &&
+typeof Symbol !== 'undefined' && isNative(Symbol) &&
   typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys);
 
 /**
  * Defer a task to execute it asynchronously.
  */
-var nextTick = (function () {
+((function () {
   var callbacks = [];
   var pending = false;
   var timerFunc;
@@ -1826,16 +1696,11 @@ var nextTick = (function () {
       })
     }
   }
-})();
-
-var _Set;
+}))();
 /* istanbul ignore if */
-if (typeof Set !== 'undefined' && isNative(Set)) {
-  // use native Set when available.
-  _Set = Set;
-} else {
+if (typeof Set !== 'undefined' && isNative(Set)) ; else {
   // a non-standard Set polyfill that only works with primitive keys.
-  _Set = (function () {
+  ((function () {
     function Set () {
       this.set = Object.create(null);
     }
@@ -1850,10 +1715,11 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
     };
 
     return Set;
-  }());
+  })());
 }
 
 /*  */
+
 
 var onRE = /^@|^v-on:/;
 var dirRE = /^v-|^@|^:/;
@@ -1867,7 +1733,7 @@ var modifierRE = /\.[^.]+/g;
 var decodeHTMLCached = cached(he.decode);
 
 // configurable state
-var warn$1;
+var warn;
 var delimiters;
 var transforms;
 var preTransforms;
@@ -1880,10 +1746,10 @@ var platformGetTagNamespace;
  * Convert HTML string to AST.
  */
 function parse (
-  template$$1,
+  template,
   options
 ) {
-  warn$1 = options.warn || baseWarn;
+  warn = options.warn || baseWarn;
 
   platformIsPreTag = options.isPreTag || no;
   platformMustUseProp = options.mustUseProp || no;
@@ -1906,7 +1772,7 @@ function parse (
   function warnOnce (msg) {
     if (!warned) {
       warned = true;
-      warn$1(msg);
+      warn(msg);
     }
   }
 
@@ -1920,8 +1786,8 @@ function parse (
     }
   }
 
-  parseHTML(template$$1, {
-    warn: warn$1,
+  parseHTML(template, {
+    warn: warn,
     expectHTML: options.expectHTML,
     isUnaryTag: options.isUnaryTag,
     canBeLeftOpenTag: options.canBeLeftOpenTag,
@@ -1952,7 +1818,7 @@ function parse (
 
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
-        process.env.NODE_ENV !== 'production' && warn$1(
+        process.env.NODE_ENV !== 'production' && warn(
           'Templates should only be responsible for mapping the state to the ' +
           'UI. Avoid placing tags with side-effects in your templates, such as ' +
           "<" + tag + ">" + ', as they will not be parsed.'
@@ -2036,7 +1902,8 @@ function parse (
           processIfConditions(element, currentParent);
         } else if (element.slotScope) { // scoped slot
           currentParent.plain = false;
-          var name = element.slotTarget || '"default"';(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element;
+          var name = element.slotTarget || '"default"'
+          ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element;
         } else {
           currentParent.children.push(element);
           element.parent = currentParent;
@@ -2070,7 +1937,7 @@ function parse (
     chars: function chars (text) {
       if (!currentParent) {
         if (process.env.NODE_ENV !== 'production') {
-          if (text === template$$1) {
+          if (text === template) {
             warnOnce(
               'Component template requires a root element, rather than just text.'
             );
@@ -2148,7 +2015,7 @@ function processKey (el) {
   var exp = getBindingAttr(el, 'key');
   if (exp) {
     if (process.env.NODE_ENV !== 'production' && el.tag === 'template') {
-      warn$1("<template> cannot be keyed. Place the key on real elements instead.");
+      warn("<template> cannot be keyed. Place the key on real elements instead.");
     }
     el.key = exp;
   }
@@ -2167,7 +2034,7 @@ function processFor (el) {
   if ((exp = getAndRemoveAttr(el, 'v-for'))) {
     var inMatch = exp.match(forAliasRE);
     if (!inMatch) {
-      process.env.NODE_ENV !== 'production' && warn$1(
+      process.env.NODE_ENV !== 'production' && warn(
         ("Invalid v-for expression: " + exp)
       );
       return
@@ -2214,7 +2081,7 @@ function processIfConditions (el, parent) {
       block: el
     });
   } else if (process.env.NODE_ENV !== 'production') {
-    warn$1(
+    warn(
       "v-" + (el.elseif ? ('else-if="' + el.elseif + '"') : 'else') + " " +
       "used on element <" + (el.tag) + "> without corresponding v-if."
     );
@@ -2228,7 +2095,7 @@ function findPrevElement (children) {
       return children[i]
     } else {
       if (process.env.NODE_ENV !== 'production' && children[i].text !== ' ') {
-        warn$1(
+        warn(
           "text \"" + (children[i].text.trim()) + "\" between v-if and v-else(-if) " +
           "will be ignored."
         );
@@ -2246,8 +2113,8 @@ function addIfCondition (el, condition) {
 }
 
 function processOnce (el) {
-  var once$$1 = getAndRemoveAttr(el, 'v-once');
-  if (once$$1 != null) {
+  var once = getAndRemoveAttr(el, 'v-once');
+  if (once != null) {
     el.once = true;
   }
 }
@@ -2256,7 +2123,7 @@ function processSlot (el) {
   if (el.tag === 'slot') {
     el.slotName = getBindingAttr(el, 'name');
     if (process.env.NODE_ENV !== 'production' && el.key) {
-      warn$1(
+      warn(
         "`key` does not work on <slot> because slots are abstract outlets " +
         "and can possibly expand into multiple elements. " +
         "Use the key on a wrapping element instead."
@@ -2323,11 +2190,11 @@ function processAttrs (el) {
         )) {
           addProp(el, name, value);
         } else {
-          addAttr(el, name, value);
+          addAttr$1(el, name, value);
         }
       } else if (onRE.test(name)) { // v-on
         name = name.replace(onRE, '');
-        addHandler(el, name, value, modifiers, false, warn$1);
+        addHandler(el, name, value, modifiers, false, warn);
       } else { // normal directives
         name = name.replace(dirRE, '');
         // parse arg
@@ -2346,7 +2213,7 @@ function processAttrs (el) {
       if (process.env.NODE_ENV !== 'production') {
         var expression = parseText(value, delimiters);
         if (expression) {
-          warn$1(
+          warn(
             name + "=\"" + value + "\": " +
             'Interpolation inside attributes has been removed. ' +
             'Use v-bind or the colon shorthand instead. For example, ' +
@@ -2354,7 +2221,7 @@ function processAttrs (el) {
           );
         }
       }
-      addAttr(el, name, JSON.stringify(value));
+      addAttr$1(el, name, JSON.stringify(value));
     }
   }
 }
@@ -2386,7 +2253,7 @@ function makeAttrsMap (attrs) {
       process.env.NODE_ENV !== 'production' &&
       map[attrs[i].name] && !isIE && !isEdge
     ) {
-      warn$1('duplicate attribute: ' + attrs[i].name);
+      warn('duplicate attribute: ' + attrs[i].name);
     }
     map[attrs[i].name] = attrs[i].value;
   }
@@ -2428,7 +2295,7 @@ function checkForAliasModel (el, value) {
   var _el = el;
   while (_el) {
     if (_el.for && _el.alias === value) {
-      warn$1(
+      warn(
         "<" + (el.tag) + " v-model=\"" + value + "\">: " +
         "You are binding v-model directly to a v-for iteration alias. " +
         "This will not be able to modify the v-for source array because " +
@@ -2442,10 +2309,11 @@ function checkForAliasModel (el, value) {
 
 /*  */
 
+
 var isStaticKey;
 var isPlatformReservedTag;
 
-var genStaticKeysCached = cached(genStaticKeys$1);
+var genStaticKeysCached = cached(genStaticKeys);
 
 /**
  * Goal of the optimizer: walk the generated template AST tree
@@ -2468,7 +2336,7 @@ function optimize (root, options) {
   markStaticRoots(root, false);
 }
 
-function genStaticKeys$1 (keys) {
+function genStaticKeys (keys) {
   return makeMap(
     'type,tag,attrsList,attrsMap,plain,parent,children,attrs' +
     (keys ? ',' + keys : '')
@@ -2691,12 +2559,6 @@ function genFilterCode (key) {
 
 /*  */
 
-var emptyObject = Object.freeze({});
-
-/**
- * Check if a string starts with $ or _
- */
-
 
 /**
  * Define a property.
@@ -2756,8 +2618,14 @@ Dep.target = null;
  * dynamically accessing methods on Array prototype
  */
 
+
 var arrayProto = Array.prototype;
-var arrayMethods = Object.create(arrayProto);[
+var arrayMethods = Object.create(arrayProto)
+
+/**
+ * Intercept mutating methods and emit events
+ */
+;[
   'push',
   'pop',
   'shift',
@@ -2766,45 +2634,36 @@ var arrayMethods = Object.create(arrayProto);[
   'sort',
   'reverse'
 ]
-.forEach(function (method) {
+  .forEach(function (method) {
   // cache original method
-  var original = arrayProto[method];
-  def(arrayMethods, method, function mutator () {
-    var args = [], len = arguments.length;
-    while ( len-- ) args[ len ] = arguments[ len ];
+    var original = arrayProto[method];
+    def(arrayMethods, method, function mutator () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
 
-    var result = original.apply(this, args);
-    var ob = this.__ob__;
-    var inserted;
-    switch (method) {
-      case 'push':
-      case 'unshift':
-        inserted = args;
-        break
-      case 'splice':
-        inserted = args.slice(2);
-        break
-    }
-    if (inserted) { ob.observeArray(inserted); }
-    // notify change
-    ob.dep.notify();
-    return result
+      var result = original.apply(this, args);
+      var ob = this.__ob__;
+      var inserted;
+      switch (method) {
+        case 'push':
+        case 'unshift':
+          inserted = args;
+          break
+        case 'splice':
+          inserted = args.slice(2);
+          break
+      }
+      if (inserted) { ob.observeArray(inserted); }
+      // notify change
+      ob.dep.notify();
+      return result
+    });
   });
-});
 
 /*  */
 
-var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
-/**
- * By default, when a reactive property is set, the new value is
- * also converted to become reactive. However when passing down props,
- * we don't want to force conversion because the value may be a nested value
- * under a frozen data structure. Converting it would defeat the optimization.
- */
-var observerState = {
-  shouldConvert: true
-};
+var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 /**
  * Observer class that are attached to each observed
@@ -2845,7 +2704,7 @@ var Observer = function Observer (value, key) {
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
   for (var i = 0; i < keys.length; i++) {
-    defineReactive$$1(obj, keys[i], obj[keys[i]]);
+    defineReactive(obj, keys[i], obj[keys[i]]);
   }
 };
 
@@ -2910,7 +2769,6 @@ function observe (value, asRootData, key) {
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__;
   } else if (
-    observerState.shouldConvert &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value) &&
@@ -2918,16 +2776,13 @@ function observe (value, asRootData, key) {
   ) {
     ob = new Observer(value, key);
   }
-  if (asRootData && ob) {
-    ob.vmCount++;
-  }
   return ob
 }
 
 /**
  * Define a reactive property on an Object.
  */
-function defineReactive$$1 (
+function defineReactive (
   obj,
   key,
   val,
@@ -2945,7 +2800,7 @@ function defineReactive$$1 (
   var getter = property && property.get;
   var setter = property && property.set;
 
-  var childOb = !shallow && observe(val, undefined, key);
+  var childOb = observe(val, undefined, key);
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -2970,15 +2825,13 @@ function defineReactive$$1 (
       }
 
       /* eslint-enable no-self-compare */
-      if (process.env.NODE_ENV !== 'production' && customSetter) {
-        customSetter();
-      }
+      if (process.env.NODE_ENV !== 'production' && customSetter) ;
       if (setter) {
         setter.call(obj, newVal);
       } else {
         val = newVal;
       }
-      childOb = !shallow && observe(newVal, undefined, key);
+      childOb = observe(newVal, undefined, key);
       dep.notify();
 
       if (!obj.__keyPath) {
@@ -3010,7 +2863,7 @@ function set (target, key, val) {
   }
   var ob = (target).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
-    process.env.NODE_ENV !== 'production' && warn$2(
+    process.env.NODE_ENV !== 'production' && warn$1(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
       'at runtime - declare it upfront in the data option.'
     );
@@ -3020,7 +2873,7 @@ function set (target, key, val) {
     target[key] = val;
     return val
   }
-  defineReactive$$1(ob.value, key, val);
+  defineReactive(ob.value, key, val);
   // Vue.set 添加对象属性，渲染时候把 val 传给小程序渲染
   if (!target.__keyPath) {
     def((target), '__keyPath', {}, false);
@@ -3030,11 +2883,6 @@ function set (target, key, val) {
   ob.dep.notify();
   return val
 }
-
-/**
- * Delete a property and trigger change if necessary.
- */
-
 
 /**
  * Collect dependencies on array elements when the array is touched, since
@@ -3052,6 +2900,7 @@ function dependArray (value) {
 
 /*  */
 
+
 /**
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
@@ -3065,7 +2914,7 @@ var strats = config.optionMergeStrategies;
 if (process.env.NODE_ENV !== 'production') {
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
-      warn$2(
+      warn$1(
         "option \"" + key + "\" can only be used during instance " +
         'creation with the `new` keyword.'
       );
@@ -3146,7 +2995,7 @@ strats.data = function (
 ) {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
-      process.env.NODE_ENV !== 'production' && warn$2(
+      process.env.NODE_ENV !== 'production' && warn$1(
         'The "data" option should be a function ' +
         'that returns a per-instance value in component ' +
         'definitions.',
@@ -3252,34 +3101,19 @@ var defaultStrat = function (parentVal, childVal) {
     : childVal
 };
 
-/**
- * Merge two option objects into a new one.
- * Core utility used in both instantiation and inheritance.
- */
-
-
-/**
- * Resolve an asset.
- * This function is used because child instances need access
- * to assets defined in its ancestor chain.
- */
-
 /*  */
 
-/*  */
-
-/*  */
 
 function on (el, dir) {
   if (process.env.NODE_ENV !== 'production' && dir.modifiers) {
-    warn$2("v-on without argument does not support modifiers.");
+    warn$1("v-on without argument does not support modifiers.");
   }
   el.wrapListeners = function (code) { return ("_g(" + code + "," + (dir.value) + ")"); };
 }
 
 /*  */
 
-function bind$1 (el, dir) {
+function bind (el, dir) {
   el.wrapData = function (code) {
     return ("_b(" + code + ",'" + (el.tag) + "'," + (dir.value) + "," + (dir.modifiers && dir.modifiers.prop ? 'true' : 'false') + (dir.modifiers && dir.modifiers.sync ? ',true' : '') + ")")
   };
@@ -3287,13 +3121,19 @@ function bind$1 (el, dir) {
 
 /*  */
 
+
 var baseDirectives = {
   on: on,
-  bind: bind$1,
+  bind: bind,
   cloak: noop
 };
 
 /*  */
+
+
+
+
+
 
 var CodegenState = function CodegenState (options) {
   this.options = options;
@@ -3340,7 +3180,7 @@ function genElement (el, state) {
     if (el.component) {
       code = genComponent(el.component, el, state);
     } else {
-      var data = el.plain ? undefined : genData$2(el, state);
+      var data = el.plain ? undefined : genData(el, state);
 
       var children = el.inlineTemplate ? null : genChildren(el, state, true);
       code = "_c('" + (el.tag) + "'" + (data ? ("," + data) : '') + (children ? ("," + children) : '') + ")";
@@ -3416,9 +3256,7 @@ function genIfConditions (
 
   // v-if with v-once should generate code like (a)?_m(0):_m(1)
   function genTernaryExp (el) {
-    return altGen
-      ? altGen(el, state)
-      : el.once
+    return el.once
         ? genOnce(el, state)
         : genElement(el, state)
   }
@@ -3450,13 +3288,13 @@ function genFor (
   }
 
   el.forProcessed = true; // avoid recursion
-  return (altHelper || '_l') + "((" + exp + ")," +
+  return ('_l') + "((" + exp + ")," +
     "function(" + alias + iterator1 + iterator2 + "){" +
-      "return " + ((altGen || genElement)(el, state)) +
+      "return " + ((genElement)(el, state)) +
     '})'
 }
 
-function genData$2 (el, state) {
+function genData (el, state) {
   var data = '{';
 
   // directives first.
@@ -3631,7 +3469,7 @@ function genChildren (
     var normalizationType = checkSkip
       ? getNormalizationType(children, state.maybeComponent)
       : 0;
-    var gen = altGenNode || genNode;
+    var gen = genNode;
     return ("[" + (children.map(function (c) { return gen(c, state); }).join(',')) + "]" + (normalizationType ? ("," + normalizationType) : ''))
   }
 }
@@ -3692,15 +3530,15 @@ function genSlot (el, state) {
   var children = genChildren(el, state);
   var res = "_t(" + slotName + (children ? ("," + children) : '');
   var attrs = el.attrs && ("{" + (el.attrs.map(function (a) { return ((camelize(a.name)) + ":" + (a.value)); }).join(',')) + "}");
-  var bind$$1 = el.attrsMap['v-bind'];
-  if ((attrs || bind$$1) && !children) {
+  var bind = el.attrsMap['v-bind'];
+  if ((attrs || bind) && !children) {
     res += ",null";
   }
   if (attrs) {
     res += "," + attrs;
   }
-  if (bind$$1) {
-    res += (attrs ? '' : ',null') + "," + bind$$1;
+  if (bind) {
+    res += (attrs ? '' : ',null') + "," + bind;
   }
   return res + ')'
 }
@@ -3712,7 +3550,7 @@ function genComponent (
   state
 ) {
   var children = el.inlineTemplate ? null : genChildren(el, state, true);
-  return ("_c(" + componentName + "," + (genData$2(el, state)) + (children ? ("," + children) : '') + ")")
+  return ("_c(" + componentName + "," + (genData(el, state)) + (children ? ("," + children) : '') + ")")
 }
 
 function genProps (props) {
@@ -3732,6 +3570,7 @@ function transformSpecialNewlines (text) {
 }
 
 /*  */
+
 
 // these keywords should not appear inside expressions, but operators like
 // typeof, instanceof and in are allowed
@@ -3830,6 +3669,9 @@ function checkExpression (exp, text, errors) {
 
 /*  */
 
+
+
+
 function createFunction (code, errors) {
   try {
     return new Function(code)
@@ -3843,7 +3685,7 @@ function createCompileToFunctionFn (compile) {
   var cache = Object.create(null);
 
   return function compileToFunctions (
-    template$$1,
+    template,
     options,
     vm
   ) {
@@ -3856,7 +3698,7 @@ function createCompileToFunctionFn (compile) {
         new Function('return 1');
       } catch (e) {
         if (e.toString().match(/unsafe-eval|CSP/)) {
-          warn$2(
+          warn$1(
             'It seems you are using the standalone build of Vue.js in an ' +
             'environment with Content Security Policy that prohibits unsafe-eval. ' +
             'The template compiler cannot work in this environment. Consider ' +
@@ -3869,20 +3711,20 @@ function createCompileToFunctionFn (compile) {
 
     // check cache
     var key = options.delimiters
-      ? String(options.delimiters) + template$$1
-      : template$$1;
+      ? String(options.delimiters) + template
+      : template;
     if (cache[key]) {
       return cache[key]
     }
 
     // compile
-    var compiled = compile(template$$1, options);
+    var compiled = compile(template, options);
 
     // check compilation errors/tips
     if (process.env.NODE_ENV !== 'production') {
       if (compiled.errors && compiled.errors.length) {
-        warn$2(
-          "Error compiling template:\n\n" + template$$1 + "\n\n" +
+        warn$1(
+          "Error compiling template:\n\n" + template + "\n\n" +
           compiled.errors.map(function (e) { return ("- " + e); }).join('\n') + '\n',
           vm
         );
@@ -3906,7 +3748,7 @@ function createCompileToFunctionFn (compile) {
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
-        warn$2(
+        warn$1(
           "Failed to generate render function:\n\n" +
           fnGenErrors.map(function (ref) {
             var err = ref.err;
@@ -3925,10 +3767,11 @@ function createCompileToFunctionFn (compile) {
 
 /*  */
 
+
 function createCompilerCreator (baseCompile) {
   return function createCompiler (baseOptions) {
     function compile (
-      template$$1,
+      template,
       options
     ) {
       var finalOptions = Object.create(baseOptions);
@@ -3959,7 +3802,7 @@ function createCompilerCreator (baseCompile) {
         }
       }
 
-      var compiled = baseCompile(template$$1, finalOptions);
+      var compiled = baseCompile(template, finalOptions);
       if (process.env.NODE_ENV !== 'production') {
         errors.push.apply(errors, detectErrors(compiled.ast));
       }
@@ -4145,7 +3988,7 @@ function fixDefaultIterator (path) {
   }
 }
 
-function addAttr$1 (path, key, value, inVdom) {
+function addAttr (path, key, value, inVdom) {
   path[key] = value;
   path.plain = false;
   // path.attrsMap[key] = value
@@ -4213,7 +4056,7 @@ function mark (path, options, deps, iteratorArr) {
     }
     var eventId = getWxEleId(level + '_' + deps.eventIndex, currentArr);
     // const eventId = getWxEleId(eIndex, currentArr)
-    addAttr$1(path, 'eventid', eventId);
+    addAttr(path, 'eventid', eventId);
     path.attrsMap['data-comkey'] = '{{$k}}';
     deps.eventIndex += 1;
     // eIndex += 1
@@ -4226,7 +4069,7 @@ function mark (path, options, deps, iteratorArr) {
 
   // eg. '1-'+i+'-'+j
   var value = getWxEleId(deps.comIndex, currentArr);
-  addAttr$1(path, 'mpcomid', value, true);
+  addAttr(path, 'mpcomid', value, true);
   path['mpcomid'] = value;
   deps.comIndex += 1;
 }
@@ -4242,15 +4085,15 @@ function markComponent (ast, options) {
 
 /*  */
 
-// for mp
+
 // `createCompilerCreator` allows creating compilers that use alternative
 // parser/optimizer/codegen, e.g the SSR optimizing compiler.
 // Here we just export a default compiler using the default parts.
 var createCompiler = createCompilerCreator(function baseCompile (
-  template$$1,
+  template,
   options
 ) {
-  var originAst = parse(template$$1.trim(), options);
+  var originAst = parse(template.trim(), options);
   var ast = markComponent(originAst, options);
   optimize(ast, options);
   var code = generate$1(ast, options);
@@ -4269,14 +4112,14 @@ var createCompiler = createCompilerCreator(function baseCompile (
 // 4, 拼接为空字符串
 // 5, 不需要在wxml上表现出来，可直接清除
 
-var noSupport = {
+var noSupport$3 = {
   type: 4,
   check: function check (k, v, errors) {
     errors(("不支持此指令: " + k + "=\"" + v + "\""));
     return false
   }
 };
-var directiveMap = {
+var directiveMap$3 = {
   'v-if': {
     name: 'wx:if',
     type: 0
@@ -4335,8 +4178,8 @@ var directiveMap = {
     name: 'url',
     type: 2
   },
-  'v-pre': noSupport,
-  'v-cloak': noSupport,
+  'v-pre': noSupport$3,
+  'v-cloak': noSupport$3,
   'v-once': {
     name: '',
     type: 5
@@ -4349,26 +4192,33 @@ var tagConfig = {
 
 // babel-plugin-transform-object-to-ternary-operator.js
 
+
+// Babel 7 ships ESM-authored packages where the main export lives on
+// `.default` (Babel 6 assigned module.exports directly). Resolve it here
+// because the compiler bundle keeps these as external requires.
+var generate = generateModule.default || generateModule;
+var template = templateModule.default || templateModule;
+
 function getStrByNode (node, onlyStr) {
   if ( onlyStr === void 0 ) onlyStr = false;
 
   if (onlyStr) {
     return node.value || node.name || ''
   }
-  return node.type === 'StringLiteral' ? node : t.stringLiteral(node.name || '')
+  return node.type === 'StringLiteral' ? node : t__namespace.stringLiteral(node.name || '')
 }
 
 // 把 { key: value } 转换成 [ value ? 'key' : '' ]
 var objectVisitor = {
   ObjectExpression: function ObjectExpression (path) {
     var elements = path.node.properties.map(function (propertyItem) {
-      return t.conditionalExpression(propertyItem.value, getStrByNode(propertyItem.key), t.stringLiteral(''))
+      return t__namespace.conditionalExpression(propertyItem.value, getStrByNode(propertyItem.key), t__namespace.stringLiteral(''))
     });
-    path.replaceWith(t.arrayExpression(elements));
+    path.replaceWith(t__namespace.arrayExpression(elements));
   }
 };
 
-function transformObjectToTernaryOperator (babel$$1) {
+function transformObjectToTernaryOperator (babel) {
   return { visitor: objectVisitor }
 }
 
@@ -4378,7 +4228,7 @@ var objectToStringVisitor = {
     var expression = path.node.properties.map(function (propertyItem) {
       var keyStr = getStrByNode(propertyItem.key, true);
       var key = keyStr ? hyphenate(keyStr) : keyStr;
-      var ref = generate(t.ExpressionStatement(propertyItem.value));
+      var ref = generate(t__namespace.ExpressionStatement(propertyItem.value));
       var val = ref.code;
       return ("'" + key + ":' + (" + (val.slice(0, -1)) + ") + ';'")
     }).join('+');
@@ -4388,29 +4238,29 @@ var objectToStringVisitor = {
   }
 };
 
-function transformObjectToString (babel$$1) {
+function transformObjectToString (babel) {
   return { visitor: objectToStringVisitor }
 }
 
-function transformDynamicClass (staticClass, clsBinding) {
+function transformDynamicClass$3 (staticClass, clsBinding) {
   if ( staticClass === void 0 ) staticClass = '';
 
-  var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
+  var result = babel.transform(("!" + clsBinding), { configFile: false, babelrc: false, plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
-function transformDynamicStyle (staticStyle, styleBinding) {
+function transformDynamicStyle$3 (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
-  var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
+  var result = babel.transform(("!" + styleBinding), { configFile: false, babelrc: false, plugins: [transformObjectToString] });
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 
-var attrs = {
+var attrs$3 = {
   format: function format (attrs) {
     if ( attrs === void 0 ) attrs = {};
 
@@ -4425,7 +4275,7 @@ var attrs = {
   },
 
   convertAttr: function convertAttr (ast, log) {
-    var this$1 = this;
+    var this$1$1 = this;
 
     var attrsMap = ast.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
     var tag = ast.tag;
@@ -4452,13 +4302,13 @@ var attrs = {
       } else if (key === 'v-show') {
         attrs['hidden'] = "{{!(" + val + ")}}";
       } else if (/^v\-on\:/i.test(key)) {
-        attrs = this$1.event(key, val, attrs, tag);
+        attrs = this$1$1.event(key, val, attrs, tag);
       } else if (/^v\-bind\:/i.test(key)) {
-        attrs = this$1.bind(key, val, attrs, tag, attrsMap['wx:key']);
+        attrs = this$1$1.bind(key, val, attrs, tag, attrsMap['wx:key']);
       } else if (/^v\-model/.test(key)) {
-        attrs = this$1.model(key, val, attrs, tag, log);
-      } else if (directiveMap[key]) {
-        var ref = directiveMap[key] || {};
+        attrs = this$1$1.model(key, val, attrs, tag, log);
+      } else if (directiveMap$3[key]) {
+        var ref = directiveMap$3[key] || {};
         var name = ref.name; if ( name === void 0 ) name = '';
         var type = ref.type;
         var map = ref.map; if ( map === void 0 ) map = {};
@@ -4509,8 +4359,8 @@ var attrs = {
     var ref = name.split('.');
     var eventName = ref[0];
     var eventNameMap = ref.slice(1);
-    var eventMap = directiveMap['v-on'];
-    var check = directiveMap.check;
+    var eventMap = directiveMap$3['v-on'];
+    var check = directiveMap$3.check;
 
     if (check) {
       check(key, val);
@@ -4566,7 +4416,7 @@ var attrs = {
       return staticCls
     }
 
-    return transformDynamicClass(staticCls, clsBinding)
+    return transformDynamicClass$3(staticCls, clsBinding)
   },
 
   styleObj: function styleObj (styleBinding, staticStyle) {
@@ -4579,7 +4429,7 @@ var attrs = {
       return staticStyle
     }
 
-    return transformDynamicStyle(staticStyle, styleBinding)
+    return transformDynamicStyle$3(staticStyle, styleBinding)
   },
 
   model: function model (key, val, attrs, tag) {
@@ -4603,12 +4453,12 @@ var attrs = {
   }
 };
 
-function getSlotsName (obj) {
+function getSlotsName$3 (obj) {
   if (!obj) {
     return ''
   }
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
-  return tmplateSlotsObj(obj)
+  return tmplateSlotsObj$3(obj)
     .concat(
       Object.keys(obj).map(function (k) {
         return '$slot' + k + ":'" + obj[k] + "'"
@@ -4617,7 +4467,7 @@ function getSlotsName (obj) {
     .join(',')
 }
 
-function tmplateSlotsObj (obj) {
+function tmplateSlotsObj$3 (obj) {
   if (!obj) {
     return []
   }
@@ -4630,7 +4480,7 @@ function tmplateSlotsObj (obj) {
   return $for ? [("$for:{" + $for + "}")] : []
 }
 
-var component = {
+var component$3 = {
   isComponent: function isComponent (tagName, components) {
     if ( components === void 0 ) components = {};
 
@@ -4651,7 +4501,7 @@ var component = {
         attrsMap['is'] = '{{' + slotName + '}}';
       }
     } else {
-      var slotsName = getSlotsName(slots);
+      var slotsName = getSlotsName$3(slots);
       var restSlotsName = slotsName ? (", " + slotsName) : '';
       attrsMap['data'] = "{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}";
       attrsMap['is'] = components[tag].name;
@@ -4660,15 +4510,14 @@ var component = {
   }
 };
 
-var astMap = {
-  'if': 'wx:if',
+var astMap$3 = {
   'iterator1': 'wx:for-index',
   'key': 'wx:key',
   'alias': 'wx:for-item',
   'v-for': 'wx:for'
 };
 
-var convertFor = function (ast) {
+function convertFor$3 (ast) {
   var iterator1 = ast.iterator1;
   var forText = ast.for;
   var key = ast.key;
@@ -4676,25 +4525,26 @@ var convertFor = function (ast) {
   var attrsMap = ast.attrsMap;
 
   if (forText) {
-    attrsMap[astMap['v-for']] = "{{" + forText + "}}";
+    attrsMap[astMap$3['v-for']] = "{{" + forText + "}}";
     if (iterator1) {
-      attrsMap[astMap['iterator1']] = iterator1;
+      attrsMap[astMap$3['iterator1']] = iterator1;
     }
     if (key) {
-      attrsMap[astMap['key']] = key;
+      attrsMap[astMap$3['key']] = key;
     }
     if (alias) {
-      attrsMap[astMap['alias']] = alias;
+      attrsMap[astMap$3['alias']] = alias;
     }
 
     delete attrsMap['v-for'];
   }
 
   return ast
-};
+}
 
 // import component from './component'
-var tag = function (ast, options, component, attrs) {
+
+function tag (ast, options, component, attrs) {
   var tag = ast.tag;
   var elseif = ast.elseif;
   var elseText = ast.else;
@@ -4786,7 +4636,7 @@ var tag = function (ast, options, component, attrs) {
     }
   }
   return ast
-};
+}
 
 function convertAst (node, options, util, conventRule) {
   if ( options === void 0 ) options = {};
@@ -4902,10 +4752,10 @@ function getAstCommon (compiled, options, log, conventRule) {
   }
 }
 
-function mpmlAst (compiled, options, log) {
+function mpmlAst$3 (compiled, options, log) {
   if ( options === void 0 ) options = {};
 
-  var conventRule = { attrs: attrs, component: component, convertFor: convertFor };
+  var conventRule = { attrs: attrs$3, component: component$3, convertFor: convertFor$3 };
   return getAstCommon(compiled, options, log, conventRule)
 }
 
@@ -4947,7 +4797,6 @@ function convertAttr (key, val) {
 }
 
 function generateCode (nodeAst, options) {
-  if ( options === void 0 ) options = {};
 
   var tag = nodeAst.tag;
   var attrsMap = nodeAst.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
@@ -4962,10 +4811,10 @@ function generateCode (nodeAst, options) {
   if (ifConditions) {
     var length = ifConditions.length;
     for (var i = 1; i < length; i++) {
-      ifConditionsArr.push(generateCode(ifConditions[i].block, options));
+      ifConditionsArr.push(generateCode(ifConditions[i].block));
     }
   }
-  var childrenContent = children.map(function (childAst) { return generateCode(childAst, options); }).join('');
+  var childrenContent = children.map(function (childAst) { return generateCode(childAst); }).join('');
   var attrs = Object.keys(attrsMap).map(function (key) { return convertAttr(key, attrsMap[key]); }).join(' ');
   attrs = attrs ? (" " + attrs) : '';
 
@@ -4985,7 +4834,7 @@ function compileToMPMLCommon (compiled, options, getAst) {
   var wxast = ref.wxast;
   var deps = ref.deps; if ( deps === void 0 ) deps = {};
   var slots = ref.slots; if ( slots === void 0 ) slots = {};
-  var code = generateCode(wxast, options);
+  var code = generateCode(wxast);
 
   // 引用子模版
   var importCode = Object.keys(deps).map(function (k) { return components[k] ? ("<import src=\"" + (components[k].src) + "\" />") : ''; }).join('');
@@ -4994,416 +4843,16 @@ function compileToMPMLCommon (compiled, options, getAst) {
   // 生成 slots code
   Object.keys(slots).forEach(function (k) {
     var slot = slots[k];
-    slot.code = generateCode(slot.node, options);
+    slot.code = generateCode(slot.node);
   });
 
   return { code: code, compiled: compiled, slots: slots, importCode: importCode }
 }
 
-function compileToMPML$1 (compiled, options) {
+function compileToMPML$4 (compiled, options) {
   if ( options === void 0 ) options = {};
 
-  return compileToMPMLCommon(compiled, options, mpmlAst)
-}
-
-// type：
-// 0, 默认值, 拼接 ${name}={{ ${content} }}
-// 1, 拼接 ${name}
-// 2, 拼接 ${map[key]}={{ '${content}' }}
-// 3, 拼接 {{ ${content} }}
-// 4, 拼接为空字符串
-// 5, 不需要在wxml上表现出来，可直接清除
-
-var noSupport$1 = {
-  type: 4,
-  check: function check (k, v, errors) {
-    errors(("不支持此指令: " + k + "=\"" + v + "\""));
-    return false
-  }
-};
-var directiveMap$1 = {
-  'v-if': {
-    name: 's-if',
-    type: 2
-  },
-  'v-else-if': {
-    name: 's-elif',
-    type: 2
-  },
-  'v-else': {
-    name: 's-else',
-    type: 1
-  },
-  'v-text': {
-    name: '',
-    type: 1
-  },
-  'v-html': {
-    name: '',
-    type: 1
-  },
-  'v-on': {
-    name: '',
-    map: {
-      click: 'tap',
-      touchstart: 'touchstart',
-      touchmove: 'touchmove',
-      touchcancel: 'touchcancel',
-      touchend: 'touchend',
-      tap: 'tap',
-      longtap: 'longtap',
-      input: 'input',
-      change: 'change',
-      submit: 'submit',
-      blur: 'blur',
-      focus: 'focus',
-      reset: 'reset',
-      confirm: 'confirm',
-      columnchange: 'columnchange',
-      linechange: 'linechange',
-      error: 'error',
-      scrolltoupper: 'scrolltoupper',
-      scrolltolower: 'scrolltolower',
-      scroll: 'scroll',
-      load: 'load'
-    },
-    type: 2
-  },
-  'v-bind': {
-    name: '',
-    map: {
-      'href': 'url'
-    },
-    type: 3
-  },
-  'href': {
-    name: 'url',
-    type: 2
-  },
-  'v-pre': noSupport$1,
-  'v-cloak': noSupport$1,
-  'v-once': {
-    name: '',
-    type: 5
-  }
-};
-
-function transformDynamicClass$1 (staticClass, clsBinding) {
-  if ( staticClass === void 0 ) staticClass = '';
-
-  var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
-  // 先实现功能，再优化代码
-  // https://github.com/babel/babel/issues/7138
-  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
-  return (staticClass + " {{" + cls + "}}")
-}
-
-function transformDynamicStyle$1 (staticStyle, styleBinding) {
-  if ( staticStyle === void 0 ) staticStyle = '';
-
-  var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
-  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
-  return (staticStyle + " {{" + cls + "}}")
-}
-
-var attrs$1 = {
-  format: function format (attrs) {
-    if ( attrs === void 0 ) attrs = {};
-
-    var obj = {};
-
-    Object.keys(attrs).map(function (key) {
-      var val = attrs[key];
-      obj[key.replace('@', 'v-on:').replace(/^:/, 'v-bind:')] = val;
-    });
-
-    return obj
-  },
-
-  convertAttr: function convertAttr (ast, log) {
-    var this$1 = this;
-
-    var attrsMap = ast.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
-    var tag = ast.tag;
-    var staticClass = ast.staticClass;
-    var attrs = {};
-    var wxClass = this.classObj(attrsMap['v-bind:class'], staticClass);
-    wxClass.length ? attrsMap['class'] = wxClass : '';
-    var wxStyle = this.styleObj(attrsMap['v-bind:style'], attrsMap['style']);
-    wxStyle.length ? attrsMap['style'] = wxStyle : '';
-
-    Object.keys(attrsMap).map(function (key) {
-      var val = attrsMap[key];
-      if (key === 'v-bind:class' || key === 'v-bind:style') {
-        return
-      }
-      if (key === 'v-text') {
-        ast.children.unshift({
-          text: ("{{" + val + "}}"),
-          type: 3
-        });
-      } else if (key === 'v-html') {
-        ast.tag = 'rich-text';
-        attrs['nodes'] = "{{" + val + "}}";
-      } else if (key === 'v-show') {
-        attrs['hidden'] = "{{!(" + val + ")}}";
-      } else if (/^v\-on\:/i.test(key)) {
-        attrs = this$1.event(key, val, attrs, tag);
-      } else if (/^v\-bind\:/i.test(key)) {
-        attrs = this$1.bind(key, val, attrs, tag, attrsMap['wx:key']);
-      } else if (/^v\-model/.test(key)) {
-        attrs = this$1.model(key, val, attrs, tag, log);
-      } else if (directiveMap$1[key]) {
-        var ref = directiveMap$1[key] || {};
-        var name = ref.name; if ( name === void 0 ) name = '';
-        var type = ref.type;
-        var map = ref.map; if ( map === void 0 ) map = {};
-        var check = ref.check;
-        if (!(check && !check(key, val, log)) && !(!name || typeof type !== 'number')) {
-          // 见 ./directiveMap.js 注释
-          if (type === 0) {
-            attrs[name] = "{{" + val + "}}";
-          }
-
-          if (type === 1) {
-            attrs[name] = undefined;
-          }
-
-          if (type === 2) {
-            attrs[name] = val;
-          }
-
-          if (type === 3) {
-            attrs[map[name] || name] = "{{" + val + "}}";
-            return
-          }
-        }
-      } else if (/^v\-/.test(key)) {
-        log(("不支持此属性-> " + key + "=\"" + val + "\""), 'waring');
-      } else {
-        if ((tagConfig.virtualTag.indexOf(tag) > -1) && (key === 'class' || key === 'style' || key === 'data-mpcomid')) {
-          if (key !== 'data-mpcomid') {
-            log(("template 不支持此属性-> " + key + "=\"" + val + "\""), 'waring');
-          }
-        } else {
-          attrs[key] = val;
-        }
-      }
-    });
-    ast.attrsMap = attrs;
-    return ast
-  },
-
-  event: function event (key, val, attrs, tag) {
-    // 小程序能力所致，bind 和 catch 事件同时绑定时候，只会触发 bind ,catch 不会被触发。
-    // .stop 的使用会阻止冒泡，但是同时绑定了一个非冒泡事件，会导致该元素上的 catchEventName 失效！
-    // .prevent 可以直接干掉，因为小程序里没有什么默认事件，比如submit并不会跳转页面
-    // .capture 不能做，因为小程序没有捕获类型的事件
-    // .self 没有可以判断的标识
-    // .once 也不能做，因为小程序没有 removeEventListener, 虽然可以直接在 handleProxy 中处理，但非常的不优雅，违背了原意，暂不考虑
-    var name = key.replace(/^v\-on\:/i, '').replace(/\.prevent/i, '');
-    var ref = name.split('.');
-    var eventName = ref[0];
-    var eventNameMap = ref.slice(1);
-    var eventMap = directiveMap$1['v-on'];
-    var check = directiveMap$1.check;
-
-    if (check) {
-      check(key, val);
-    }
-    var wxmlEventName = '';
-    if (eventName === 'change' && (tag === 'input' || tag === 'textarea')) {
-      wxmlEventName = 'blur';
-    } else {
-      wxmlEventName = eventMap.map[eventName];
-    }
-
-    var eventType = 'bind';
-    var isStop = eventNameMap.includes('stop');
-    if (eventNameMap.includes('capture')) {
-      eventType = isStop ? 'capture-catch:' : 'capture-bind:';
-    } else if (isStop) {
-      eventType = 'catch';
-    }
-
-    wxmlEventName = eventType + (wxmlEventName || eventName);
-    attrs[wxmlEventName] = 'handleProxy';
-
-    return attrs
-  },
-
-  bind: function bind (key, val, attrs, tag, isIf) {
-    var name = key.replace(/^v\-bind\:/i, '');
-
-    if (isIf && name === 'key') {
-      attrs['wx:key'] = val;
-    }
-
-    if (tag === 'template') {
-      return attrs
-    }
-
-    if (name === 'href') {
-      attrs['url'] = "{{" + val + "}}";
-    } else {
-      attrs[name] = "{{" + val + "}}";
-    }
-
-    if (tag === 'scroll-view') {
-      if (name === 'scroll-top' || name === 'scroll-left' || name === 'scroll-into-view') {
-        attrs[name] = "{=" + val + "=}";
-      }
-    }
-
-    if (tag === 'input' || tag === 'textarea' || tag === 'slider') {
-      if (name === 'value') {
-        attrs[name] = "{=" + val + "=}";
-      }
-    }
-
-    if (tag === 'movable-view' && (name === 'x' || name === 'y')) {
-      attrs[name] = "{=" + val + "=}";
-    }
-
-    return attrs
-  },
-
-  classObj: function classObj (clsBinding, staticCls) {
-    if ( clsBinding === void 0 ) clsBinding = '';
-
-    if (!clsBinding && !staticCls) {
-      return ''
-    }
-    if (!clsBinding && staticCls) {
-      return staticCls
-    }
-
-    return transformDynamicClass$1(staticCls, clsBinding)
-  },
-
-  styleObj: function styleObj (styleBinding, staticStyle) {
-    if ( styleBinding === void 0 ) styleBinding = '';
-
-    if (!styleBinding && !staticStyle) {
-      return ''
-    }
-    if (!styleBinding && staticStyle) {
-      return staticStyle
-    }
-
-    return transformDynamicStyle$1(staticStyle, styleBinding)
-  },
-
-  model: function model (key, val, attrs, tag) {
-    var isFormInput = tag === 'input' || tag === 'textarea';
-    attrs['value'] = "{{" + val + "}}";
-    if (key === 'v-model.lazy') {
-      if (isFormInput) {
-        attrs['bindblur'] = 'handleProxy';
-      } else {
-        attrs['bindchange'] = 'handleProxy';
-      }
-    } else {
-      if (isFormInput) {
-        attrs['bindinput'] = 'handleProxy';
-      } else {
-        attrs['bindchange'] = 'handleProxy';
-      }
-    }
-
-    return attrs
-  }
-};
-
-function getSlotsName$1 (obj) {
-  if (!obj) {
-    return ''
-  }
-  // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
-  return tmplateSlotsObj$1(obj)
-    .concat(
-      Object.keys(obj).map(function (k) { return ("$slot" + k + ":'" + (obj[k]) + "'"); })
-    )
-    .join(',')
-}
-
-function tmplateSlotsObj$1 (obj) {
-  if (!obj) {
-    return []
-  }
-  // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a1不能写成 'a1' 带引号的形式，会出错
-  var $for = Object.keys(obj)
-    .map(function (k) { return (k + ":'" + (obj[k]) + "'"); })
-    .join(',');
-  return $for ? [("$for:{" + $for + "}")] : []
-}
-
-var component$1 = {
-  isComponent: function isComponent (tagName, components) {
-    if ( components === void 0 ) components = {};
-
-    return !!components[tagName]
-  },
-  convertComponent: function convertComponent (ast, components, slotName) {
-    var attrsMap = ast.attrsMap;
-    var tag = ast.tag;
-    var mpcomid = ast.mpcomid;
-    var slots = ast.slots;
-    if (slotName) {
-      attrsMap['data'] = '{{{...$root[$p], ...$root[$k], $root}}}';
-      // bindedName is available when rendering slot in v-for
-      var bindedName = attrsMap['v-bind:name'];
-      if (bindedName) {
-        attrsMap['is'] = '{{$for[' + bindedName + ']}}';
-      } else {
-        attrsMap['is'] = '{{' + slotName + '}}';
-      }
-    } else {
-      var slotsName = getSlotsName$1(slots);
-      var restSlotsName = slotsName ? (", " + slotsName) : '';
-      attrsMap['data'] = "{{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}}";
-      attrsMap['is'] = components[tag].name;
-    }
-    return ast
-  }
-};
-
-var astMap$1 = {
-  'if': 's-if',
-  'v-for': 's-for',
-  'alias': 's-for-item',
-  'iterator1': 's-for-index',
-  'key': 's-key'
-};
-
-var convertFor$1 = function (ast) {
-  var iterator1 = ast.iterator1;
-  var forText = ast.for;
-  var alias = ast.alias;
-  var attrsMap = ast.attrsMap;
-
-  // 缩写：<view s-for="p,index in persons">
-  // 全写：<view s-for="persons" s-for-index="index" s-for-item="p">
-
-  if (forText) {
-    attrsMap[astMap$1['v-for']] = alias + "," + iterator1 + " in " + forText;
-    delete attrsMap['v-for'];
-  }
-
-  return ast
-};
-
-function mpmlAst$1 (compiled, options, log) {
-  if ( options === void 0 ) options = {};
-
-  var conventRule = { attrs: attrs$1, component: component$1, convertFor: convertFor$1 };
-  return getAstCommon(compiled, options, log, conventRule)
-}
-
-function compileToMPML$2 (compiled, options) {
-  if ( options === void 0 ) options = {};
-
-  return compileToMPMLCommon(compiled, options, mpmlAst$1)
+  return compileToMPMLCommon(compiled, options, mpmlAst$3)
 }
 
 // type：
@@ -5423,15 +4872,15 @@ var noSupport$2 = {
 };
 var directiveMap$2 = {
   'v-if': {
-    name: 'tt:if',
-    type: 0
+    name: 's-if',
+    type: 2
   },
   'v-else-if': {
-    name: 'tt:elif',
-    type: 0
+    name: 's-elif',
+    type: 2
   },
   'v-else': {
-    name: 'tt:else',
+    name: 's-else',
     type: 1
   },
   'v-text': {
@@ -5491,7 +4940,7 @@ var directiveMap$2 = {
 function transformDynamicClass$2 (staticClass, clsBinding) {
   if ( staticClass === void 0 ) staticClass = '';
 
-  var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
+  var result = babel.transform(("!" + clsBinding), { configFile: false, babelrc: false, plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
@@ -5501,7 +4950,7 @@ function transformDynamicClass$2 (staticClass, clsBinding) {
 function transformDynamicStyle$2 (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
-  var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
+  var result = babel.transform(("!" + styleBinding), { configFile: false, babelrc: false, plugins: [transformObjectToString] });
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
@@ -5521,7 +4970,7 @@ var attrs$2 = {
   },
 
   convertAttr: function convertAttr (ast, log) {
-    var this$1 = this;
+    var this$1$1 = this;
 
     var attrsMap = ast.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
     var tag = ast.tag;
@@ -5548,11 +4997,11 @@ var attrs$2 = {
       } else if (key === 'v-show') {
         attrs['hidden'] = "{{!(" + val + ")}}";
       } else if (/^v\-on\:/i.test(key)) {
-        attrs = this$1.event(key, val, attrs, tag);
+        attrs = this$1$1.event(key, val, attrs, tag);
       } else if (/^v\-bind\:/i.test(key)) {
-        attrs = this$1.bind(key, val, attrs, tag, attrsMap['tt:key']);
+        attrs = this$1$1.bind(key, val, attrs, tag, attrsMap['wx:key']);
       } else if (/^v\-model/.test(key)) {
-        attrs = this$1.model(key, val, attrs, tag, log);
+        attrs = this$1$1.model(key, val, attrs, tag, log);
       } else if (directiveMap$2[key]) {
         var ref = directiveMap$2[key] || {};
         var name = ref.name; if ( name === void 0 ) name = '';
@@ -5636,7 +5085,7 @@ var attrs$2 = {
     var name = key.replace(/^v\-bind\:/i, '');
 
     if (isIf && name === 'key') {
-      attrs['tt:key'] = val;
+      attrs['wx:key'] = val;
     }
 
     if (tag === 'template') {
@@ -5647,6 +5096,22 @@ var attrs$2 = {
       attrs['url'] = "{{" + val + "}}";
     } else {
       attrs[name] = "{{" + val + "}}";
+    }
+
+    if (tag === 'scroll-view') {
+      if (name === 'scroll-top' || name === 'scroll-left' || name === 'scroll-into-view') {
+        attrs[name] = "{=" + val + "=}";
+      }
+    }
+
+    if (tag === 'input' || tag === 'textarea' || tag === 'slider') {
+      if (name === 'value') {
+        attrs[name] = "{=" + val + "=}";
+      }
+    }
+
+    if (tag === 'movable-view' && (name === 'x' || name === 'y')) {
+      attrs[name] = "{=" + val + "=}";
     }
 
     return attrs
@@ -5706,9 +5171,7 @@ function getSlotsName$2 (obj) {
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
   return tmplateSlotsObj$2(obj)
     .concat(
-      Object.keys(obj).map(function (k) {
-        return '$slot' + k + ":'" + obj[k] + "'"
-      })
+      Object.keys(obj).map(function (k) { return ("$slot" + k + ":'" + (obj[k]) + "'"); })
     )
     .join(',')
 }
@@ -5719,9 +5182,7 @@ function tmplateSlotsObj$2 (obj) {
   }
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a1不能写成 'a1' 带引号的形式，会出错
   var $for = Object.keys(obj)
-    .map(function (k) {
-      return (k + ":'" + (obj[k]) + "'")
-    })
+    .map(function (k) { return (k + ":'" + (obj[k]) + "'"); })
     .join(',');
   return $for ? [("$for:{" + $for + "}")] : []
 }
@@ -5738,7 +5199,7 @@ var component$2 = {
     var mpcomid = ast.mpcomid;
     var slots = ast.slots;
     if (slotName) {
-      attrsMap['data'] = '{{...$root[$p], ...$root[$k], $root}}';
+      attrsMap['data'] = '{{{...$root[$p], ...$root[$k], $root}}}';
       // bindedName is available when rendering slot in v-for
       var bindedName = attrsMap['v-bind:name'];
       if (bindedName) {
@@ -5749,7 +5210,7 @@ var component$2 = {
     } else {
       var slotsName = getSlotsName$2(slots);
       var restSlotsName = slotsName ? (", " + slotsName) : '';
-      attrsMap['data'] = "{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}";
+      attrsMap['data'] = "{{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}}";
       attrsMap['is'] = components[tag].name;
     }
     return ast
@@ -5757,36 +5218,24 @@ var component$2 = {
 };
 
 var astMap$2 = {
-  'if': 'tt:if',
-  'iterator1': 'tt:for-index',
-  'key': 'tt:key',
-  'alias': 'tt:for-item',
-  'v-for': 'tt:for'
-};
+  'v-for': 's-for'};
 
-var convertFor$2 = function (ast) {
+function convertFor$2 (ast) {
   var iterator1 = ast.iterator1;
   var forText = ast.for;
-  var key = ast.key;
   var alias = ast.alias;
   var attrsMap = ast.attrsMap;
-  if (forText) {
-    attrsMap[astMap$2['v-for']] = "{{" + forText + "}}";
-    if (iterator1) {
-      attrsMap[astMap$2['iterator1']] = iterator1;
-    }
-    if (key) {
-      attrsMap[astMap$2['key']] = key;
-    }
-    if (alias) {
-      attrsMap[astMap$2['alias']] = alias;
-    }
 
+  // 缩写：<view s-for="p,index in persons">
+  // 全写：<view s-for="persons" s-for-index="index" s-for-item="p">
+
+  if (forText) {
+    attrsMap[astMap$2['v-for']] = alias + "," + iterator1 + " in " + forText;
     delete attrsMap['v-for'];
   }
 
   return ast
-};
+}
 
 function mpmlAst$2 (compiled, options, log) {
   if ( options === void 0 ) options = {};
@@ -5809,7 +5258,401 @@ function compileToMPML$3 (compiled, options) {
 // 4, 拼接为空字符串
 // 5, 不需要在wxml上表现出来，可直接清除
 
-var noSupport$3 = {
+var noSupport$1 = {
+  type: 4,
+  check: function check (k, v, errors) {
+    errors(("不支持此指令: " + k + "=\"" + v + "\""));
+    return false
+  }
+};
+var directiveMap$1 = {
+  'v-if': {
+    name: 'tt:if',
+    type: 0
+  },
+  'v-else-if': {
+    name: 'tt:elif',
+    type: 0
+  },
+  'v-else': {
+    name: 'tt:else',
+    type: 1
+  },
+  'v-text': {
+    name: '',
+    type: 1
+  },
+  'v-html': {
+    name: '',
+    type: 1
+  },
+  'v-on': {
+    name: '',
+    map: {
+      click: 'tap',
+      touchstart: 'touchstart',
+      touchmove: 'touchmove',
+      touchcancel: 'touchcancel',
+      touchend: 'touchend',
+      tap: 'tap',
+      longtap: 'longtap',
+      input: 'input',
+      change: 'change',
+      submit: 'submit',
+      blur: 'blur',
+      focus: 'focus',
+      reset: 'reset',
+      confirm: 'confirm',
+      columnchange: 'columnchange',
+      linechange: 'linechange',
+      error: 'error',
+      scrolltoupper: 'scrolltoupper',
+      scrolltolower: 'scrolltolower',
+      scroll: 'scroll',
+      load: 'load'
+    },
+    type: 2
+  },
+  'v-bind': {
+    name: '',
+    map: {
+      'href': 'url'
+    },
+    type: 3
+  },
+  'href': {
+    name: 'url',
+    type: 2
+  },
+  'v-pre': noSupport$1,
+  'v-cloak': noSupport$1,
+  'v-once': {
+    name: '',
+    type: 5
+  }
+};
+
+function transformDynamicClass$1 (staticClass, clsBinding) {
+  if ( staticClass === void 0 ) staticClass = '';
+
+  var result = babel.transform(("!" + clsBinding), { configFile: false, babelrc: false, plugins: [transformObjectToTernaryOperator] });
+  // 先实现功能，再优化代码
+  // https://github.com/babel/babel/issues/7138
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  return (staticClass + " {{" + cls + "}}")
+}
+
+function transformDynamicStyle$1 (staticStyle, styleBinding) {
+  if ( staticStyle === void 0 ) staticStyle = '';
+
+  var result = babel.transform(("!" + styleBinding), { configFile: false, babelrc: false, plugins: [transformObjectToString] });
+  var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
+  return (staticStyle + " {{" + cls + "}}")
+}
+
+var attrs$1 = {
+  format: function format (attrs) {
+    if ( attrs === void 0 ) attrs = {};
+
+    var obj = {};
+
+    Object.keys(attrs).map(function (key) {
+      var val = attrs[key];
+      obj[key.replace('@', 'v-on:').replace(/^:/, 'v-bind:')] = val;
+    });
+
+    return obj
+  },
+
+  convertAttr: function convertAttr (ast, log) {
+    var this$1$1 = this;
+
+    var attrsMap = ast.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
+    var tag = ast.tag;
+    var staticClass = ast.staticClass;
+    var attrs = {};
+    var wxClass = this.classObj(attrsMap['v-bind:class'], staticClass);
+    wxClass.length ? attrsMap['class'] = wxClass : '';
+    var wxStyle = this.styleObj(attrsMap['v-bind:style'], attrsMap['style']);
+    wxStyle.length ? attrsMap['style'] = wxStyle : '';
+
+    Object.keys(attrsMap).map(function (key) {
+      var val = attrsMap[key];
+      if (key === 'v-bind:class' || key === 'v-bind:style') {
+        return
+      }
+      if (key === 'v-text') {
+        ast.children.unshift({
+          text: ("{{" + val + "}}"),
+          type: 3
+        });
+      } else if (key === 'v-html') {
+        ast.tag = 'rich-text';
+        attrs['nodes'] = "{{" + val + "}}";
+      } else if (key === 'v-show') {
+        attrs['hidden'] = "{{!(" + val + ")}}";
+      } else if (/^v\-on\:/i.test(key)) {
+        attrs = this$1$1.event(key, val, attrs, tag);
+      } else if (/^v\-bind\:/i.test(key)) {
+        attrs = this$1$1.bind(key, val, attrs, tag, attrsMap['tt:key']);
+      } else if (/^v\-model/.test(key)) {
+        attrs = this$1$1.model(key, val, attrs, tag, log);
+      } else if (directiveMap$1[key]) {
+        var ref = directiveMap$1[key] || {};
+        var name = ref.name; if ( name === void 0 ) name = '';
+        var type = ref.type;
+        var map = ref.map; if ( map === void 0 ) map = {};
+        var check = ref.check;
+        if (!(check && !check(key, val, log)) && !(!name || typeof type !== 'number')) {
+          // 见 ./directiveMap.js 注释
+          if (type === 0) {
+            attrs[name] = "{{" + val + "}}";
+          }
+
+          if (type === 1) {
+            attrs[name] = undefined;
+          }
+
+          if (type === 2) {
+            attrs[name] = val;
+          }
+
+          if (type === 3) {
+            attrs[map[name] || name] = "{{" + val + "}}";
+            return
+          }
+        }
+      } else if (/^v\-/.test(key)) {
+        log(("不支持此属性-> " + key + "=\"" + val + "\""), 'waring');
+      } else {
+        if ((tagConfig.virtualTag.indexOf(tag) > -1) && (key === 'class' || key === 'style' || key === 'data-mpcomid')) {
+          if (key !== 'data-mpcomid') {
+            log(("template 不支持此属性-> " + key + "=\"" + val + "\""), 'waring');
+          }
+        } else {
+          attrs[key] = val;
+        }
+      }
+    });
+    ast.attrsMap = attrs;
+    return ast
+  },
+
+  event: function event (key, val, attrs, tag) {
+    // 小程序能力所致，bind 和 catch 事件同时绑定时候，只会触发 bind ,catch 不会被触发。
+    // .stop 的使用会阻止冒泡，但是同时绑定了一个非冒泡事件，会导致该元素上的 catchEventName 失效！
+    // .prevent 可以直接干掉，因为小程序里没有什么默认事件，比如submit并不会跳转页面
+    // .capture 不能做，因为小程序没有捕获类型的事件
+    // .self 没有可以判断的标识
+    // .once 也不能做，因为小程序没有 removeEventListener, 虽然可以直接在 handleProxy 中处理，但非常的不优雅，违背了原意，暂不考虑
+    var name = key.replace(/^v\-on\:/i, '').replace(/\.prevent/i, '');
+    var ref = name.split('.');
+    var eventName = ref[0];
+    var eventNameMap = ref.slice(1);
+    var eventMap = directiveMap$1['v-on'];
+    var check = directiveMap$1.check;
+
+    if (check) {
+      check(key, val);
+    }
+    var wxmlEventName = '';
+    if (eventName === 'change' && (tag === 'input' || tag === 'textarea')) {
+      wxmlEventName = 'blur';
+    } else {
+      wxmlEventName = eventMap.map[eventName];
+    }
+
+    var eventType = 'bind';
+    var isStop = eventNameMap.includes('stop');
+    if (eventNameMap.includes('capture')) {
+      eventType = isStop ? 'capture-catch:' : 'capture-bind:';
+    } else if (isStop) {
+      eventType = 'catch';
+    }
+
+    wxmlEventName = eventType + (wxmlEventName || eventName);
+    attrs[wxmlEventName] = 'handleProxy';
+
+    return attrs
+  },
+
+  bind: function bind (key, val, attrs, tag, isIf) {
+    var name = key.replace(/^v\-bind\:/i, '');
+
+    if (isIf && name === 'key') {
+      attrs['tt:key'] = val;
+    }
+
+    if (tag === 'template') {
+      return attrs
+    }
+
+    if (name === 'href') {
+      attrs['url'] = "{{" + val + "}}";
+    } else {
+      attrs[name] = "{{" + val + "}}";
+    }
+
+    return attrs
+  },
+
+  classObj: function classObj (clsBinding, staticCls) {
+    if ( clsBinding === void 0 ) clsBinding = '';
+
+    if (!clsBinding && !staticCls) {
+      return ''
+    }
+    if (!clsBinding && staticCls) {
+      return staticCls
+    }
+
+    return transformDynamicClass$1(staticCls, clsBinding)
+  },
+
+  styleObj: function styleObj (styleBinding, staticStyle) {
+    if ( styleBinding === void 0 ) styleBinding = '';
+
+    if (!styleBinding && !staticStyle) {
+      return ''
+    }
+    if (!styleBinding && staticStyle) {
+      return staticStyle
+    }
+
+    return transformDynamicStyle$1(staticStyle, styleBinding)
+  },
+
+  model: function model (key, val, attrs, tag) {
+    var isFormInput = tag === 'input' || tag === 'textarea';
+    attrs['value'] = "{{" + val + "}}";
+    if (key === 'v-model.lazy') {
+      if (isFormInput) {
+        attrs['bindblur'] = 'handleProxy';
+      } else {
+        attrs['bindchange'] = 'handleProxy';
+      }
+    } else {
+      if (isFormInput) {
+        attrs['bindinput'] = 'handleProxy';
+      } else {
+        attrs['bindchange'] = 'handleProxy';
+      }
+    }
+
+    return attrs
+  }
+};
+
+function getSlotsName$1 (obj) {
+  if (!obj) {
+    return ''
+  }
+  // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
+  return tmplateSlotsObj$1(obj)
+    .concat(
+      Object.keys(obj).map(function (k) {
+        return '$slot' + k + ":'" + obj[k] + "'"
+      })
+    )
+    .join(',')
+}
+
+function tmplateSlotsObj$1 (obj) {
+  if (!obj) {
+    return []
+  }
+  // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a1不能写成 'a1' 带引号的形式，会出错
+  var $for = Object.keys(obj)
+    .map(function (k) {
+      return (k + ":'" + (obj[k]) + "'")
+    })
+    .join(',');
+  return $for ? [("$for:{" + $for + "}")] : []
+}
+
+var component$1 = {
+  isComponent: function isComponent (tagName, components) {
+    if ( components === void 0 ) components = {};
+
+    return !!components[tagName]
+  },
+  convertComponent: function convertComponent (ast, components, slotName) {
+    var attrsMap = ast.attrsMap;
+    var tag = ast.tag;
+    var mpcomid = ast.mpcomid;
+    var slots = ast.slots;
+    if (slotName) {
+      attrsMap['data'] = '{{...$root[$p], ...$root[$k], $root}}';
+      // bindedName is available when rendering slot in v-for
+      var bindedName = attrsMap['v-bind:name'];
+      if (bindedName) {
+        attrsMap['is'] = '{{$for[' + bindedName + ']}}';
+      } else {
+        attrsMap['is'] = '{{' + slotName + '}}';
+      }
+    } else {
+      var slotsName = getSlotsName$1(slots);
+      var restSlotsName = slotsName ? (", " + slotsName) : '';
+      attrsMap['data'] = "{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}";
+      attrsMap['is'] = components[tag].name;
+    }
+    return ast
+  }
+};
+
+var astMap$1 = {
+  'iterator1': 'tt:for-index',
+  'key': 'tt:key',
+  'alias': 'tt:for-item',
+  'v-for': 'tt:for'
+};
+
+function convertFor$1 (ast) {
+  var iterator1 = ast.iterator1;
+  var forText = ast.for;
+  var key = ast.key;
+  var alias = ast.alias;
+  var attrsMap = ast.attrsMap;
+  if (forText) {
+    attrsMap[astMap$1['v-for']] = "{{" + forText + "}}";
+    if (iterator1) {
+      attrsMap[astMap$1['iterator1']] = iterator1;
+    }
+    if (key) {
+      attrsMap[astMap$1['key']] = key;
+    }
+    if (alias) {
+      attrsMap[astMap$1['alias']] = alias;
+    }
+
+    delete attrsMap['v-for'];
+  }
+
+  return ast
+}
+
+function mpmlAst$1 (compiled, options, log) {
+  if ( options === void 0 ) options = {};
+
+  var conventRule = { attrs: attrs$1, component: component$1, convertFor: convertFor$1 };
+  return getAstCommon(compiled, options, log, conventRule)
+}
+
+function compileToMPML$2 (compiled, options) {
+  if ( options === void 0 ) options = {};
+
+  return compileToMPMLCommon(compiled, options, mpmlAst$1)
+}
+
+// type：
+// 0, 默认值, 拼接 ${name}={{ ${content} }}
+// 1, 拼接 ${name}
+// 2, 拼接 ${map[key]}={{ '${content}' }}
+// 3, 拼接 {{ ${content} }}
+// 4, 拼接为空字符串
+// 5, 不需要在wxml上表现出来，可直接清除
+
+var noSupport = {
   type: 4,
   check: function (k, v, errors) {
     errors(("不支持此指令: " + k + "=\"" + v + "\""));
@@ -5817,7 +5660,7 @@ var noSupport$3 = {
   }
 };
 
-var directiveMap$3 = {
+var directiveMap = {
   'v-if': {
     name: 'a:if',
     type: 0
@@ -5876,33 +5719,33 @@ var directiveMap$3 = {
     name: 'url',
     type: 2
   },
-  'v-pre': noSupport$3,
-  'v-cloak': noSupport$3,
+  'v-pre': noSupport,
+  'v-cloak': noSupport,
   'v-once': {
     name: '',
     type: 5
   }
 };
 
-function transformDynamicClass$3 (staticClass, clsBinding) {
+function transformDynamicClass (staticClass, clsBinding) {
   if ( staticClass === void 0 ) staticClass = '';
 
-  var result = babel.transform(("!" + clsBinding), { plugins: [transformObjectToTernaryOperator] });
+  var result = babel.transform(("!" + clsBinding), { configFile: false, babelrc: false, plugins: [transformObjectToTernaryOperator] });
   // 先实现功能，再优化代码
   // https://github.com/babel/babel/issues/7138
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticClass + " {{" + cls + "}}")
 }
 
-function transformDynamicStyle$3 (staticStyle, styleBinding) {
+function transformDynamicStyle (staticStyle, styleBinding) {
   if ( staticStyle === void 0 ) staticStyle = '';
 
-  var result = babel.transform(("!" + styleBinding), { plugins: [transformObjectToString] });
+  var result = babel.transform(("!" + styleBinding), { configFile: false, babelrc: false, plugins: [transformObjectToString] });
   var cls = prettier.format(result.code, { parser: 'babel', semi: false, singleQuote: true }).slice(1).slice(0, -1).replace(/\n|\r/g, '');
   return (staticStyle + " {{" + cls + "}}")
 }
 
-var attrs$3 = {
+var attrs = {
   format: function format (attrs) {
     if ( attrs === void 0 ) attrs = {};
 
@@ -5916,7 +5759,7 @@ var attrs$3 = {
   },
 
   convertAttr: function convertAttr (ast, log) {
-    var this$1 = this;
+    var this$1$1 = this;
 
     var attrsMap = ast.attrsMap; if ( attrsMap === void 0 ) attrsMap = {};
     var tag = ast.tag;
@@ -5943,13 +5786,13 @@ var attrs$3 = {
       } else if (key === 'v-show') {
         attrs['hidden'] = "{{!(" + val + ")}}";
       } else if (/^v\-on\:/i.test(key)) {
-        attrs = this$1.event(key, val, attrs, tag, log);
+        attrs = this$1$1.event(key, val, attrs, tag, log);
       } else if (/^v\-bind\:/i.test(key)) {
-        attrs = this$1.bind(key, val, attrs, tag, attrsMap['a:key']);
+        attrs = this$1$1.bind(key, val, attrs, tag, attrsMap['a:key']);
       } else if (/^v\-model/.test(key)) {
-        attrs = this$1.model(key, val, attrs, tag, log);
-      } else if (directiveMap$3[key]) {
-        var ref = directiveMap$3[key] || {};
+        attrs = this$1$1.model(key, val, attrs, tag, log);
+      } else if (directiveMap[key]) {
+        var ref = directiveMap[key] || {};
         var name = ref.name; if ( name === void 0 ) name = '';
         var type = ref.type;
         var map = ref.map; if ( map === void 0 ) map = {};
@@ -6000,8 +5843,8 @@ var attrs$3 = {
     var ref = name.split('.');
     var eventName = ref[0];
     var eventNameMap = ref.slice(1);
-    var eventMap = directiveMap$3['v-on'];
-    var check = directiveMap$3.check;
+    var eventMap = directiveMap['v-on'];
+    var check = directiveMap.check;
 
     if (check) {
       check(key, val);
@@ -6057,7 +5900,7 @@ var attrs$3 = {
       return staticCls
     }
 
-    return transformDynamicClass$3(staticCls, clsBinding)
+    return transformDynamicClass(staticCls, clsBinding)
   },
 
   styleObj: function styleObj (styleBinding, staticStyle) {
@@ -6070,7 +5913,7 @@ var attrs$3 = {
       return staticStyle
     }
 
-    return transformDynamicStyle$3(staticStyle, styleBinding)
+    return transformDynamicStyle(staticStyle, styleBinding)
   },
 
   model: function model (key, val, attrs, tag) {
@@ -6093,12 +5936,12 @@ var attrs$3 = {
   }
 };
 
-function getSlotsName$3 (obj) {
+function getSlotsName (obj) {
   if (!obj) {
     return ''
   }
   // wxml模板中 data="{{ a:{a1:'string2'}, b:'string'}}" 键a不能放在最后，会出错
-  return tmplateSlotsObj$3(obj)
+  return tmplateSlotsObj(obj)
     .concat(
       Object.keys(obj).map(function (k) {
         return '$slot' + k + ":'" + obj[k] + "'"
@@ -6107,7 +5950,7 @@ function getSlotsName$3 (obj) {
     .join(',')
 }
 
-function tmplateSlotsObj$3 (obj) {
+function tmplateSlotsObj (obj) {
   if (!obj) {
     return []
   }
@@ -6120,7 +5963,7 @@ function tmplateSlotsObj$3 (obj) {
   return $for ? [("$for:{" + $for + "}")] : []
 }
 
-var component$3 = {
+var component = {
   isComponent: function isComponent (tagName, components) {
     if ( components === void 0 ) components = {};
 
@@ -6141,7 +5984,7 @@ var component$3 = {
         attrsMap['is'] = '{{' + slotName + '}}';
       }
     } else {
-      var slotsName = getSlotsName$3(slots);
+      var slotsName = getSlotsName(slots);
       var restSlotsName = slotsName ? (", " + slotsName) : '';
       attrsMap['data'] = "{{...$root[$kk+" + mpcomid + "], $root" + restSlotsName + "}}";
       attrsMap['is'] = components[tag].name;
@@ -6150,15 +5993,14 @@ var component$3 = {
   }
 };
 
-var astMap$3 = {
-  'if': 'a:if',
+var astMap = {
   'iterator1': 'a:for-index',
   'key': 'a:key',
   'alias': 'a:for-item',
   'v-for': 'a:for'
 };
 
-var convertFor$3 = function (ast) {
+function convertFor (ast) {
   var iterator1 = ast.iterator1;
   var forText = ast.for;
   var key = ast.key;
@@ -6166,34 +6008,34 @@ var convertFor$3 = function (ast) {
   var attrsMap = ast.attrsMap;
 
   if (forText) {
-    attrsMap[astMap$3['v-for']] = "{{" + forText + "}}";
+    attrsMap[astMap['v-for']] = "{{" + forText + "}}";
     if (iterator1) {
-      attrsMap[astMap$3['iterator1']] = iterator1;
+      attrsMap[astMap['iterator1']] = iterator1;
     }
     if (key) {
-      attrsMap[astMap$3['key']] = key;
+      attrsMap[astMap['key']] = key;
     }
     if (alias) {
-      attrsMap[astMap$3['alias']] = alias;
+      attrsMap[astMap['alias']] = alias;
     }
 
     delete attrsMap['v-for'];
   }
 
   return ast
-};
+}
 
-function mpmlAst$3 (compiled, options, log) {
+function mpmlAst (compiled, options, log) {
   if ( options === void 0 ) options = {};
 
-  var conventRule = { attrs: attrs$3, component: component$3, convertFor: convertFor$3 };
+  var conventRule = { attrs: attrs, component: component, convertFor: convertFor };
   return getAstCommon(compiled, options, log, conventRule)
 }
 
-function compileToMPML$4 (compiled, options) {
+function compileToMPML$1 (compiled, options) {
   if ( options === void 0 ) options = {};
 
-  return compileToMPMLCommon(compiled, options, mpmlAst$3)
+  return compileToMPMLCommon(compiled, options, mpmlAst)
 }
 
 function compileToMPML (compiled, options, fileExt) {
@@ -6202,19 +6044,19 @@ function compileToMPML (compiled, options, fileExt) {
   var code;
   switch (fileExt.platform) {
     case 'swan':
-      code = compileToMPML$2(compiled, options);
-      break
-    case 'wx':
-      code = compileToMPML$1(compiled, options);
-      break
-    case 'tt':
       code = compileToMPML$3(compiled, options);
       break
-    case 'my':
+    case 'wx':
       code = compileToMPML$4(compiled, options);
       break
-    default:
+    case 'tt':
+      code = compileToMPML$2(compiled, options);
+      break
+    case 'my':
       code = compileToMPML$1(compiled, options);
+      break
+    default:
+      code = compileToMPML$4(compiled, options);
   }
   return code
 }
@@ -6223,9 +6065,7 @@ var ref = createCompiler(baseOptions);
 var compile = ref.compile;
 var compileToFunctions = ref.compileToFunctions;
 
-/*  */
-
-exports.parseComponent = parseComponent;
 exports.compile = compile;
 exports.compileToFunctions = compileToFunctions;
 exports.compileToMPML = compileToMPML;
+exports.parseComponent = parseComponent;

@@ -100,7 +100,7 @@ function cleanKeyPath (vm) {
 function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
   try {
     if (vmData instanceof Array) {
-       // Array.
+      // Array.
       compareAndSetDeepData(rootKey + '.' + originKey, vmData, vm, data)
     } else {
       // Object
@@ -126,7 +126,7 @@ function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
             }
           }
         })
-         // Root and child may share one reference; clean up after the dependency tree is fully walked.
+        // Root and child may share one reference; clean up after the dependency tree is fully walked.
         vm['__mpKeyPath'] = vm['__mpKeyPath'] || {}
         vm['__mpKeyPath'][vmData.__ob__.dep.id] = vmData
       } else {

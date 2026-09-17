@@ -106,10 +106,10 @@ describe('Component', () => {
       expect(vm.$el.outerHTML).toBe('<div view="view-b">bar b</div>')
       vm.view = ''
     })
-    .then(() => {
-      expect(vm.$el.nodeType).toBe(8)
-      expect(vm.$el.data).toBe('')
-    }).then(done)
+      .then(() => {
+        expect(vm.$el.nodeType).toBe(8)
+        expect(vm.$el.data).toBe('')
+      }).then(done)
   })
 
   it('dynamic with props', done => {
@@ -135,10 +135,10 @@ describe('Component', () => {
       expect(vm.$el.outerHTML).toBe('<div>bar view-b</div>')
       vm.view = ''
     })
-    .then(() => {
-      expect(vm.$el.nodeType).toBe(8)
-      expect(vm.$el.data).toBe('')
-    }).then(done)
+      .then(() => {
+        expect(vm.$el.nodeType).toBe(8)
+        expect(vm.$el.data).toBe('')
+      }).then(done)
   })
 
   it(':is using raw component constructor', () => {

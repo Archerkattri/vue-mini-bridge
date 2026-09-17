@@ -20,21 +20,21 @@ type RenderState = {
 };
 
 export class RenderContext {
-  userContext: ?Object;
-  activeInstance: Component;
-  renderStates: Array<RenderState>;
-  write: (text: string, next: Function) => void;
-  renderNode: (node: VNode, isRoot: boolean, context: RenderContext) => void;
-  next: () => void;
-  done: () => void;
+  userContext: ?Object
+  activeInstance: Component
+  renderStates: Array<RenderState>
+  write: (text: string, next: Function) => void
+  renderNode: (node: VNode, isRoot: boolean, context: RenderContext) => void
+  next: () => void
+  done: () => void
 
-  modules: Array<(node: VNode) => ?string>;
-  directives: Object;
-  isUnaryTag: (tag: string) => boolean;
+  modules: Array<(node: VNode) => ?string>
+  directives: Object
+  isUnaryTag: (tag: string) => boolean
 
-  cache: any;
+  cache: any
   get: ?(key: string, cb: Function) => void;
-  has: ?(key: string, cb: Function) => void;
+  has: ?(key: string, cb: Function) => void
 
   constructor (options: Object) {
     this.userContext = options.userContext
@@ -60,6 +60,7 @@ export class RenderContext {
     this.next = this.next.bind(this)
   }
 
+  // eslint-disable-next-line no-dupe-class-members -- pair with the `next` Flow property declared above
   next () {
     const lastState = this.renderStates[this.renderStates.length - 1]
     if (isUndef(lastState)) {

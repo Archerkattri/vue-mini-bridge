@@ -1,4 +1,3 @@
-import webpack from 'webpack'
 import Vue from '../../dist/vue.runtime.common.js'
 import { compileWithWebpack } from './compile-with-webpack'
 import { createRenderer } from '../../packages/vue-server-renderer'
@@ -12,13 +11,16 @@ function generateClientManifest (file, cb) {
   compileWithWebpack(file, {
     output: {
       path: '/',
-      filename: '[name].js'
+      filename: '[name].js',
+      chunkFilename: '[name].js',
+      publicPath: ''
+    },
+    optimization: {
+      runtimeChunk: {
+        name: 'manifest'
+      }
     },
     plugins: [
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'manifest',
-        minChunks: Infinity
-      }),
       new VueSSRClientPlugin()
     ]
   }, fs => {
@@ -224,13 +226,13 @@ describe('SSR: template option', () => {
       // used chunks should have preload
       `<link rel="preload" href="/manifest.js" as="script">` +
       `<link rel="preload" href="/main.js" as="script">` +
-      `<link rel="preload" href="/0.js" as="script">` +
+      `<link rel="preload" href="/async-foo.js" as="script">` +
       `<link rel="preload" href="/test.css" as="style">` +
       // images and fonts are only preloaded when explicitly asked for
       (options.preloadOtherAssets ? `<link rel="preload" href="/test.png" as="image">` : ``) +
       (options.preloadOtherAssets ? `<link rel="preload" href="/test.woff2" as="font" type="font/woff2" crossorigin>` : ``) +
       // unused chunks should have prefetch
-      `<link rel="prefetch" href="/1.js">` +
+      `<link rel="prefetch" href="/async-bar.js">` +
       // css assets should be loaded
       `<link rel="stylesheet" href="/test.css">` +
     `</head><body>` +
@@ -240,7 +242,7 @@ describe('SSR: template option', () => {
       // manifest chunk should be first
       `<script src="/manifest.js" defer></script>` +
       // async chunks should be before main chunk
-      `<script src="/0.js" defer></script>` +
+      `<script src="/async-foo.js" defer></script>` +
       `<script src="/main.js" defer></script>` +
     `</body></html>`
 

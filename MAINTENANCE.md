@@ -8,7 +8,8 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - 20,246 stars, 2,021 forks, 420 open non-PR issues, and 45 open pull requests at review time.
 - Last upstream push: 2022-03-02.
 - The repository is a Vue 2.4.1-era runtime/compiler tree with mini-program adapters for WeChat, Baidu, Toutiao, and Alipay.
-- The declared toolchain is Node 6, Rollup 0.45, Webpack 2, Babel 6, Karma 1, PhantomJS, Flow 0.48, TypeScript 2.4, and CircleCI.
+- The inherited toolchain was Node 6, Rollup 0.45, Webpack 2, Babel 6, Karma 1, PhantomJS, Flow 0.48, TypeScript 2.4, and CircleCI.
+- The modernized toolchain is Node 22+, Rollup 4, Webpack 5, Babel 7, ESLint 9, Flow 0.48, TypeScript 2.4, and GitHub Actions.
 
 ## Current baseline
 
@@ -22,8 +23,8 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - `npm run flow` now passes with zero errors after typing the observer metadata used by mini-program data diffing.
 - Build outputs are deterministic: the banner year honors `SOURCE_DATE_EPOCH` for reproducible builds, and `build/build.js` now exits non-zero when a rollup bundle fails instead of silently reporting success.
 - The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is fully removed from `devDependencies` (17 packages, 248 lockfile entries). The aggregate `npm test` gate is green end to end: lint, flow (0 errors), type tests, ssr (92 specs), weex (67 specs), and mpvue (76 specs).
-- `yarn audit --summary` went from 746 to 19 vulnerabilities. Fixed by removing dead direct dependencies (commitizen, cz-conventional-changelog, http-server, cross-spawn), upgrading lodash and serialize-javascript, and pinning patched transitives via `resolutions` (ajv, decode-uri-component, dot-prop, json5, loader-utils, shelljs, yargs-parser). The full gate stays green throughout.
-- 19 advisories remain and are accepted risks, all dev-only: babel-traverse 6.x (5 critical, needs the Babel 7 migration; only compiles our own source), braces 1.x/2.x plus micromatch 2.x/3.x (4 high, 5 moderate, need micromatch 4 via the bundler upgrades), rollup 0.45 (2 high: one Rollup-4-only CVE that does not apply, one accepted risk on pinned output), trim-newlines 1.x/2.x (2 high, unpatched lines used only by release-note generation), elliptic (1 low, no patch exists).
+- `yarn audit --summary` went from 746 to 0 vulnerabilities. Fixed by removing dead direct dependencies (commitizen, cz-conventional-changelog, http-server, cross-spawn, babel-plugin-istanbul, rollup-watch, file-loader, eslint-loader, babel 6 presets/plugins), upgrading lodash and serialize-javascript, migrating the bundler toolchain (Rollup 0.45 to 4, Webpack 2 to 5, Babel 6 to 7, ESLint 3 to 9), and pinning patched transitives via `resolutions` (dot-prop, shelljs, trim-newlines, yargs-parser). The full gate stays green throughout.
+- No advisories remain and no risks are accepted. The former accepted risks were eliminated at their roots: babel-traverse 6.x by the Babel 7 migration (including the mini-program template compiler, which is runtime code), braces 1.x/2.x by removing babel-plugin-istanbul and upgrading the chokidar/watchpack chains, rollup 0.45 by the Rollup 4 migration, trim-newlines 1.x/2.x via a `resolutions` pin (release-note generation smoke-tested), and elliptic (no patched version exists) by the Webpack 5 migration, which dropped the node-libs-browser chain.
 - The obsolete CircleCI 1.0 config is removed; GitHub Actions runs the aggregate gate and `build/ci.sh` is a local alias for it.
 - Stray `console.log` calls in the mini-program data-diff hot path now go through the dev-only `warn()` channel, and dead commented-out debug lines are removed.
 - Touched runtime files use English comments (translated on touch per maintenance policy); the weex capture-phase notice uses `warn()` with a corrected message.
@@ -54,8 +55,8 @@ The useful work falls into these groups:
 1. Keep the public mini-program runtime/compiler contract stable while making source and generated bundles deterministic.
 2. [Done] Replaced Node 6/CircleCI with GitHub Actions on supported LTS Node versions and documented the minimum runtime.
 3. [Done] Removed PhantomJS, Selenium 2, Sauce-only paths, `codecov.io`, and deprecated Karma integrations; the aggregate gate now runs the jasmine suites (ssr, weex, mpvue) instead of Karma coverage.
-4. Migrate Babel 6 to Babel 7, then consider Babel 8 only after the Babel 7 configuration and compiler output are stable.
-5. Upgrade Webpack through a compatibility branch: latest Webpack 4-compatible loaders first, then Webpack 5 with loader API, target, asset, and configuration changes.
+4. [Done] Migrated Babel 6 to Babel 7 (root config, spec transpilation, mini-program compiler runtime code, and webpack loader); generated bundles diffed against pre-migration output.
+5. [Done] Upgraded Webpack 2 straight to Webpack 5 (plus Rollup 0.45 to 4 and ESLint 3 to 9): SSR webpack plugins ported to the processAssets/hooks APIs, file-loader replaced with asset modules, CommonsChunkPlugin replaced with runtimeChunk, and the lint ruleset converted to flat config.
 6. Replace Flow 0.48 and TypeScript 2.4 checks with a maintained TypeScript-first type surface without changing generated output until behavior is locked down.
 7. Evaluate Vue 2.7 and `@vue/compat` as migration aids, not as a drop-in replacement. Vue 2 is EOL and this renderer uses Vue internals, so Vue 3 support needs an explicit compatibility layer.
 8. Add regression coverage for lifecycle registration, event forwarding, slots, component props, data diffing, sourcemaps, code splitting, and each supported platform adapter.

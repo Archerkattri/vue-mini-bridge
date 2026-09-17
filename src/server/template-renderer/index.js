@@ -38,14 +38,14 @@ type PreloadFile = {
 };
 
 export default class TemplateRenderer {
-  options: TemplateRendererOptions;
-  inject: boolean;
-  parsedTemplate: ParsedTemplate | null;
-  publicPath: string;
-  clientManifest: ClientManifest;
-  preloadFiles: Array<string>;
-  prefetchFiles: Array<string>;
-  mapFiles: AsyncFileMapper;
+  options: TemplateRendererOptions
+  inject: boolean
+  parsedTemplate: ParsedTemplate | null
+  publicPath: string
+  clientManifest: ClientManifest
+  preloadFiles: Array<string>
+  prefetchFiles: Array<string>
+  mapFiles: AsyncFileMapper
 
   constructor (options: TemplateRendererOptions) {
     this.options = options
@@ -198,8 +198,8 @@ export default class TemplateRenderer {
     } = options || {}
     return context[contextKey]
       ? `<script>window.${windowKey}=${
-          serialize(context[contextKey], { isJSON: true })
-        }</script>`
+        serialize(context[contextKey], { isJSON: true })
+      }</script>`
       : ''
   }
 

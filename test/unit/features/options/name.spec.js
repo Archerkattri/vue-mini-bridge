@@ -14,19 +14,15 @@ describe('Options name', () => {
       name: 'Hyper*Vue'
     })
 
-    /* eslint-disable */
     expect(`Invalid component name: "Hyper*Vue". Component names can only contain alphanumeric characters and the hyphen, and must start with a letter.`)
       .toHaveBeenWarned()
-    /* eslint-enable */
 
     Vue.extend({
       name: '2Cool2BValid'
     })
 
-    /* eslint-disable */
     expect(`Invalid component name: "2Cool2BValid". Component names can only contain alphanumeric characters and the hyphen, and must start with a letter.`)
       .toHaveBeenWarned()
-    /* eslint-enable */
   })
 
   it('id should not override given name when using Vue.component', () => {

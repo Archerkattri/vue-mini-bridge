@@ -1,9 +1,15 @@
 // babel-plugin-transform-object-to-ternary-operator.js
 
-import * as t from 'babel-types'
-import generate from 'babel-generator'
-import template from 'babel-template'
+import * as t from '@babel/types'
+import generateModule from '@babel/generator'
+import templateModule from '@babel/template'
 import { hyphenate } from 'shared/util'
+
+// Babel 7 ships ESM-authored packages where the main export lives on
+// `.default` (Babel 6 assigned module.exports directly). Resolve it here
+// because the compiler bundle keeps these as external requires.
+const generate = generateModule.default || generateModule
+const template = templateModule.default || templateModule
 
 function getStrByNode (node, onlyStr = false) {
   if (onlyStr) {

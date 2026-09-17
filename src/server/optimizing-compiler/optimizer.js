@@ -14,11 +14,11 @@ import { no, makeMap, isBuiltInTag } from 'shared/util'
 
 // optimizability constants
 export const optimizability = {
-  FALSE: 0,    // whole sub tree un-optimizable
-  FULL: 1,     // whole sub tree optimizable
-  SELF: 2,     // self optimizable but has some un-optimizable children
+  FALSE: 0, // whole sub tree un-optimizable
+  FULL: 1, // whole sub tree optimizable
+  SELF: 2, // self optimizable but has some un-optimizable children
   CHILDREN: 3, // self un-optimizable but have fully optimizable children
-  PARTIAL: 4   // self un-optimizable with some un-optimizable children
+  PARTIAL: 4 // self un-optimizable with some un-optimizable children
 }
 
 let isPlatformReservedTag

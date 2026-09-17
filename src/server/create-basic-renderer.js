@@ -7,7 +7,7 @@ import type { RenderOptions } from './create-renderer'
 export function createBasicRenderer ({
   modules = [],
   directives = {},
-  isUnaryTag = (() => false),
+  isUnaryTag = () => false,
   cache
 }: RenderOptions = {}) {
   const render = createRenderFunction(modules, directives, isUnaryTag, cache)

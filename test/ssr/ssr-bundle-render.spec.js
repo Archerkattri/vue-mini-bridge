@@ -13,11 +13,13 @@ export function createRenderer (file, options, cb) {
 
   compileWithWebpack(file, {
     target: 'node',
-    devtool: asBundle ? '#source-map' : false,
+    devtool: asBundle ? 'source-map' : false,
     output: {
       path: '/',
       filename: 'bundle.js',
-      libraryTarget: 'commonjs2'
+      library: {
+        type: 'commonjs2'
+      }
     },
     externals: [require.resolve('../../dist/vue.runtime.common.js')],
     plugins: asBundle

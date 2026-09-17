@@ -14,13 +14,13 @@ import { isTrue, isUndef } from 'shared/util'
 import { createWriteFunction } from './write'
 
 export default class RenderStream extends stream.Readable {
-  buffer: string;
-  render: (write: Function, done: Function) => void;
-  expectedSize: number;
-  write: Function;
-  next: Function;
-  end: Function;
-  done: boolean;
+  buffer: string
+  render: (write: Function, done: Function) => void
+  expectedSize: number
+  write: Function
+  next: Function
+  end: Function
+  done: boolean
 
   constructor (render: Function) {
     super()
