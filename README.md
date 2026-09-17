@@ -4,8 +4,6 @@ Vue Mini Bridge is an independently maintained Vue-compatible runtime and templa
 
 It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, documenting behavior in English, and adding regression coverage for current developer environments.
 
-**Website:** https://archerkattri.github.io/vue-mini-bridge/ — usage, platform matrix, and a compiler playground showing real output for every target.
-
 ![Compiler playground: one Vue template compiled to WeChat, Baidu, ByteDance, and Alipay targets](docs/playground-demo.gif)
 
 ## Platform compatibility
