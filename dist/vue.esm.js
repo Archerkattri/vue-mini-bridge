@@ -8002,13 +8002,16 @@ var shouldDecodeNewlines = inBrowser ? shouldDecode('\n', '&#10;') : false;
 /*  */
 
 
-var defaultTagRE = /\{\{([\s\S]+?)\}\}/g;
+// Tag contents are a tempered token: each content character asserts it does
+// not start the close delimiter, so a tag always ends at the first close
+// delimiter and the match split is unambiguous (linear time).
+var defaultTagRE = /\{\{((?:(?!\}\})[\s\S])+?)\}\}/g;
 var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
 
 var buildRegex = cached(function (delimiters) {
   var open = delimiters[0].replace(regexEscapeRE, '\\$&');
   var close = delimiters[1].replace(regexEscapeRE, '\\$&');
-  return new RegExp(open + '([\\s\\S]+?)' + close, 'g')
+  return new RegExp(open + '((?:(?!' + close + ')[\\s\\S])+?)' + close, 'g')
 });
 
 function parseText (
@@ -9375,7 +9378,8 @@ function genFilterCode (key) {
   }
   var alias = keyCodes[key];
   var safeKey = escapeCodeString(JSON.stringify(key));
-  return ("_k($event.keyCode," + safeKey + (alias ? ',' + JSON.stringify(alias) : '') + ")")
+  var safeAlias = alias ? ',' + escapeCodeString(JSON.stringify(alias)) : '';
+  return ("_k($event.keyCode," + safeKey + safeAlias + ")")
 }
 
 /*  */

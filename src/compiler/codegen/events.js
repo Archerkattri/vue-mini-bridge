@@ -133,5 +133,6 @@ function genFilterCode (key: string): string {
   }
   const alias = keyCodes[key]
   const safeKey = escapeCodeString(JSON.stringify(key))
-  return `_k($event.keyCode,${safeKey}${alias ? ',' + JSON.stringify(alias) : ''})`
+  const safeAlias = alias ? ',' + escapeCodeString(JSON.stringify(alias)) : ''
+  return `_k($event.keyCode,${safeKey}${safeAlias})`
 }

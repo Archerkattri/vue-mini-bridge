@@ -3,13 +3,16 @@
 import { cached } from 'shared/util'
 import { parseFilters } from './filter-parser'
 
-const defaultTagRE = /\{\{([\s\S]+?)\}\}/g
+// Tag contents are a tempered token: each content character asserts it does
+// not start the close delimiter, so a tag always ends at the first close
+// delimiter and the match split is unambiguous (linear time).
+const defaultTagRE = /\{\{((?:(?!\}\})[\s\S])+?)\}\}/g
 const regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g
 
 const buildRegex = cached(delimiters => {
   const open = delimiters[0].replace(regexEscapeRE, '\\$&')
   const close = delimiters[1].replace(regexEscapeRE, '\\$&')
-  return new RegExp(open + '([\\s\\S]+?)' + close, 'g')
+  return new RegExp(open + '((?:(?!' + close + ')[\\s\\S])+?)' + close, 'g')
 })
 
 export function parseText (

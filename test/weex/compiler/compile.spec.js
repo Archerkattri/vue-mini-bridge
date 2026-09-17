@@ -89,4 +89,16 @@ describe('compile basic', () => {
     expect(staticRenderFns).toEqual([])
     expect(errors).toEqual([])
   })
+
+  it('should end tags at the first close delimiter', () => {
+    const { render, errors } = compile(`<div>{{a}}b}}</div>`)
+    expect(render).toEqual(`with(this){return _c('div',[_v(_s(a)+"b}}")])}`)
+    expect(errors).toEqual([])
+  })
+
+  it('should treat empty-adjacent tag markers as literal text', () => {
+    const { render, errors } = compile(`<div>{{}}x}}</div>`)
+    expect(render).toEqual(`with(this){return _c('div',[_v("{{}}x}}")])}`)
+    expect(errors).toEqual([])
+  })
 })
