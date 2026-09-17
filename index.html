@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="vue-mini-bridge compiles Vue 2 single-file components to WeChat, Alipay, Baidu, and ByteDance mini programs.">
+  <title>vue-mini-bridge — Vue 2 for mini programs</title>
+  <script>
+    (function() {
+      var savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem('vmb-theme');
+      } catch (error) {
+        savedTheme = null;
+      }
+      var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : systemTheme;
+    }());
+  </script>
+  <link href="support/style.css" rel="stylesheet">
+</head>
+
+<body hidden>
+  <header class="site-header">
+    <div class="page-width header-inner">
+      <a class="brand" href="#top" aria-label="vue-mini-bridge home">
+        <span class="brand-mark" aria-hidden="true">V</span>
+        <span>vue-mini-bridge <span class="brand-version">v<span class="version">2.4.1</span></span></span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#playground">Playground</a>
+        <a href="#platforms">Platforms</a>
+        <a href="https://github.com/Archerkattri/vue-mini-bridge">GitHub <span aria-hidden="true">↗</span></a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span aria-hidden="true" class="theme-symbol">☾</span>
+          <span id="theme-label">dark mode</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-width" id="top">
+    <section class="intro" aria-labelledby="intro-title">
+      <div class="intro-label">A maintained Vue 2 bridge for mini programs</div>
+      <h1 id="intro-title">One Vue codebase,<br>four mini programs.</h1>
+      <p class="intro-copy">vue-mini-bridge carries the mpvue lineage forward: write single-file components in Vue 2, compile them to native mini-program templates, and run them on WeChat, Alipay, Baidu, and ByteDance from one codebase.</p>
+      <div class="intro-meta">
+        <code>npm install vue-mini-bridge</code>
+        <span>v<span class="version">2.4.1</span></span>
+        <span>MIT licensed</span>
+      </div>
+    </section>
+
+    <section class="content-section usage-section" id="usage" aria-labelledby="usage-title">
+      <div class="section-side">
+        <span class="section-number">01</span>
+        <h2 id="usage-title">Use it</h2>
+        <p>Components stay ordinary Vue. The template compiler turns the <code>&lt;template&gt;</code> block into native markup per target.</p>
+      </div>
+      <div class="usage-content">
+        <div class="code-block">
+          <div class="code-head"><span>Install</span><span>shell</span></div>
+          <pre><code>npm install vue-mini-bridge vue-mini-bridge-template-compiler</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-head"><span>A component</span><span>counter.vue</span></div>
+          <pre><code><span class="code-attr">&lt;template&gt;</span>
+  &lt;view class=<span class="code-string">"counter"</span>&gt;
+    &lt;text&gt;{{ count }}&lt;/text&gt;
+    &lt;button @click=<span class="code-string">"add"</span>&gt;Add one&lt;/button&gt;
+  &lt;/view&gt;
+<span class="code-attr">&lt;/template&gt;</span>
+
+<span class="code-attr">&lt;script&gt;</span>
+<span class="code-keyword">export default</span> {
+  data: () =&gt; ({ count: <span class="code-string">0</span> }),
+  methods: {
+    add () { <span class="code-keyword">this</span>.count += <span class="code-string">1</span> }
+  }
+}
+<span class="code-attr">&lt;/script&gt;</span></code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-head"><span>Compile it</span><span>build.js</span></div>
+          <pre><code><span class="code-keyword">const</span> { compile, compileToMPML } = <span class="code-keyword">require</span>(<span class="code-string">'vue-mini-bridge-template-compiler'</span>)
+
+<span class="code-keyword">const</span> compiled = compile(template, {})
+<span class="code-keyword">const</span> { code } = compileToMPML(compiled, { name: <span class="code-string">'demo'</span> }, { platform: <span class="code-string">'wx'</span> })
+<span class="code-comment">// code is a &lt;template&gt; block ready for the page WXML</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="platforms" aria-labelledby="platforms-title">
+      <div class="section-side">
+        <span class="section-number">02</span>
+        <h2 id="platforms-title">Platforms</h2>
+        <p>One compiler flag picks the dialect. The emitted primitives — templates, data binding, <code>setData</code> — are the stable core every vendor still supports.</p>
+      </div>
+      <div>
+        <table class="matrix-table" aria-label="Supported mini-program platforms">
+          <thead>
+            <tr><th>Platform</th><th>Target</th><th>Dialect</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WeChat</td>
+              <td><code>wx</code></td>
+              <td><code>wx:if</code> <code>wx:for</code> <code>bindtap</code></td>
+              <td><span class="status-ok">Supported</span> — base library 3.x; template + setData path works in WebView and Skyline renderers.</td>
+            </tr>
+            <tr>
+              <td>Alipay</td>
+              <td><code>my</code></td>
+              <td><code>a:if</code> <code>a:for</code> <code>onTap</code></td>
+              <td><span class="status-ok">Supported</span> — AXML directives stable; verify against the current Mini Program Studio.</td>
+            </tr>
+            <tr>
+              <td>Baidu</td>
+              <td><code>swan</code></td>
+              <td><code>s-if</code> <code>s-for</code> <code>bindtap</code></td>
+              <td><span class="status-ok">Supported</span> — Swan directives stable; verify against current Baidu developer tools.</td>
+            </tr>
+            <tr>
+              <td>ByteDance</td>
+              <td><code>tt</code></td>
+              <td><code>tt:if</code> <code>tt:for</code> <code>bindtap</code></td>
+              <td><span class="status-ok">Supported</span> — TTML directives stable; verify against current Douyin developer tools.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section" id="playground" aria-labelledby="playground-title">
+      <div class="section-side">
+        <span class="section-number">03</span>
+        <h2 id="playground-title">Playground</h2>
+        <p>Real compiler output. Pick an example and a target to see exactly what ships to each platform.</p>
+      </div>
+      <div class="playground-panel">
+        <div class="tab-row" id="example-tabs" role="tablist" aria-label="Examples"></div>
+        <div class="tab-row" id="platform-tabs" role="tablist" aria-label="Platforms"></div>
+        <div class="playground-io">
+          <div class="code-head"><span>Vue template</span><span>input</span></div>
+          <pre id="pg-input"><code>Loading…</code></pre>
+          <div class="code-head"><span>Compiled template</span><span id="pg-output-label">wx</span></div>
+          <pre id="pg-output"><code></code></pre>
+        </div>
+        <div class="playground-note" id="pg-note">Compiled with the repository template compiler.</div>
+      </div>
+    </section>
+
+    <section class="content-section" id="directives" aria-labelledby="directives-title">
+      <div class="section-side">
+        <span class="section-number">04</span>
+        <h2 id="directives-title">Directives</h2>
+        <p>Vue directives map to each vendor's native spelling. These are the compiler's actual conversions.</p>
+      </div>
+      <div>
+        <div class="playground-panel">
+          <div class="tab-row" id="directive-tabs" role="tablist" aria-label="Directives"></div>
+          <div class="playground-io">
+            <div class="code-head"><span>Vue template</span><span>input</span></div>
+            <pre id="dx-input"><code>Loading…</code></pre>
+          </div>
+        </div>
+        <div class="directive-outputs" id="dx-outputs"></div>
+      </div>
+    </section>
+
+    <section class="content-section" id="pipeline" aria-labelledby="pipeline-title">
+      <div class="section-side">
+        <span class="section-number">05</span>
+        <h2 id="pipeline-title">Pipeline</h2>
+        <p>Build time compiles templates; run time keeps the native view in sync through diffed <code>setData</code> calls.</p>
+      </div>
+      <div>
+        <figure class="pipeline-figure" style="margin: 0;">
+          <svg viewBox="0 0 640 210" role="img" aria-label="Single-file component compiles to four platform templates; the runtime syncs state with setData.">
+            <g font-family="'Courier New', Courier, monospace" font-size="12" text-anchor="middle">
+              <rect x="8" y="20" width="140" height="46" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="78" y="47" fill="currentColor">counter.vue</text>
+              <rect x="182" y="20" width="140" height="46" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="252" y="47" fill="currentColor">compile()</text>
+              <rect x="356" y="20" width="120" height="46" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="416" y="47" fill="currentColor">platform AST</text>
+              <rect x="510" y="20" width="122" height="46" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="571" y="40" fill="currentColor">wx · swan</text>
+              <text x="571" y="56" fill="currentColor">tt · my</text>
+              <line x1="148" y1="43" x2="182" y2="43" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="322" y1="43" x2="356" y2="43" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="476" y1="43" x2="510" y2="43" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="8" y="120" width="140" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="78" y="147" fill="currentColor">mpvue runtime</text>
+              <rect x="182" y="120" width="140" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="252" y="147" fill="currentColor">diff + throttle</text>
+              <rect x="356" y="120" width="120" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="416" y="147" fill="currentColor">setData</text>
+              <rect x="510" y="120" width="122" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="571" y="147" fill="currentColor">native view</text>
+              <line x1="148" y1="143" x2="182" y2="143" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="322" y1="143" x2="356" y2="143" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="476" y1="143" x2="510" y2="143" stroke="currentColor" stroke-width="1.5"/>
+              <text x="78" y="12" fill="currentColor" opacity="0.55" text-anchor="start">build time</text>
+              <text x="78" y="112" fill="currentColor" opacity="0.55" text-anchor="start">run time</text>
+            </g>
+          </svg>
+          <figcaption class="pipeline-caption">Solid boxes run at build time; dashed boxes run on device. The runtime never touches the DOM — it diffs state and calls setData.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="closing-section" aria-label="Project links">
+      <div>
+        <span class="closing-mark" aria-hidden="true">—</span>
+        <p>Vue 2 components, compiled to the mini-program vendors you ship to.</p>
+      </div>
+      <div class="closing-links">
+        <a href="https://github.com/Archerkattri/vue-mini-bridge">Source on GitHub <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/Archerkattri/vue-mini-bridge/issues">Report an issue <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="page-width footer-inner">
+      <span>vue-mini-bridge <span class="version">2.4.1</span></span>
+      <span>Maintained fork of the mpvue mini-program platform.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var themeToggle = document.getElementById('theme-toggle');
+      var themeLabel = document.getElementById('theme-label');
+      var themeSymbol = document.querySelector('.theme-symbol');
+      var themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function currentTheme() {
+        return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+      }
+
+      function updateThemeButton() {
+        var theme = currentTheme();
+        var nextTheme = theme === 'dark' ? 'light' : 'dark';
+        themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        themeToggle.setAttribute('aria-label', 'Switch to ' + nextTheme + ' mode');
+        themeLabel.textContent = nextTheme + ' mode';
+        themeSymbol.textContent = nextTheme === 'dark' ? '☾' : '☀';
+      }
+
+      function setTheme(theme, persist) {
+        document.documentElement.dataset.theme = theme;
+        if (persist) {
+          try {
+            localStorage.setItem('vmb-theme', theme);
+          } catch (error) {
+            /* A blocked storage context still gets the theme for this visit. */
+          }
+        }
+        updateThemeButton();
+      }
+
+      themeToggle.addEventListener('click', function() {
+        setTheme(currentTheme() === 'dark' ? 'light' : 'dark', true);
+      });
+
+      themeMedia.addEventListener('change', function(event) {
+        var savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem('vmb-theme');
+        } catch (error) {
+          savedTheme = null;
+        }
+        if (!savedTheme) setTheme(event.matches ? 'dark' : 'light', false);
+      });
+
+      document.body.hidden = false;
+      updateThemeButton();
+    }());
+  </script>
+  <script src="support/site.js"></script>
+</body>
+</html>

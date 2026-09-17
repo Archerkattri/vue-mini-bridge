@@ -1,0 +1,104 @@
+{
+  "versions": {
+    "bridge": "2.4.1",
+    "compiler": "2.0.6"
+  },
+  "platforms": [
+    "wx",
+    "swan",
+    "tt",
+    "my"
+  ],
+  "examples": [
+    {
+      "id": "counter",
+      "title": "Counter",
+      "template": "<view class=\"counter\"><text>{{count}}</text><button @click=\"add\">Add one</button></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view counter\"><text class=\"_text\">{{count}}</text><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Add one</button></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view counter\"><text class=\"_text\">{{count}}</text><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Add one</button></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view counter\"><text class=\"_text\">{{count}}</text><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Add one</button></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view counter\"><text class=\"_text\">{{count}}</text><button onTap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Add one</button></view></template>"
+      }
+    },
+    {
+      "id": "list",
+      "title": "List + empty state",
+      "template": "<view><view v-for=\"item in items\" :key=\"item.id\"><text>{{item.name}}</text></view><view v-if=\"empty\">No items yet</view></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><view wx:key=\"item.id\" key=\"{{item.id}}\" wx:for=\"{{items}}\" wx:for-index=\"index\" wx:for-item=\"item\" class=\"_view\"><text class=\"_text\">{{item.name}}</text></view><view wx:if=\"{{empty}}\" class=\"_view\">No items yet</view></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><view key=\"{{item.id}}\" s-for=\"item,index in items\" class=\"_view\"><text class=\"_text\">{{item.name}}</text></view><view s-if=\"empty\" class=\"_view\">No items yet</view></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><view tt:key=\"item.id\" key=\"{{item.id}}\" tt:for=\"{{items}}\" tt:for-index=\"index\" tt:for-item=\"item\" class=\"_view\"><text class=\"_text\">{{item.name}}</text></view><view tt:if=\"{{empty}}\" class=\"_view\">No items yet</view></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><view a:key=\"item.id\" key=\"{{item.id}}\" a:for=\"{{items}}\" a:for-index=\"index\" a:for-item=\"item\" class=\"_view\"><text class=\"_text\">{{item.name}}</text></view><view a:if=\"{{empty}}\" class=\"_view\">No items yet</view></view></template>"
+      }
+    },
+    {
+      "id": "form",
+      "title": "Form + link",
+      "template": "<view><input v-model=\"query\" placeholder=\"Search\"/><a href=\"/pages/detail\">Detail</a></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" placeholder=\"Search\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" placeholder=\"Search\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" placeholder=\"Search\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" onInput=\"handleProxy\" placeholder=\"Search\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>"
+      }
+    }
+  ],
+  "directives": [
+    {
+      "id": "v-if",
+      "label": "v-if",
+      "template": "<view><text v-if=\"ok\">Visible</text></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><text wx:if=\"{{ok}}\" class=\"_text\">Visible</text></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><text s-if=\"ok\" class=\"_text\">Visible</text></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><text tt:if=\"{{ok}}\" class=\"_text\">Visible</text></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><text a:if=\"{{ok}}\" class=\"_text\">Visible</text></view></template>"
+      }
+    },
+    {
+      "id": "v-for",
+      "label": "v-for + :key",
+      "template": "<view><view v-for=\"item in items\" :key=\"item.id\">{{item.name}}</view></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><view wx:key=\"item.id\" key=\"{{item.id}}\" wx:for=\"{{items}}\" wx:for-index=\"index\" wx:for-item=\"item\" class=\"_view\">{{item.name}}</view></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><view key=\"{{item.id}}\" s-for=\"item,index in items\" class=\"_view\">{{item.name}}</view></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><view tt:key=\"item.id\" key=\"{{item.id}}\" tt:for=\"{{items}}\" tt:for-index=\"index\" tt:for-item=\"item\" class=\"_view\">{{item.name}}</view></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><view a:key=\"item.id\" key=\"{{item.id}}\" a:for=\"{{items}}\" a:for-index=\"index\" a:for-item=\"item\" class=\"_view\">{{item.name}}</view></view></template>"
+      }
+    },
+    {
+      "id": "click",
+      "label": "@click",
+      "template": "<view><button @click=\"go\">Go</button></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Go</button></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Go</button></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><button bindtap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Go</button></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><button onTap=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_button\">Go</button></view></template>"
+      }
+    },
+    {
+      "id": "v-model",
+      "label": "v-model",
+      "template": "<view><input v-model=\"query\"/></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" bindinput=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><input value=\"{{query}}\" onInput=\"handleProxy\" data-eventid=\"{{'1_0'}}\" data-comkey=\"{{$k}}\" class=\"_input\" /></view></template>"
+      }
+    },
+    {
+      "id": "href",
+      "label": "<a href>",
+      "template": "<view><a href=\"/pages/detail\">Detail</a></view>",
+      "output": {
+        "wx": "<template name=\"demo\"><view class=\"_view\"><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "swan": "<template name=\"demo\"><view class=\"_view\"><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "tt": "<template name=\"demo\"><view class=\"_view\"><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>",
+        "my": "<template name=\"demo\"><view class=\"_view\"><navigator url=\"/pages/detail\" class=\"_a\">Detail</navigator></view></template>"
+      }
+    }
+  ]
+}

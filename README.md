@@ -4,6 +4,21 @@ Vue Mini Bridge is an independently maintained Vue-compatible runtime and templa
 
 It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, documenting behavior in English, and adding regression coverage for current developer environments.
 
+**Website:** https://archerkattri.github.io/vue-mini-bridge/ — usage, platform matrix, and a compiler playground showing real output for every target.
+
+![Compiler playground: one Vue template compiled to WeChat, Baidu, ByteDance, and Alipay targets](docs/playground-demo.gif)
+
+## Platform compatibility
+
+Checked against the vendors' current documentation (September 2026). Upstream mpvue is dormant — last release 1.4.4 in May 2019, last commit March 2022 — while all four vendors kept their template primitives stable.
+
+| Platform | Target | Template dialect | Compatibility |
+| --- | --- | --- | --- |
+| WeChat | `wx` | `wx:if`, `wx:for`, `bindtap`, `<template>` | Base library 3.x. Template/import/include plus `setData` is the maintained glass-easel compiler path in both WebView and Skyline renderers. Validate on the latest DevTools. |
+| Alipay | `my` | `a:if`, `a:for`, `onTap` | AXML directives stable for years; platform and Mini Program Studio actively maintained. Verify on the current IDE. |
+| Baidu | `swan` | `s-if`, `s-for`, `bindtap` | Swan template syntax stable. Verify on current Baidu developer tools. |
+| Toutiao / ByteDance | `tt` | `tt:if`, `tt:for`, `bindtap` | TTML template syntax stable. Verify on current Douyin developer tools. |
+
 ## Status
 
 The project is under active modernization. The runtime/compiler behavior is intentionally kept close to the upstream contract while the build and test infrastructure are being replaced. Do not treat an unreleased branch as a drop-in production upgrade yet.

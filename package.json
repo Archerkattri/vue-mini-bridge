@@ -25,6 +25,8 @@
     "build:ssr": "npm run build -- vue.runtime.common.js,vue-server-renderer",
     "build:weex": "npm run build -- weex-vue-framework,weex-template-compiler",
     "build:mpvue": "npm run build -- mpvue,mpvue-template-compiler",
+    "build:site-data": "node scripts/build-site-data.cjs",
+    "capture:site": "node test/capture-site.cjs",
     "test": "npm run lint && npm run flow && npm run test:types && npm run test:ssr && npm run test:weex && npm run test:mpvue",
     "test:weex": "npm run build:weex && jasmine JASMINE_CONFIG_PATH=test/weex/jasmine.json",
     "test:mpvue": "npm run build:mpvue && jasmine JASMINE_CONFIG_PATH=test/mp/jasmine.json",
