@@ -14,6 +14,7 @@ name: Publish to npm
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,8 +29,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: yarn
+      # No registry-url: npmjs.org is npm's default registry, and the
+      # .npmrc that registry-url generates breaks yarn cache lookup when
+      # NODE_AUTH_TOKEN is unset (OIDC needs no token).
 
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
@@ -37,6 +40,10 @@ jobs:
       - name: Verify tag matches both package versions
         run: |
           tag='${{ github.event.release.tag_name }}'
+          if [ -z "$tag" ]; then
+            echo 'manual dispatch: no release tag to verify against'
+            exit 0
+          fi
           for pkg in packages/mpvue packages/mpvue-template-compiler; do
             ver="$(node -p "require('./$pkg/package.json').version")"
             test "v$ver" = "$tag" || { echo "tag $tag does not match $pkg v$ver"; exit 1; }
