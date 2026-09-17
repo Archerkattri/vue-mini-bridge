@@ -486,8 +486,12 @@ if (process.env.NODE_ENV !== 'production') {
 
     var file = vm._isVue && vm.$options.__file;
     if (!name && file) {
-      var match = file.match(/([^/\\]+)\.vue$/);
-      name = match && match[1];
+      // Basename without the .vue suffix, found without a regular
+      // expression so adversarial __file values cannot cause slow matches.
+      if (file.slice(-4) === '.vue') {
+        var sep = Math.max(file.lastIndexOf('/'), file.lastIndexOf('\\'));
+        name = file.slice(sep + 1, -4);
+      }
     }
 
     return (
@@ -969,6 +973,13 @@ function defineReactive (
   customSetter,
   shallow
 ) {
+  if (key === '__proto__') {
+    process.env.NODE_ENV !== 'production' && warn$2(
+      'Avoid using __proto__ as a reactive property key: ' +
+      'it is skipped to prevent prototype pollution.'
+    );
+    return
+  }
   var dep = new Dep();
 
   var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -1034,6 +1045,13 @@ function defineReactive (
  * already exist.
  */
 function set (target, key, val) {
+  if (key === '__proto__') {
+    process.env.NODE_ENV !== 'production' && warn$2(
+      'Avoid using __proto__ as a reactive property key: ' +
+      'the write is skipped to prevent prototype pollution.'
+    );
+    return val
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key);
     target.splice(key, 1, val);
@@ -9225,7 +9243,10 @@ function isDirectChildOfTemplateFor (node) {
 /*  */
 
 var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
-var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
+// Bracket contents exclude their own quote so a path can never span quotes:
+// this keeps the match linear-time and rejects quote-spanning paths (which
+// fall back to inline-statement codegen instead of direct invocation).
+var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
 
 // keyCode aliases
 var keyCodes = {

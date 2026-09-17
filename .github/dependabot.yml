@@ -8,10 +8,10 @@ updates:
       npm_and_yarn:
         patterns:
           - "*"
-    # rollup 0.45 cannot take the 2.x line: the build config and its
-    # rollup 0.x/1.x-era plugins are incompatible. Major rollup upgrades
-    # stay on the MAINTENANCE.md roadmap instead of arriving via bot PR.
+    # Major upgrades arrive only via deliberate migration PRs: each one
+    # needs config, lockfile, and full-suite verification by hand.
+    # The grouped bot PRs therefore carry minor and patch updates only.
     ignore:
-      - dependency-name: rollup
+      - dependency-name: "*"
         update-types:
           - version-update:semver-major

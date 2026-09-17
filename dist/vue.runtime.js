@@ -483,8 +483,12 @@
 
       var file = vm._isVue && vm.$options.__file;
       if (!name && file) {
-        var match = file.match(/([^/\\]+)\.vue$/);
-        name = match && match[1];
+        // Basename without the .vue suffix, found without a regular
+        // expression so adversarial __file values cannot cause slow matches.
+        if (file.slice(-4) === '.vue') {
+          var sep = Math.max(file.lastIndexOf('/'), file.lastIndexOf('\\'));
+          name = file.slice(sep + 1, -4);
+        }
       }
 
       return (
@@ -966,6 +970,13 @@
     customSetter,
     shallow
   ) {
+    if (key === '__proto__') {
+      warn(
+        'Avoid using __proto__ as a reactive property key: ' +
+        'it is skipped to prevent prototype pollution.'
+      );
+      return
+    }
     var dep = new Dep();
 
     var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -1031,6 +1042,13 @@
    * already exist.
    */
   function set (target, key, val) {
+    if (key === '__proto__') {
+      warn(
+        'Avoid using __proto__ as a reactive property key: ' +
+        'the write is skipped to prevent prototype pollution.'
+      );
+      return val
+    }
     if (Array.isArray(target) && isValidArrayIndex(key)) {
       target.length = Math.max(target.length, key);
       target.splice(key, 1, val);

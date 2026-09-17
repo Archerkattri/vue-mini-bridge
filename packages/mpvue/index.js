@@ -915,6 +915,9 @@ try {
     customSetter,
     shallow
   ) {
+    if (key === '__proto__') {
+      return
+    }
     var dep = new Dep();
 
     var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -975,6 +978,9 @@ try {
    * already exist.
    */
   function set (target, key, val) {
+    if (key === '__proto__') {
+      return val
+    }
     if (Array.isArray(target) && isValidArrayIndex(key)) {
       target.length = Math.max(target.length, key);
       target.splice(key, 1, val);

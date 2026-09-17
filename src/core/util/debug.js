@@ -46,8 +46,12 @@ if (process.env.NODE_ENV !== 'production') {
 
     const file = vm._isVue && vm.$options.__file
     if (!name && file) {
-      const match = file.match(/([^/\\]+)\.vue$/)
-      name = match && match[1]
+      // Basename without the .vue suffix, found without a regular
+      // expression so adversarial __file values cannot cause slow matches.
+      if (file.slice(-4) === '.vue') {
+        const sep = Math.max(file.lastIndexOf('/'), file.lastIndexOf('\\'))
+        name = file.slice(sep + 1, -4)
+      }
     }
 
     return (

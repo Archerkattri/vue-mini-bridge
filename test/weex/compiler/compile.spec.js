@@ -23,6 +23,22 @@ describe('compile basic', () => {
     expect(errors).toEqual([])
   })
 
+  it('should compile bracket-path handlers as method paths', () => {
+    const single = compile(`<div @click="a['b']"></div>`)
+    expect(single.render).toEqual(`with(this){return _c('div',{on:{"click":a['b']}})}`)
+    expect(single.errors).toEqual([])
+    const double = compile(`<div @click='a["b"]'></div>`)
+    expect(double.render).toEqual(`with(this){return _c('div',{on:{"click":a["b"]}})}`)
+    expect(double.errors).toEqual([])
+  })
+
+  it('should wrap quote-spanning handler paths as inline statements', () => {
+    const { render, staticRenderFns, errors } = compile(`<div @click="a['b'c']"></div>`)
+    expect(render).toEqual(`with(this){return _c('div',{on:{"click":function($event){a['b'c']}}})}`)
+    expect(staticRenderFns).toEqual([])
+    expect(errors).toEqual([`invalid expression: @click="a['b'c']"`])
+  })
+
   it('should compile data bindings with children', () => {
     const { render, staticRenderFns, errors } = compile(`<foo :a="b"><text>Hello</text></foo>`)
     expect(render).toEqual(`with(this){return _c('foo',{attrs:{"a":b}},[_c('text',[_v("Hello")])])}`)

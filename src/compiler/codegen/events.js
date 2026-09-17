@@ -1,7 +1,10 @@
 /* @flow */
 
 const fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/
-const simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/
+// Bracket contents exclude their own quote so a path can never span quotes:
+// this keeps the match linear-time and rejects quote-spanning paths (which
+// fall back to inline-statement codegen instead of direct invocation).
+const simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/
 
 // keyCode aliases
 const keyCodes: { [key: string]: number | Array<number> } = {

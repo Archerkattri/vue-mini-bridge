@@ -160,6 +160,13 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  if (key === '__proto__') {
+    process.env.NODE_ENV !== 'production' && warn(
+      'Avoid using __proto__ as a reactive property key: ' +
+      'it is skipped to prevent prototype pollution.'
+    )
+    return
+  }
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -225,6 +232,13 @@ export function defineReactive (
  * already exist.
  */
 export function set (target: Array<any> | Object, key: any, val: any): any {
+  if (key === '__proto__') {
+    process.env.NODE_ENV !== 'production' && warn(
+      'Avoid using __proto__ as a reactive property key: ' +
+      'the write is skipped to prevent prototype pollution.'
+    )
+    return val
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key)
     target.splice(key, 1, val)
