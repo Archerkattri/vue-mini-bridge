@@ -1,5 +1,11 @@
 # Vue Mini Bridge
 
+[![npm version](https://img.shields.io/npm/v/vue-mini-bridge.svg)](https://www.npmjs.com/package/vue-mini-bridge)
+[![npm version](https://img.shields.io/npm/v/vue-mini-bridge-template-compiler.svg)](https://www.npmjs.com/package/vue-mini-bridge-template-compiler)
+[![CI](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Website](https://img.shields.io/website.svg?url=https%3A%2F%2Farcherkattri.github.io%2Fvue-mini-bridge%2F)](https://archerkattri.github.io/vue-mini-bridge/)
+
 Vue Mini Bridge is an independently maintained Vue-compatible runtime and template compiler for mini-program targets.
 
 It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, documenting behavior in English, and adding regression coverage for current developer environments.
