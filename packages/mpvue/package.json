@@ -1,6 +1,6 @@
 {
   "name": "vue-mini-bridge",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Vue-compatible runtime for mini-program targets",
   "main": "index.js",
   "files": [
@@ -34,5 +34,5 @@
   "bugs": {
     "url": "https://github.com/Archerkattri/vue-mini-bridge/issues"
   },
-  "homepage": "https://github.com/Archerkattri/vue-mini-bridge/"
+  "homepage": "https://archerkattri.github.io/vue-mini-bridge/"
 }

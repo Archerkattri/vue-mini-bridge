@@ -130,7 +130,7 @@ BibTeX entry for this release:
   author = {Attri, Krishi},
   title = {vue-mini-bridge},
   year = {2026},
-  version = {2.0.7},
+  version = {2.0.8},
   url = {https://github.com/Archerkattri/vue-mini-bridge}
 }
 ```
