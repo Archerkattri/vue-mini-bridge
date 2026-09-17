@@ -1,6 +1,7 @@
 # Vue Mini Bridge
 
 [![npm version](https://img.shields.io/npm/v/vue-mini-bridge.svg)](https://www.npmjs.com/package/vue-mini-bridge)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22821137.svg)](https://doi.org/10.5281/zenodo.22821137)
 [![CI](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -131,6 +132,7 @@ BibTeX entry for this release:
   title = {vue-mini-bridge},
   year = {2026},
   version = {2.0.8},
+  doi = {10.5281/zenodo.22821258},
   url = {https://github.com/Archerkattri/vue-mini-bridge}
 }
 ```
