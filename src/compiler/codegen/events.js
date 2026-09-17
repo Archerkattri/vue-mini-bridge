@@ -114,11 +114,24 @@ function genKeyFilter (keys: Array<string>): string {
   return `if(!('button' in $event)&&${keys.map(genFilterCode).join('&&')})return null;`
 }
 
+// JSON.stringify leaves <, > and / untouched, so without this a modifier
+// name containing "</script>" would survive into generated code verbatim.
+const codeStringEscapes: { [key: string]: string } = {
+  '<': '\\u003C',
+  '>': '\\u003E',
+  '/': '\\u002F'
+}
+
+function escapeCodeString (str: string): string {
+  return str.replace(/[<>\/]/g, c => codeStringEscapes[c])
+}
+
 function genFilterCode (key: string): string {
   const keyVal = parseInt(key, 10)
   if (keyVal) {
     return `$event.keyCode!==${keyVal}`
   }
   const alias = keyCodes[key]
-  return `_k($event.keyCode,${JSON.stringify(key)}${alias ? ',' + JSON.stringify(alias) : ''})`
+  const safeKey = escapeCodeString(JSON.stringify(key))
+  return `_k($event.keyCode,${safeKey}${alias ? ',' + JSON.stringify(alias) : ''})`
 }

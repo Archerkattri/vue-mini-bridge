@@ -40,6 +40,15 @@ describe('Vue.set prototype pollution guard', function () {
     expect({}.polluted).toBeUndefined()
   })
 
+  it('refuses constructor keys instead of shadowing them reactively', function () {
+    const obj = {}
+    const val = { polluted: true }
+    expect(Vue.set(obj, 'constructor', val)).toBe(val)
+    expect(obj.hasOwnProperty('constructor')).toBe(false)
+    expect(obj.constructor).toBe(Object)
+    expect(defineReactive({}, 'constructor', val)).toBeUndefined()
+  })
+
   it('warns in development when refusing __proto__ writes', function () {
     spyOn(console, 'error')
     const val = { polluted: true }

@@ -1075,9 +1075,9 @@ function defineReactive (
   customSetter,
   shallow
 ) {
-  if (key === '__proto__') {
+  if (key === '__proto__' || key === 'constructor') {
     process.env.NODE_ENV !== 'production' && warn$2(
-      'Avoid using __proto__ as a reactive property key: ' +
+      'Avoid using __proto__ or constructor as a reactive property key: ' +
       'it is skipped to prevent prototype pollution.'
     );
     return
@@ -1145,9 +1145,9 @@ function defineReactive (
  * already exist.
  */
 function set (target, key, val) {
-  if (key === '__proto__') {
+  if (key === '__proto__' || key === 'constructor') {
     process.env.NODE_ENV !== 'production' && warn$2(
-      'Avoid using __proto__ as a reactive property key: ' +
+      'Avoid using __proto__ or constructor as a reactive property key: ' +
       'the write is skipped to prevent prototype pollution.'
     );
     return val
@@ -2299,13 +2299,13 @@ function wrapFilter (exp, filter) {
 /*  */
 
 
-var defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
+var defaultTagRE = /\{\{([\s\S]+?)\}\}/g;
 var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
 
 var buildRegex = cached(function (delimiters) {
   var open = delimiters[0].replace(regexEscapeRE, '\\$&');
   var close = delimiters[1].replace(regexEscapeRE, '\\$&');
-  return new RegExp(open + '((?:.|\\n)+?)' + close, 'g')
+  return new RegExp(open + '([\\s\\S]+?)' + close, 'g')
 });
 
 function parseText (
@@ -3899,13 +3899,26 @@ function genKeyFilter (keys) {
   return ("if(!('button' in $event)&&" + (keys.map(genFilterCode).join('&&')) + ")return null;")
 }
 
+// JSON.stringify leaves <, > and / untouched, so without this a modifier
+// name containing "</script>" would survive into generated code verbatim.
+var codeStringEscapes = {
+  '<': '\\u003C',
+  '>': '\\u003E',
+  '/': '\\u002F'
+};
+
+function escapeCodeString (str) {
+  return str.replace(/[<>\/]/g, function (c) { return codeStringEscapes[c]; })
+}
+
 function genFilterCode (key) {
   var keyVal = parseInt(key, 10);
   if (keyVal) {
     return ("$event.keyCode!==" + keyVal)
   }
   var alias = keyCodes[key];
-  return ("_k($event.keyCode," + (JSON.stringify(key)) + (alias ? ',' + JSON.stringify(alias) : '') + ")")
+  var safeKey = escapeCodeString(JSON.stringify(key));
+  return ("_k($event.keyCode," + safeKey + (alias ? ',' + JSON.stringify(alias) : '') + ")")
 }
 
 /*  */

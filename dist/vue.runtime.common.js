@@ -966,9 +966,9 @@ function defineReactive (
   customSetter,
   shallow
 ) {
-  if (key === '__proto__') {
+  if (key === '__proto__' || key === 'constructor') {
     process.env.NODE_ENV !== 'production' && warn(
-      'Avoid using __proto__ as a reactive property key: ' +
+      'Avoid using __proto__ or constructor as a reactive property key: ' +
       'it is skipped to prevent prototype pollution.'
     );
     return
@@ -1038,9 +1038,9 @@ function defineReactive (
  * already exist.
  */
 function set (target, key, val) {
-  if (key === '__proto__') {
+  if (key === '__proto__' || key === 'constructor') {
     process.env.NODE_ENV !== 'production' && warn(
-      'Avoid using __proto__ as a reactive property key: ' +
+      'Avoid using __proto__ or constructor as a reactive property key: ' +
       'the write is skipped to prevent prototype pollution.'
     );
     return val

@@ -915,7 +915,7 @@ try {
     customSetter,
     shallow
   ) {
-    if (key === '__proto__') {
+    if (key === '__proto__' || key === 'constructor') {
       return
     }
     var dep = new Dep();
@@ -978,7 +978,7 @@ try {
    * already exist.
    */
   function set (target, key, val) {
-    if (key === '__proto__') {
+    if (key === '__proto__' || key === 'constructor') {
       return val
     }
     if (Array.isArray(target) && isValidArrayIndex(key)) {
