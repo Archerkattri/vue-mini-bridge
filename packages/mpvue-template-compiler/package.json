@@ -3,6 +3,11 @@
   "version": "2.0.6",
   "description": "Vue-compatible template compiler for mini-program targets",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "build.js",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Archerkattri/vue-mini-bridge.git"
@@ -14,7 +19,7 @@
     "mp",
     "antmp"
   ],
-  "author": "Archerkattri",
+  "author": "Krishi Attri <krishiattriwork@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=22"

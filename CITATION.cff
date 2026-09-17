@@ -1,0 +1,26 @@
+# Citation metadata. GitHub renders this as a "Cite this repository" button
+# with APA / BibTeX export. Keep version and date-released in step with
+# each release (see packages/mpvue/package.json).
+cff-version: 1.2.0
+message: "If you use Vue Mini Bridge in your work, please cite it as below."
+type: software
+title: "vue-mini-bridge"
+abstract: "Vue 2 single-file components compiled to WeChat, Alipay, Baidu, and ByteDance mini programs."
+authors:
+  - family-names: "Attri"
+    given-names: "Krishi"
+    alias: "Archerkattri"
+    email: "krishiattriwork@gmail.com"
+    orcid: "https://orcid.org/0009-0005-4695-6467"
+    website: "https://github.com/Archerkattri"
+version: 2.0.6
+date-released: "2026-09-17"
+repository-code: "https://github.com/Archerkattri/vue-mini-bridge"
+url: "https://archerkattri.github.io/vue-mini-bridge/"
+license: MIT
+keywords:
+  - "vue"
+  - "vue2"
+  - "mini-program"
+  - "wechat-miniprogram"
+  - "mpvue"

@@ -114,6 +114,23 @@ The original MIT license and attribution are preserved in [`LICENSE`](LICENSE),
 and the historical source is available as the `upstream` Git remote. Vue Mini
 Bridge is not affiliated with Meituan, Vue, or any mini-program platform vendor.
 
+## Citation
+
+If you use Vue Mini Bridge in your work, please cite it. The easiest way
+is the **Cite this repository** button in the GitHub sidebar, which
+exports APA and BibTeX from [CITATION.cff](CITATION.cff). A ready-made
+BibTeX entry for this release:
+
+```bibtex
+@misc{Attri2026VueMiniBridge,
+  author = {Attri, Krishi},
+  title = {vue-mini-bridge},
+  year = {2026},
+  version = {2.0.6},
+  url = {https://github.com/Archerkattri/vue-mini-bridge}
+}
+```
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).

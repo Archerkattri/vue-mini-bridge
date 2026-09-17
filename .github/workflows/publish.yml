@@ -1,0 +1,69 @@
+# Release publishing via npm Trusted Publishing (OIDC) - no tokens stored.
+# The FIRST publish of each package name must be manual (npm login, then
+# npm publish --access public from packages/mpvue and
+# packages/mpvue-template-compiler); OIDC cannot create a package that
+# does not exist yet. Afterwards configure the trusted publisher at
+# npmjs.com -> package Settings -> Trusted publishing (GitHub Actions,
+# this repo + the publish.yml workflow), and every later GitHub release
+# publishes both packages automatically with provenance attestations.
+# Release checklist: bump both package versions, refresh CITATION.cff
+# version/date-released, rebuild the compiler outputs, tag vX.Y.Z,
+# publish the GitHub release.
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Verify tag matches both package versions
+        run: |
+          tag='${{ github.event.release.tag_name }}'
+          for pkg in packages/mpvue packages/mpvue-template-compiler; do
+            ver="$(node -p "require('./$pkg/package.json').version")"
+            test "v$ver" = "$tag" || { echo "tag $tag does not match $pkg v$ver"; exit 1; }
+          done
+
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+
+      - name: Rebuild and reject stale committed outputs
+        run: |
+          npm run build:mpvue
+          git diff --exit-code -- packages/ || { echo 'committed package outputs are stale; rebuild and commit first'; exit 1; }
+
+      - name: Fail if either version is already on npm
+        run: |
+          for pkg in packages/mpvue packages/mpvue-template-compiler; do
+            name="$(node -p "require('./$pkg/package.json').name")"
+            ver="$(node -p "require('./$pkg/package.json').version")"
+            if npm view "$name@$ver" version >/dev/null 2>&1; then
+              echo "$name@$ver is already published"; exit 1
+            fi
+          done
+
+      - name: Publish vue-mini-bridge
+        working-directory: packages/mpvue
+        run: npm publish --provenance --access public
+
+      - name: Publish vue-mini-bridge-template-compiler
+        working-directory: packages/mpvue-template-compiler
+        run: npm publish --provenance --access public
