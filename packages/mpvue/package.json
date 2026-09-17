@@ -13,10 +13,18 @@
   },
   "keywords": [
     "vue",
-    "compiler",
-    "mp",
-    "mp",
-    "antmp"
+    "vue2",
+    "mini-program",
+    "miniprogram",
+    "wechat",
+    "weapp",
+    "wechat-miniprogram",
+    "mpvue",
+    "alipay",
+    "baidu",
+    "swan",
+    "bytedance",
+    "toutiao"
   ],
   "author": "Krishi Attri <krishiattriwork@gmail.com>",
   "license": "MIT",
