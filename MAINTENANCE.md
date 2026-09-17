@@ -60,6 +60,7 @@ The useful work falls into these groups:
 6. Replace Flow 0.48 and TypeScript 2.4 checks with a maintained TypeScript-first type surface without changing generated output until behavior is locked down.
 7. Evaluate Vue 2.7 and `@vue/compat` as migration aids, not as a drop-in replacement. Vue 2 is EOL and this renderer uses Vue internals, so Vue 3 support needs an explicit compatibility layer.
 8. Add regression coverage for lifecycle registration, event forwarding, slots, component props, data diffing, sourcemaps, code splitting, and each supported platform adapter.
+9. Migrate the 0.x-held devDeps by hand (buble, flow-bin with a modernized .flowconfig, shelljs, weex-js-runtime, weex-vdom-tester): 0.x minors are breaking — PR #6 proved it red — so the bot group carries patches only for these.
 
 ## Primary references
 
