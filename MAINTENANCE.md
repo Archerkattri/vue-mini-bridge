@@ -44,6 +44,7 @@ The complete live issue set is available at <https://github.com/Meituan-Dianping
 - Labels are not a reliable priority signal: 115 open issues are marked `wontfix`, while only 3 are marked `bug`.
 - First-pass issue work should require a current reproduction and a regression test. Old questions, unsupported platform requests, and duplicate reports should be closed with a reason after triage.
 - Upstream issue #1822's sourcemap failure depends on the Quickstart's `productionSourceMap` build and `webpack-mpvue-asset-plugin`, neither of which is present in this repository; that exact failure does not reproduce on the current branch.
+- Upstream issue #1828 reports a computed getter running without a visible DOM update, but its minimal example never references `fullName` in the template, so there is no rendered value to update. The report does not establish a framework defect; add the computed property to the template before treating it as a regression.
 
 ## Pull-request review
 
