@@ -1,5 +1,5 @@
 const { createInstance } = require('../helpers/index')
-const { compile, compileToMPML } = require('../../../packages/mpvue-template-compiler')
+const { compile, compileToFunctions, compileToMPML } = require('../../../packages/mpvue-template-compiler')
 
 // Focused regression coverage for the maintained mini-program contract:
 // lifecycle cascades, slot event forwarding, prop updates, minimal setData
@@ -114,6 +114,58 @@ describe('regression', function () {
     }
     app.$mp.page._callHook('handleProxy', ev)
     expect(seen).toEqual(['slotTarget'])
+  })
+
+  it('routes v-for click handlers inside child components', function () {
+    const clicked = []
+    const itemList = {
+      props: ['content'],
+      methods: {
+        showDetail (index) {
+          clicked.push(index)
+        }
+      },
+      render: compileToFunctions(
+        '<ul><li v-for="(item, index) in content" :key="index" class="list-box" @click="showDetail(index)">{{item}}</li></ul>'
+      ).render
+    }
+    const options = {
+      components: {
+        itemList
+      },
+      data () {
+        return {
+          content: ['first', 'second']
+        }
+      },
+      render () {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c('div', {
+          staticClass: 'container'
+        }, [_c('item-list', {
+          attrs: {
+            content: _vm.content,
+            mpcomid: '0'
+          }
+        })], 1)
+      }
+    }
+    const app = createInstance(options)
+    app.$mount()
+
+    const dataset = { comkey: '0_0', eventid: '1_0_1' }
+    const event = {
+      type: 'tap',
+      timeStamp: 1,
+      target: { id: 'secondItem', dataset: dataset },
+      currentTarget: { id: 'secondItem', dataset: dataset },
+      detail: {},
+      touches: []
+    }
+    app.$mp.page._callHook('handleProxy', event)
+    expect(clicked).toEqual([1])
   })
 
   it('propagates parent data changes to child props', function (done) {
