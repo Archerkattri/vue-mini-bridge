@@ -9,7 +9,7 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - Last upstream push: 2022-03-02.
 - The repository is a Vue 2.4.1-era runtime/compiler tree with mini-program adapters for WeChat, Baidu, Toutiao, and Alipay.
 - The inherited toolchain was Node 6, Rollup 0.45, Webpack 2, Babel 6, Karma 1, PhantomJS, Flow 0.48, TypeScript 2.4, and CircleCI.
-- The current toolchain is Node 22+, Rollup 4, Webpack 5, Babel 7, ESLint 9, Jasmine 7, Flow 0.48, TypeScript 6, Prettier 2, and GitHub Actions. The lockfile pins these dependencies for reproducible installs.
+- The current toolchain is Node 22+, Rollup 4, Webpack 5, Babel 7, ESLint 9, Jasmine 7, Flow 0.48, TypeScript 6, Prettier 2, and GitHub Actions. The lockfile pins these dependencies for reproducible installs. CI tests Node 22, 24, and 26; Node 26 is the Current release, and the package engine floor remains Node 22.
 
 ## Current baseline
 
@@ -43,6 +43,7 @@ The complete live issue set is available at <https://github.com/Meituan-Dianping
 - Platform-specific demand covers map, canvas, video, picker, web-view, worker, native component, and cross-platform event behavior.
 - Labels are not a reliable priority signal: 115 open issues are marked `wontfix`, while only 3 are marked `bug`.
 - First-pass issue work should require a current reproduction and a regression test. Old questions, unsupported platform requests, and duplicate reports should be closed with a reason after triage.
+- Upstream issue #1822's sourcemap failure depends on the Quickstart's `productionSourceMap` build and `webpack-mpvue-asset-plugin`, neither of which is present in this repository; that exact failure does not reproduce on the current branch.
 
 ## Pull-request review
 
@@ -57,7 +58,7 @@ The useful work falls into these groups:
 ## Upgrade plan
 
 1. Keep the public mini-program runtime/compiler contract stable while making source and generated bundles deterministic.
-2. [Done] Replaced Node 6/CircleCI with GitHub Actions on supported LTS Node versions and documented the minimum runtime.
+2. [Done] Replaced Node 6/CircleCI with GitHub Actions on Node 22, 24, and 26; the package minimum remains Node 22.
 3. [Done] Removed PhantomJS, Selenium 2, Sauce-only paths, `codecov.io`, and deprecated Karma integrations; the aggregate gate now runs the jasmine suites (ssr, weex, mpvue) instead of Karma coverage.
 4. [Done] Migrated Babel 6 to Babel 7 (root config, spec transpilation, mini-program compiler runtime code, and webpack loader); generated bundles diffed against pre-migration output.
 5. [Done] Upgraded Webpack 2 straight to Webpack 5 (plus Rollup 0.45 to 4 and ESLint 3 to 9): SSR webpack plugins ported to the processAssets/hooks APIs, file-loader replaced with asset modules, CommonsChunkPlugin replaced with runtimeChunk, and the lint ruleset converted to flat config.
