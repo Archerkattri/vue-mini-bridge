@@ -209,6 +209,45 @@ describe('regression', function () {
     }, 300)
   })
 
+  it('preserves zero when a nested object property changes', function (done) {
+    const options = {
+      data () {
+        return {
+          item: { foo: 1 }
+        }
+      },
+      render () {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c('div', {
+          staticClass: 'container'
+        }, [_vm._v(_vm._s(_vm.item.foo))])
+      }
+    }
+    const app = createInstance(options)
+    app.$mount()
+
+    setTimeout(function () {
+      const calls = []
+      const page = app.$mp.page
+      const origSetData = page.setData.bind(page)
+      page.setData = function (obj) {
+        calls.push(obj)
+        return origSetData(obj)
+      }
+      app.item.foo = 0
+      setTimeout(function () {
+        expect(calls.length).toBeGreaterThan(0)
+        expect(Object.assign.apply(null, [{}].concat(calls))).toEqual({
+          '$root.0.item.foo': 0
+        })
+        expect(page.data['$root']['0'].item.foo).toEqual(0)
+        done()
+      }, 300)
+    }, 300)
+  })
+
   it('compiles the same template deterministically', function () {
     const template = '<div><p v-for="item in list" @click="clickHandle">{{item}}</p></div>'
     const first = compileToMPML(compile(template, {}), { name: 'a' })
