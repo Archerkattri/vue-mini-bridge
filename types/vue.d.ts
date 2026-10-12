@@ -34,7 +34,7 @@ export declare class Vue {
 
   $data: Object;
   readonly $el: HTMLElement;
-  readonly $options: ComponentOptions<this>;
+  readonly $options: ComponentOptions<any>;
   readonly $parent: Vue;
   readonly $root: Vue;
   readonly $children: Vue[];
@@ -83,7 +83,7 @@ export declare class Vue {
     keyCodes: { [key: string]: number };
   }
 
-  static extend(options: ComponentOptions<Vue> | FunctionalComponentOptions): typeof Vue;
+  static extend<V extends Vue>(options: ComponentOptions<V> | FunctionalComponentOptions): typeof Vue;
   static nextTick(callback: () => void, context?: any[]): void;
   static nextTick(): Promise<void>
   static set<T>(object: Object, key: string, value: T): T;
@@ -96,10 +96,10 @@ export declare class Vue {
     definition?: DirectiveOptions | DirectiveFunction
   ): DirectiveOptions;
   static filter(id: string, definition?: Function): Function;
-  static component(id: string, definition?: Component | AsyncComponent): typeof Vue;
+  static component<V extends Vue>(id: string, definition?: ComponentOptions<V> | Component | AsyncComponent): typeof Vue;
 
   static use<T>(plugin: PluginObject<T> | PluginFunction<T>, options?: T): void;
-  static mixin(mixin: typeof Vue | ComponentOptions<Vue>): void;
+  static mixin(mixin: typeof Vue | ComponentOptions<any>): void;
   static compile(template: string): {
     render(createElement: typeof Vue.prototype.$createElement): VNode;
     staticRenderFns: (() => VNode)[];

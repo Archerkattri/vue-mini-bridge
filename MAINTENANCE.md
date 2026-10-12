@@ -9,7 +9,7 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - Last upstream push: 2022-03-02.
 - The repository is a Vue 2.4.1-era runtime/compiler tree with mini-program adapters for WeChat, Baidu, Toutiao, and Alipay.
 - The inherited toolchain was Node 6, Rollup 0.45, Webpack 2, Babel 6, Karma 1, PhantomJS, Flow 0.48, TypeScript 2.4, and CircleCI.
-- The modernized toolchain is Node 22+, Rollup 4, Webpack 5, Babel 7, ESLint 9, Flow 0.48, TypeScript 2.4, and GitHub Actions.
+- The current toolchain is Node 22+, Rollup 4, Webpack 5, Babel 7, ESLint 9, Jasmine 7, Flow 0.48, TypeScript 6, Prettier 2, and GitHub Actions. The lockfile pins these dependencies for reproducible installs.
 
 ## Current baseline
 
@@ -19,12 +19,16 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - The original lint gate had 29 existing errors. The modernization branch now clears `npm run lint`.
 - The runtime now exports the Vue constructor with `Vue.createMP` attached, and the platform lifecycle adapter mounts pages and components at their native ready points without repeating root hooks.
 - The compiler declares its Babel, Prettier, and Lodash runtime dependencies explicitly, so mini-program builds no longer emit unresolved-import warnings.
-- The mini-program compiler/runtime integration suite now passes all 80 specs (`npm run test:mp`), including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing. Five regression specs cover lifecycle cascades to child components, slot event forwarding, parent-to-child prop updates, minimal `setData` key paths, and deterministic compiler output; four more cover the `__proto__`/`constructor` pollution guard.
-- `npm run flow` now passes with zero errors after typing the observer metadata used by mini-program data diffing.
+- The mini-program compiler/runtime integration suite passes all 84 specs (`npm run test:mpvue`), including lifecycle registration, event forwarding, slots, props, `v-model`, and data diffing. Regression coverage includes lifecycle cascades, slot event forwarding, parent-to-child prop updates, minimal `setData` key paths, deterministic compiler output, and prototype-pollution keys.
+- `npm run flow` passes with Flow 0.48 and zero errors. A trial upgrade to Flow 0.335 produced 752 errors across the 198 checked files and was reverted; keep the legacy checker until a staged type-system migration is reviewed separately.
+- `npm run test:types` passes with TypeScript 6.0.3. The declaration tests and compiler options were updated for the current compiler.
+- Jasmine was upgraded to 7.0.0 with jasmine-core 7.0.2. Duplicate spec titles were renamed, and SSR suites load Babel through a local helper so Jasmine works on Windows.
+- The full `npm test` gate passes: lint, Flow, TypeScript declarations, SSR (92 specs), Weex (73 specs), and mini-program (84 specs).
+- Prettier remains at 2.8.8 because the compiler adapters call its formatting API synchronously. Prettier 3 makes that API asynchronous; defer that migration until the compiler interface and generated output can be migrated and tested together.
 - Build outputs are deterministic: the banner year honors `SOURCE_DATE_EPOCH` for reproducible builds, and `build/build.js` now exits non-zero when a rollup bundle fails instead of silently reporting success.
-- The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is fully removed from `devDependencies` (17 packages, 248 lockfile entries). The aggregate `npm test` gate is green end to end: lint, flow (0 errors), type tests, ssr (92 specs), weex (73 specs), and mpvue (80 specs).
-- `yarn audit --summary` went from 746 to 0 vulnerabilities. Fixed by removing dead direct dependencies (commitizen, cz-conventional-changelog, http-server, cross-spawn, babel-plugin-istanbul, rollup-watch, file-loader, eslint-loader, babel 6 presets/plugins), upgrading lodash and serialize-javascript, migrating the bundler toolchain (Rollup 0.45 to 4, Webpack 2 to 5, Babel 6 to 7, ESLint 3 to 9), and pinning patched transitives via `resolutions` (dot-prop, shelljs, trim-newlines, yargs-parser). The full gate stays green throughout.
-- No advisories remain and no risks are accepted. The former accepted risks were eliminated at their roots: babel-traverse 6.x by the Babel 7 migration (including the mini-program template compiler, which is runtime code), braces 1.x/2.x by removing babel-plugin-istanbul and upgrading the chokidar/watchpack chains, rollup 0.45 by the Rollup 4 migration, trim-newlines 1.x/2.x via a `resolutions` pin (release-note generation smoke-tested), and elliptic (no patched version exists) by the Webpack 5 migration, which dropped the node-libs-browser chain.
+- The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is removed from `devDependencies`.
+- `yarn audit --summary` reported 0 vulnerabilities across 564 audited packages on 2026-10-11. The audit covers the installed dependency graph represented by the lockfile; it is not a claim that platform IDEs or applications using the packages have no security issues.
+- Security updates include removing obsolete direct dependencies, upgrading `serialize-javascript` and fixing the Handlebars resolution, migrating Rollup, Webpack, Babel, and ESLint, and pinning patched transitives via `resolutions` (dot-prop, shelljs, trim-newlines, yargs-parser). Keep these overrides only while the corresponding dependency paths require them.
 - The obsolete CircleCI 1.0 config is removed; GitHub Actions runs the aggregate gate and `build/ci.sh` is a local alias for it.
 - Stray `console.log` calls in the mini-program data-diff hot path now go through the dev-only `warn()` channel, and dead commented-out debug lines are removed.
 - Touched runtime files use English comments (translated on touch per maintenance policy); the weex capture-phase notice uses `warn()` with a corrected message.
@@ -57,10 +61,10 @@ The useful work falls into these groups:
 3. [Done] Removed PhantomJS, Selenium 2, Sauce-only paths, `codecov.io`, and deprecated Karma integrations; the aggregate gate now runs the jasmine suites (ssr, weex, mpvue) instead of Karma coverage.
 4. [Done] Migrated Babel 6 to Babel 7 (root config, spec transpilation, mini-program compiler runtime code, and webpack loader); generated bundles diffed against pre-migration output.
 5. [Done] Upgraded Webpack 2 straight to Webpack 5 (plus Rollup 0.45 to 4 and ESLint 3 to 9): SSR webpack plugins ported to the processAssets/hooks APIs, file-loader replaced with asset modules, CommonsChunkPlugin replaced with runtimeChunk, and the lint ruleset converted to flat config.
-6. Replace Flow 0.48 and TypeScript 2.4 checks with a maintained TypeScript-first type surface without changing generated output until behavior is locked down.
+6. Replace Flow 0.48 with a maintained type-checking approach only after the existing code has a staged migration plan. Flow 0.335 is not a drop-in update for this codebase. Keep the tested TypeScript declaration surface on TypeScript 6 until the TypeScript 7 migration is verified.
 7. Evaluate Vue 2.7 and `@vue/compat` as migration aids, not as a drop-in replacement. Vue 2 is EOL and this renderer uses Vue internals, so Vue 3 support needs an explicit compatibility layer.
 8. Add regression coverage for lifecycle registration, event forwarding, slots, component props, data diffing, sourcemaps, code splitting, and each supported platform adapter.
-9. Migrate the 0.x-held devDeps by hand (buble, flow-bin with a modernized .flowconfig, shelljs, weex-js-runtime, weex-vdom-tester): 0.x minors are breaking — PR #6 proved it red — so the bot group carries patches only for these.
+9. Migrate the remaining 0.x devDependencies by hand (Bublé, Flow, shelljs, weex-js-runtime, weex-vdom-tester): their majors and minors can change behavior, so the dependency bot should carry patch updates only until each migration has focused coverage.
 
 ## Primary references
 

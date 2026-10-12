@@ -64,7 +64,7 @@ describe('a', () => {
 })
 
 describe('指令', () => {
-  it('v-if', () => {
+  it('v-if directive', () => {
     assertCodegen(
       `<div v-if="ss"></div>`,
       `<template name="a"><view wx:if="{{ss}}" class="_div"></view></template>`,
@@ -127,7 +127,7 @@ describe('指令', () => {
     )
   })
 
-  it('v-bind', () => {
+  it('v-bind shorthand', () => {
     assertCodegen(
       `<div :a="s"></div>`,
       `<template name="a"><view a="{{s}}" class="_div"></view></template>`,
@@ -135,7 +135,7 @@ describe('指令', () => {
     )
   })
 
-  it('v-bind', () => {
+  it('v-bind longhand', () => {
     assertCodegen(
       `<div v-bind:a="s"></div>`,
       `<template name="a"><view a="{{s}}" class="_div"></view></template>`,
@@ -143,7 +143,7 @@ describe('指令', () => {
     )
   })
 
-  it('v-bind', () => {
+  it('v-bind expression', () => {
     assertCodegen(
       `<div v-bind:a="a + 1"></div>`,
       `<template name="a"><view a="{{a + 1}}" class="_div"></view></template>`,
@@ -272,7 +272,7 @@ describe('指令', () => {
     )
   })
 
-  it('v-if', () => {
+  it('v-else-if directive', () => {
     assertCodegen(
       `<div v-if="s"></div>`,
       `<template name="a"><view wx:if="{{s}}" class="_div"></view></template>`,
@@ -434,7 +434,7 @@ describe('表单', () => {
 })
 
 describe('template', () => {
-  it('template', () => {
+  it('component inside v-for', () => {
     assertCodegen(
       `<div><card v-for="i in 10"></card></div>`,
       `<import src="/components/card" /><template name="a"><view class="_div data-v-djskdksdksdjkksdks"><template data="{{...$root[$kk+'0_'+index], $root}}" is="card" wx:for="{{10}}" wx:for-index="index" wx:for-item="i"></template></view></template>`,
@@ -451,7 +451,7 @@ describe('template', () => {
     )
   })
 
-  it('template', () => {
+  it('component template output', () => {
     assertCodegen(
       `<div><card :message="1"></card></div>`,
       `<import src="/components/card" /><template name="a"><view class="_div data-v-djskdksdksdjkksdks"><template data="{{...$root[$kk+'0'], $root}}" is="card"></template></view></template>`,
@@ -467,7 +467,7 @@ describe('template', () => {
       }
     )
   })
-  it('template', () => {
+  it('component with block child', () => {
     assertCodegen(
       `<div><card :message="1"></card> <block><span>test</span></block></div>`,
       `<import src="/components/card" /><template name="a"><view class="_div data-v-djskdksdksdjkksdks"><template data="{{...$root[$kk+'0'], $root}}" is="card"></template> <block><label class="_span data-v-djskdksdksdjkksdks">test</label></block></view></template>`,
@@ -557,7 +557,7 @@ describe('slot', () => {
     )
   })
 
-  it('slot template', () => {
+  it('component template with named slot', () => {
     assertCodegen(
       `<card class="baz boo"><template slot="header">test</template></card>`,
       `<import src="/components/card" /><template name="a"><template data="{{...$root[$kk+'1'], $root, $for:{default:'hashValue-default-1',header:'hashValue-header-1'},$slotdefault:'hashValue-default-1',$slotheader:'hashValue-header-1'}}" is="card"></template></template>`,
@@ -578,7 +578,7 @@ describe('slot', () => {
       }
     )
   })
-  it('slot template', () => {
+  it('root template with named slot', () => {
     assertCodegen(
       `<template class="baz boo"><template slot="header">test</template></template>`,
       `<template name="a"><template><template slot="header">test</template></template></template>`,
@@ -612,7 +612,7 @@ describe('web-view', () => {
 })
 
 describe('组件', () => {
-  it('组件驼峰命名', () => {
+  it('camel-case component tag', () => {
     assertCodegen(
       `<div><aCard></aCard></div>`,
       `<import src="card$3d556b2c" /><template name="index$c044a66a"><view class="_div data-v-5eca2e54"><template data="{{...$root[$kk+'0'], $root}}" is="card$3d556b2c"></template></view></template>`,
@@ -625,7 +625,7 @@ describe('组件', () => {
        moduleId: 'data-v-5eca2e54' }
     );
   })
-  it('组件驼峰命名', () => {
+  it('pascal-case component tag', () => {
     assertCodegen(
       `<div><Card></Card></div>`,
       `<import src="card$3d556b2c" /><template name="index$c044a66a"><view class="_div data-v-5eca2e54"><template data="{{...$root[$kk+'0'], $root}}" is="card$3d556b2c"></template></view></template>`,

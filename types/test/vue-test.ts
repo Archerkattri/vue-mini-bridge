@@ -1,7 +1,7 @@
 import Vue = require("../index");
 
 class Test extends Vue {
-  a: number;
+  declare a: number;
 
   testProperties() {
     this.$data;
@@ -18,7 +18,7 @@ class Test extends Vue {
   }
 
   // test property reification
-  $refs: {
+  declare $refs: {
     vue: Vue,
     element: HTMLInputElement,
     vues: Vue[],

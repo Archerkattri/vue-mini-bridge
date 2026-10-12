@@ -250,69 +250,70 @@ describe('SSR: template option', () => {
   createClientManifestAssertions(false)
 
   function createClientManifestAssertions (runInNewContext) {
-    it('bundleRenderer + renderToString + clientManifest ()', done => {
-      createRendererWithManifest('split.js', { runInNewContext }, renderer => {
-        renderer.renderToString({ state: { a: 1 }}, (err, res) => {
-          expect(err).toBeNull()
-          expect(res).toContain(expectedHTMLWithManifest())
-          done()
+    describe(runInNewContext ? 'new VM context' : 'shared VM context', () => {
+      it('bundleRenderer + renderToString + clientManifest ()', done => {
+        createRendererWithManifest('split.js', { runInNewContext }, renderer => {
+          renderer.renderToString({ state: { a: 1 }}, (err, res) => {
+            expect(err).toBeNull()
+            expect(res).toContain(expectedHTMLWithManifest())
+            done()
+          })
         })
       })
-    })
 
-    it('bundleRenderer + renderToStream + clientManifest + shouldPreload', done => {
-      createRendererWithManifest('split.js', {
-        runInNewContext,
-        shouldPreload: (file, type) => {
-          if (type === 'image' || type === 'script' || type === 'font' || type === 'style') {
-            return true
+      it('bundleRenderer + renderToStream + clientManifest + shouldPreload', done => {
+        createRendererWithManifest('split.js', {
+          runInNewContext,
+          shouldPreload: (file, type) => {
+            if (type === 'image' || type === 'script' || type === 'font' || type === 'style') {
+              return true
+            }
           }
-        }
-      }, renderer => {
-        const stream = renderer.renderToStream({ state: { a: 1 }})
-        let res = ''
-        stream.on('data', chunk => {
-          res += chunk.toString()
-        })
-        stream.on('end', () => {
-          expect(res).toContain(expectedHTMLWithManifest({
-            preloadOtherAssets: true
-          }))
-          done()
+        }, renderer => {
+          const stream = renderer.renderToStream({ state: { a: 1 }})
+          let res = ''
+          stream.on('data', chunk => {
+            res += chunk.toString()
+          })
+          stream.on('end', () => {
+            expect(res).toContain(expectedHTMLWithManifest({
+              preloadOtherAssets: true
+            }))
+            done()
+          })
         })
       })
-    })
 
-    it('bundleRenderer + renderToString + clientManifest + inject: false', done => {
-      createRendererWithManifest('split.js', {
-        runInNewContext,
-        template: `<html>` +
+      it('bundleRenderer + renderToString + clientManifest + inject: false', done => {
+        createRendererWithManifest('split.js', {
+          runInNewContext,
+          template: `<html>` +
           `<head>{{{ renderResourceHints() }}}{{{ renderStyles() }}}</head>` +
           `<body><!--vue-ssr-outlet-->{{{ renderState({ windowKey: '__FOO__', contextKey: 'foo' }) }}}{{{ renderScripts() }}}</body>` +
         `</html>`,
-        inject: false
-      }, renderer => {
-        const context = { foo: { a: 1 }}
-        renderer.renderToString(context, (err, res) => {
-          expect(err).toBeNull()
-          expect(res).toContain(expectedHTMLWithManifest({
-            stateKey: '__FOO__'
-          }))
-          done()
+          inject: false
+        }, renderer => {
+          const context = { foo: { a: 1 }}
+          renderer.renderToString(context, (err, res) => {
+            expect(err).toBeNull()
+            expect(res).toContain(expectedHTMLWithManifest({
+              stateKey: '__FOO__'
+            }))
+            done()
+          })
         })
       })
-    })
 
-    it('bundleRenderer + renderToString + clientManifest + no template', done => {
-      createRendererWithManifest('split.js', {
-        runInNewContext,
-        template: null
-      }, renderer => {
-        const context = { foo: { a: 1 }}
-        renderer.renderToString(context, (err, res) => {
-          expect(err).toBeNull()
+      it('bundleRenderer + renderToString + clientManifest + no template', done => {
+        createRendererWithManifest('split.js', {
+          runInNewContext,
+          template: null
+        }, renderer => {
+          const context = { foo: { a: 1 }}
+          renderer.renderToString(context, (err, res) => {
+            expect(err).toBeNull()
 
-          const customOutput =
+            const customOutput =
             `<html><head>${
               context.renderResourceHints() +
               context.renderStyles()
@@ -325,34 +326,34 @@ describe('SSR: template option', () => {
               context.renderScripts()
             }</body></html>`
 
-          expect(customOutput).toContain(expectedHTMLWithManifest({
-            stateKey: '__FOO__'
-          }))
-          done()
+            expect(customOutput).toContain(expectedHTMLWithManifest({
+              stateKey: '__FOO__'
+            }))
+            done()
+          })
         })
       })
-    })
 
-    it('whitespace insensitive interpolation', done => {
-      const interpolateTemplate = `<html><head><title>{{title}}</title></head><body><!--vue-ssr-outlet-->{{{snippet}}}</body></html>`
-      const renderer = createRenderer({
-        template: interpolateTemplate
-      })
+      it('whitespace insensitive interpolation', done => {
+        const interpolateTemplate = `<html><head><title>{{title}}</title></head><body><!--vue-ssr-outlet-->{{{snippet}}}</body></html>`
+        const renderer = createRenderer({
+          template: interpolateTemplate
+        })
 
-      const context = {
-        title: '<script>hacks</script>',
-        snippet: '<div>foo</div>',
-        head: '<meta name="viewport" content="width=device-width">',
-        styles: '<style>h1 { color: red }</style>',
-        state: { a: 1 }
-      }
+        const context = {
+          title: '<script>hacks</script>',
+          snippet: '<div>foo</div>',
+          head: '<meta name="viewport" content="width=device-width">',
+          styles: '<style>h1 { color: red }</style>',
+          state: { a: 1 }
+        }
 
-      renderer.renderToString(new Vue({
-        template: '<div>hi</div>'
-      }), context, (err, res) => {
-        expect(err).toBeNull()
-        expect(res).toContain(
-          `<html><head>` +
+        renderer.renderToString(new Vue({
+          template: '<div>hi</div>'
+        }), context, (err, res) => {
+          expect(err).toBeNull()
+          expect(res).toContain(
+            `<html><head>` +
           // double mustache should be escaped
           `<title>&lt;script&gt;hacks&lt;/script&gt;</title>` +
           `${context.head}${context.styles}</head><body>` +
@@ -361,8 +362,9 @@ describe('SSR: template option', () => {
           // triple should be raw
           `<div>foo</div>` +
           `</body></html>`
-        )
-        done()
+          )
+          done()
+        })
       })
     })
   }

@@ -20,6 +20,7 @@ export function compileWithWebpack (file, extraConfig, cb) {
       rules: [
         {
           test: /\.js$/,
+          type: 'javascript/auto',
           loader: 'babel-loader'
         },
         {

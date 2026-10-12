@@ -4732,7 +4732,7 @@ Object.defineProperty(Vue.prototype, '$ssrContext', {
 });
 
 Vue.version = '2.4.1';
-Vue.mpvueVersion = '2.0.6';
+Vue.mpvueVersion = '2.0.9';
 
 /*  */
 

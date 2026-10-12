@@ -97,11 +97,11 @@ Vue.component('component', {
       createElement(() => Vue.component("component")),
       createElement(() => ( {} as ComponentOptions<Vue> )),
       createElement(() => {
-        return new Promise((resolve) => {
+        return new Promise<Vue.Component>((resolve) => {
           resolve({} as ComponentOptions<Vue>);
         })
       }),
-      createElement((resolve, reject) => {
+      createElement((resolve: (component: Vue.Component) => void, reject: (reason?: any) => void) => {
         resolve({} as ComponentOptions<Vue>);
         reject();
       }),

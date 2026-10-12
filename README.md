@@ -1,142 +1,75 @@
 # Vue Mini Bridge
 
-[![npm version](https://img.shields.io/npm/v/vue-mini-bridge.svg)](https://www.npmjs.com/package/vue-mini-bridge)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22821137.svg)](https://doi.org/10.5281/zenodo.22821137)
 [![CI](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/vue-mini-bridge.svg)](https://www.npmjs.com/package/vue-mini-bridge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Vue Mini Bridge is an independently maintained Vue-compatible runtime and template compiler for mini-program targets.
+Vue Mini Bridge is a Vue 2 runtime and template compiler for mini-program projects. It continues the [mpvue](https://github.com/Meituan-Dianping/mpvue) codebase with an English-maintained source tree and updated build tooling.
 
-It continues the useful parts of the original mpvue platform work while rebuilding the toolchain, documenting behavior in English, and adding regression coverage for current developer environments.
-
-![Compiler playground: one Vue template compiled to WeChat, Baidu, ByteDance, and Alipay targets](docs/playground-demo.gif)
-
-## Platform compatibility
-
-Checked against the vendors' current documentation (September 2026). Upstream mpvue is dormant — last release 1.4.4 in May 2019, last commit March 2022 — while all four vendors kept their template primitives stable.
-
-| Platform | Target | Template dialect | Compatibility |
-| --- | --- | --- | --- |
-| WeChat | `wx` | `wx:if`, `wx:for`, `bindtap`, `<template>` | Base library 3.x. Template/import/include plus `setData` is the maintained glass-easel compiler path in both WebView and Skyline renderers. Validate on the latest DevTools. |
-| Alipay | `my` | `a:if`, `a:for`, `onTap` | AXML directives stable for years; platform and Mini Program Studio actively maintained. Verify on the current IDE. |
-| Baidu | `swan` | `s-if`, `s-for`, `bindtap` | Swan template syntax stable. Verify on current Baidu developer tools. |
-| Toutiao / ByteDance | `tt` | `tt:if`, `tt:for`, `bindtap` | TTML template syntax stable. Verify on current Douyin developer tools. |
+![A Vue template compiled to WeChat, Baidu, ByteDance, and Alipay mini-program markup](docs/playground-demo.gif)
 
 ## Status
 
-The project is under active modernization. The runtime/compiler behavior is intentionally kept close to the upstream contract while the build and test infrastructure are being replaced. Do not treat an unreleased branch as a drop-in production upgrade yet.
+This project is derived from Vue 2.4.1-era mpvue and remains a Vue 2 project. It is not a Vue 3 compatibility layer. Vue 2 reached end of life on December 31, 2023; see the [Vue 2 end-of-life notice](https://v2.vuejs.org/eol/).
 
-Supported target adapters currently present in the source tree:
+The source includes adapters for WeChat (`wx`), Baidu (`swan`), ByteDance (`tt`), and Alipay (`my`). Their behavior varies by platform and developer-tool version. The project’s automated tests cover the compiler and runtime adapters; validate your application in each target vendor’s current tools before release.
 
-- WeChat (`wx`)
-- Baidu (`swan`)
-- Toutiao (`tt`)
-- Alipay (`my`)
+The working tree is being modernized. The package manifests currently identify version `2.0.9`; this does not mean that version has been published to npm. Check npm for the version available to install.
 
 ## Packages
 
-The independent package names are:
+- `vue-mini-bridge` provides the mini-program runtime.
+- `vue-mini-bridge-template-compiler` compiles Vue templates into platform markup for use with a compatible loader.
 
-- `vue-mini-bridge` — the mini-program runtime
-- `vue-mini-bridge-template-compiler` — the template compiler used by a compatible loader
+The packages are built from this repository. Runtime changes belong under `src/`; generated package files are refreshed with the build commands below.
 
-Both packages are generated from the source tree during a release build. Make changes under `src/`, then run the build before publishing.
+Install both packages in a mini-program application:
 
-```mermaid
-flowchart LR
-    src[src/ Vue 2 runtime + compiler] --> build[rollup build]
-    build --> runtime[vue-mini-bridge runtime]
-    build --> compiler[vue-mini-bridge-template-compiler]
-    runtime --> wx[WeChat wx]
-    runtime --> swan[Baidu swan]
-    runtime --> tt[Toutiao tt]
-    runtime --> my[Alipay my]
-    compiler --> loader[compatible mpvue loader]
+```sh
+npm install vue-mini-bridge vue-mini-bridge-template-compiler
 ```
 
 ## Usage
 
-Inside a mini-program project (where the platform provides `App` and `Page`),
-mount a page through the runtime entry point:
+In a mini-program environment that provides `App` and `Page`, create a Vue instance and register it with the runtime:
 
 ```js
-const Vue = require('vue-mini-bridge');
+const Vue = require('vue-mini-bridge')
 
 const page = new Vue({
-  data: { msg: 'hello' }
-});
+  data: { message: 'hello' }
+})
 
 Vue.createMP({
-  mpType: 'page', // 'app' | 'page' | 'component'
+  mpType: 'page', // 'app' or 'component' are also supported
   init: () => page
-});
+})
 ```
 
-Compile a template to mini-program markup:
-
-```js
-const { compile, compileToMPML } = require('vue-mini-bridge-template-compiler');
-
-const output = compileToMPML(compile('<div>{{msg}}</div>', {}), { name: 'page' });
-```
+The compiler package exposes `compile` and `compileToMPML`. A platform loader should call them during its build; it is not a replacement for the mini-program IDE or bundler configuration.
 
 ## Development
 
-Requirements: Node.js 22 or newer and Yarn 1.x (via Corepack) while the dependency graph is being migrated.
+Use Node.js 22 or 24 and Yarn 1 through Corepack:
 
 ```sh
-corepack yarn install
+corepack yarn install --frozen-lockfile
 npm run lint
-npm run build:mpvue
+npm run flow
+npm run test:types
+npm run test:mpvue
+npm run test:weex
+npm run test:ssr
 ```
 
-## Support matrix
+`npm test` runs the full check sequence. Build the mini-program packages with `npm run build:mpvue`; build the Weex packages with `npm run build:weex`.
 
-| Area | Status |
-| ---- | ------ |
-| Node.js runtime | 22 and 24 supported (`engines: node >= 22`) |
-| Mini-program runtime (`vue-mini-bridge`) | Maintained; covered by `npm run test:mp` |
-| Template compiler (`vue-mini-bridge-template-compiler`) | Maintained; covered by `npm run test:mp` |
-| Target adapters | WeChat (`wx`), Baidu (`swan`), Toutiao (`tt`), Alipay (`my`) |
-| Aggregate `npm test` | Supported: lint, flow, types, ssr (92), weex (67), mpvue (76) |
+For upstream issue and pull-request review, dependency decisions, and deferred migrations, see [MAINTENANCE.md](MAINTENANCE.md).
 
-```sh
-npm test
-```
+## Attribution
 
-Focused checks also pass individually (`npm run lint`, `npm run flow`,
-`npm run build:mpvue`, `npm run test:mp`).
-
-Set `SOURCE_DATE_EPOCH` to pin the banner year for reproducible builds.
-
-The maintenance record, live upstream issue/PR review, and upgrade sequence are in [`MAINTENANCE.md`](MAINTENANCE.md).
-
-## Relationship to upstream
-
-This repository continues [mpvue](https://github.com/Meituan-Dianping/mpvue)
-by Meituan, itself a fork of [vuejs/vue@2.4.1](https://github.com/vuejs/vue).
-The original MIT license and attribution are preserved in [`LICENSE`](LICENSE),
-and the historical source is available as the `upstream` Git remote. Vue Mini
-Bridge is not affiliated with Meituan, Vue, or any mini-program platform vendor.
-
-## Citation
-
-If you use Vue Mini Bridge in your work, please cite it. The easiest way
-is the **Cite this repository** button in the GitHub sidebar, which
-exports APA and BibTeX from [CITATION.cff](CITATION.cff). A ready-made
-BibTeX entry for this release:
-
-```bibtex
-@misc{Attri2026VueMiniBridge,
-  author = {Attri, Krishi},
-  title = {vue-mini-bridge},
-  year = {2026},
-  version = {2.0.8},
-  doi = {10.5281/zenodo.22821258},
-  url = {https://github.com/Archerkattri/vue-mini-bridge}
-}
-```
+This repository preserves the original MIT license and source history. Vue Mini Bridge is independently maintained and is not affiliated with Meituan, Vue, or the platform vendors. Use GitHub’s **Cite this repository** button for the citation data in [CITATION.cff](CITATION.cff).
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [LICENSE](LICENSE).

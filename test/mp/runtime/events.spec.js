@@ -89,7 +89,6 @@ describe('events', function () {
         clickHandle (str, ev) {
           expect(str).toEqual('warp component click')
           expect(ev.target.id).toEqual('testEventId2')
-          done()
         }
       },
       // <div class="container">
@@ -121,7 +120,6 @@ describe('events', function () {
         clickHandle (str, ev) {
           expect(str).toEqual('test p click')
           expect(ev.target.id).toEqual('testEventId1')
-          done()
         }
       },
       // render 由 mpvue-loader 和 mpvue-template-compiler 生成
@@ -158,6 +156,7 @@ describe('events', function () {
 
     const ev2 = JSON.parse(`{"type":"tap","timeStamp":152060,"target":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0_0","eventid":"0"}},"currentTarget":{"id":"testEventId2","offsetLeft":116,"offsetTop":286,"dataset":{"comkey":"0_0","eventid":"0"}},"detail":{"x":215,"y":301},"touches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}],"changedTouches":[{"identifier":0,"pageX":216,"pageY":301,"clientX":216,"clientY":301}]}`)
     app.$mp.page._callHook('handleProxy', ev2)
+    done()
   })
 
   // v-model 等特殊指令
