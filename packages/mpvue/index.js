@@ -5442,6 +5442,15 @@ try {
         if (vmData.__keyPath && !vmData.__newReference) {
           // An update list exists, so update from the list.
           _keyPathOnThis = vmData.__keyPath;
+          Object.keys(_keyPathOnThis).forEach(function (_key) {
+            if (_keyPathOnThis[_key] === 'del') {
+              var key = originKey
+                ? rootKey + '.' + originKey + '.' + _key
+                : rootKey + '.' + _key;
+              // Mini-program setData ignores undefined, so send an empty value to clear the view field.
+              data[key] = '';
+            }
+          });
           Object.keys(vmData).forEach(function (_key) {
             if (vmData[_key] instanceof Object) {
               // Reference type: recurse.

@@ -46,6 +46,7 @@ The complete live issue set is available at <https://github.com/Meituan-Dianping
 - Upstream issue #1822's sourcemap failure depends on the Quickstart's `productionSourceMap` build and `webpack-mpvue-asset-plugin`, neither of which is present in this repository; that exact failure does not reproduce on the current branch.
 - Upstream issue #1828 reports a computed getter running without a visible DOM update, but its minimal example never references `fullName` in the template, so there is no rendered value to update. The report does not establish a framework defect; add the computed property to the template before treating it as a regression.
 - Upstream issue #1672 reports a nested object value of `0` becoming an empty string in mpvue 1.4.6. The maintained runtime now has an end-to-end regression test for changing a nested numeric property to zero; the emitted `setData` value and page state both remain numeric zero.
+- Upstream issue #1812's `$delete` failure reproduced for a nested reactive property: the diff walker skipped deletion markers because the deleted key was no longer enumerable. It now emits an empty string for that path, since mini-program `setData` ignores `undefined`; the runtime regression verifies that the stale value is cleared. The complete workspace test command passes locally.
 
 ## Pull-request review
 
