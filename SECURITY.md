@@ -1,18 +1,24 @@
 # Security Policy
 
-## Supported Versions
-
-Security fixes land on `master`. There are no maintained release lines;
-pin a commit if you need a fixed reference.
-
 ## Reporting a Vulnerability
 
-Report privately through GitHub's
-[private vulnerability reporting](../../security/advisories/new)
-(preferred) or open a public issue for anything already disclosed.
-Include the affected package and file, a minimal reproduction, and the
-Node.js version. Expect an initial response within a week.
+Do **not** open a public issue for security vulnerabilities. Report them
+privately via [private vulnerability reporting](https://github.com/Archerkattri/vue-mini-bridge/security/advisories/new).
 
-Note: this project ships no runtime dependencies of its own. Its
-dependency footprint is dev-only (build and test tooling), and the
-known accepted risks are recorded in [MAINTENANCE.md](MAINTENANCE.md).
+Please include:
+
+- Affected version, tag, or commit
+- Description of the issue and its impact
+- Steps to reproduce, exploit, or proof of concept (if available)
+
+## What to Expect
+
+- Acknowledgement of your report within 7 days.
+- A fix or mitigation on a best-effort timeline; credit in the release notes
+  if you want it.
+- Please do not disclose the issue publicly until a fix is released.
+
+## Supported Versions
+
+Security fixes are provided for the latest release on the default branch.
+Older releases are supported on a best-effort basis only.
