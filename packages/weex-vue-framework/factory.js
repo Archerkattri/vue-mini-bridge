@@ -4727,7 +4727,7 @@ Object.defineProperty(Vue.prototype, '$ssrContext', {
 });
 
 Vue.version = '2.4.1';
-Vue.mpvueVersion = '2.0.9';
+Vue.mpvueVersion = '2.0.11';
 
 /* globals renderer */
 // renderer is injected by weex factory wrapper
