@@ -1,6 +1,6 @@
 {
   "name": "vue-mini-bridge",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Vue-compatible runtime for mini-program targets",
   "main": "index.js",
   "files": [
