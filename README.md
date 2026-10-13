@@ -14,7 +14,7 @@ This project is derived from Vue 2.4.1-era mpvue and remains a Vue 2 project. It
 
 The source includes adapters for WeChat (`wx`), Baidu (`swan`), ByteDance (`tt`), and Alipay (`my`). Their behavior varies by platform and developer-tool version. The project’s automated tests cover the compiler and runtime adapters; validate your application in each target vendor’s current tools before release.
 
-The working tree is being modernized. The package manifests currently identify version `2.0.9`; this does not mean that version has been published to npm. Check npm for the version available to install.
+The package manifests prepare version `2.0.9`, which remains unreleased until published. See the [changelog](CHANGELOG.md) for changes in that candidate; the npm badge shows the latest published version.
 
 ## Packages
 
