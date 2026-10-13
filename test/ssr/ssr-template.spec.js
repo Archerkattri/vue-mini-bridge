@@ -7,6 +7,25 @@ import { createRenderer as createBundleRenderer } from './ssr-bundle-render.spec
 const defaultTemplate = `<html><head></head><body><!--vue-ssr-outlet--></body></html>`
 const interpolateTemplate = `<html><head><title>{{ title }}</title></head><body><!--vue-ssr-outlet-->{{{ snippet }}}</body></html>`
 
+describe('SSR: platform namespaces', () => {
+  it('renders SVG elements through the public renderer API', done => {
+    const renderer = createRenderer()
+    const component = new Vue({
+      render (h) {
+        return h('svg', [h('circle')])
+      }
+    })
+
+    renderer.renderToString(component, (err, result) => {
+      expect(err).toBeNull()
+      expect(result).toContain(
+        '<svg data-server-rendered="true"><circle></circle></svg>'
+      )
+      done()
+    })
+  })
+})
+
 function generateClientManifest (file, cb) {
   compileWithWebpack(file, {
     output: {
