@@ -4095,7 +4095,7 @@ try {
   });
 
   Vue.version = '2.4.1';
-  Vue.mpvueVersion = '2.0.8';
+  Vue.mpvueVersion = '2.0.9';
 
   /* globals renderer */
 
@@ -5442,6 +5442,15 @@ try {
         if (vmData.__keyPath && !vmData.__newReference) {
           // An update list exists, so update from the list.
           _keyPathOnThis = vmData.__keyPath;
+          Object.keys(_keyPathOnThis).forEach(function (_key) {
+            if (_keyPathOnThis[_key] === 'del') {
+              var key = originKey
+                ? rootKey + '.' + originKey + '.' + _key
+                : rootKey + '.' + _key;
+              // Mini-program setData ignores undefined, so send an empty value to clear the view field.
+              data[key] = '';
+            }
+          });
           Object.keys(vmData).forEach(function (_key) {
             if (vmData[_key] instanceof Object) {
               // Reference type: recurse.

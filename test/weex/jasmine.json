@@ -4,6 +4,6 @@
     "**/*[sS]pec.js"
   ],
   "helpers": [
-    "../../node_modules/@babel/register"
+    "../helpers/babel-register.js"
   ]
 }

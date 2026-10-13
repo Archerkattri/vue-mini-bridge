@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, modernize]
+    branches: [master, modernize, 'wip/**']
   pull_request:
 
 permissions:
@@ -10,13 +10,16 @@ permissions:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [22, 24, 26]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile

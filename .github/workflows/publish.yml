@@ -1,20 +1,11 @@
-# Release publishing via npm Trusted Publishing (OIDC) - no tokens stored.
-# The FIRST publish of each package name must be manual (npm login, then
-# npm publish --access public from packages/mpvue and
-# packages/mpvue-template-compiler); OIDC cannot create a package that
-# does not exist yet. Afterwards configure the trusted publisher at
-# npmjs.com -> package Settings -> Trusted publishing (GitHub Actions,
-# this repo + the publish.yml workflow), and every later GitHub release
-# publishes both packages automatically with provenance attestations.
-# Release checklist: bump both package versions, refresh CITATION.cff
-# version/date-released, rebuild the compiler outputs, tag vX.Y.Z,
-# publish the GitHub release.
+# Publishes both packages on tagged GitHub releases through npm trusted
+# publishing. Configure each package's publisher for this repository and
+# this workflow.
 name: Publish to npm
 
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,13 +13,13 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: yarn
       # No registry-url: npmjs.org is npm's default registry, and the
       # .npmrc that registry-url generates breaks yarn cache lookup when
@@ -38,19 +29,21 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Verify tag matches both package versions
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          tag='${{ github.event.release.tag_name }}'
-          if [ -z "$tag" ]; then
-            echo 'manual dispatch: no release tag to verify against'
-            exit 0
-          fi
           for pkg in packages/mpvue packages/mpvue-template-compiler; do
             ver="$(node -p "require('./$pkg/package.json').version")"
-            test "v$ver" = "$tag" || { echo "tag $tag does not match $pkg v$ver"; exit 1; }
+            test "v$ver" = "$RELEASE_TAG" || { echo "tag $RELEASE_TAG does not match $pkg v$ver"; exit 1; }
           done
 
       - run: corepack enable
       - run: yarn install --frozen-lockfile
+
+      - name: Run release checks
+        run: |
+          npm test
+          yarn audit --level high
 
       - name: Rebuild and reject stale committed outputs
         run: |

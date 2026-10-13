@@ -108,6 +108,15 @@ function minifyDeepData (rootKey, originKey, vmData, data, _mpValueSet, vm) {
       if (vmData.__keyPath && !vmData.__newReference) {
         // An update list exists, so update from the list.
         __keyPathOnThis = vmData.__keyPath
+        Object.keys(__keyPathOnThis).forEach((_key) => {
+          if (__keyPathOnThis[_key] === 'del') {
+            const key = originKey
+              ? rootKey + '.' + originKey + '.' + _key
+              : rootKey + '.' + _key
+            // Mini-program setData ignores undefined, so send an empty value to clear the view field.
+            data[key] = ''
+          }
+        })
         Object.keys(vmData).forEach((_key) => {
           if (vmData[_key] instanceof Object) {
             // Reference type: recurse.

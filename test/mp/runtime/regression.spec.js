@@ -1,5 +1,5 @@
 const { createInstance } = require('../helpers/index')
-const { compile, compileToMPML } = require('../../../packages/mpvue-template-compiler')
+const { compile, compileToFunctions, compileToMPML } = require('../../../packages/mpvue-template-compiler')
 
 // Focused regression coverage for the maintained mini-program contract:
 // lifecycle cascades, slot event forwarding, prop updates, minimal setData
@@ -116,6 +116,58 @@ describe('regression', function () {
     expect(seen).toEqual(['slotTarget'])
   })
 
+  it('routes v-for click handlers inside child components', function () {
+    const clicked = []
+    const itemList = {
+      props: ['content'],
+      methods: {
+        showDetail (index) {
+          clicked.push(index)
+        }
+      },
+      render: compileToFunctions(
+        '<ul><li v-for="(item, index) in content" :key="index" class="list-box" @click="showDetail(index)">{{item}}</li></ul>'
+      ).render
+    }
+    const options = {
+      components: {
+        itemList
+      },
+      data () {
+        return {
+          content: ['first', 'second']
+        }
+      },
+      render () {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c('div', {
+          staticClass: 'container'
+        }, [_c('item-list', {
+          attrs: {
+            content: _vm.content,
+            mpcomid: '0'
+          }
+        })], 1)
+      }
+    }
+    const app = createInstance(options)
+    app.$mount()
+
+    const dataset = { comkey: '0_0', eventid: '1_0_1' }
+    const event = {
+      type: 'tap',
+      timeStamp: 1,
+      target: { id: 'secondItem', dataset: dataset },
+      currentTarget: { id: 'secondItem', dataset: dataset },
+      detail: {},
+      touches: []
+    }
+    app.$mp.page._callHook('handleProxy', event)
+    expect(clicked).toEqual([1])
+  })
+
   it('propagates parent data changes to child props', function (done) {
     const cardOptions = {
       props: ['info'],
@@ -204,6 +256,84 @@ describe('regression', function () {
           '$root.0.msg': 666
         })
         expect(page.data['$root']['0'].msg).toEqual(666)
+        done()
+      }, 300)
+    }, 300)
+  })
+
+  it('preserves zero when a nested object property changes', function (done) {
+    const options = {
+      data () {
+        return {
+          item: { foo: 1 }
+        }
+      },
+      render () {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c('div', {
+          staticClass: 'container'
+        }, [_vm._v(_vm._s(_vm.item.foo))])
+      }
+    }
+    const app = createInstance(options)
+    app.$mount()
+
+    setTimeout(function () {
+      const calls = []
+      const page = app.$mp.page
+      const origSetData = page.setData.bind(page)
+      page.setData = function (obj) {
+        calls.push(obj)
+        return origSetData(obj)
+      }
+      app.item.foo = 0
+      setTimeout(function () {
+        expect(calls.length).toBeGreaterThan(0)
+        expect(Object.assign.apply(null, [{}].concat(calls))).toEqual({
+          '$root.0.item.foo': 0
+        })
+        expect(page.data['$root']['0'].item.foo).toEqual(0)
+        done()
+      }, 300)
+    }, 300)
+  })
+
+  it('clears deleted nested object properties from mini-program data', function (done) {
+    const options = {
+      data () {
+        return {
+          item: { foo: 'present' }
+        }
+      },
+      render () {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c('div', {
+          staticClass: 'container'
+        }, [_vm._v(_vm._s(_vm.item.foo || 'deleted'))])
+      }
+    }
+    const app = createInstance(options)
+    app.$mount()
+
+    setTimeout(function () {
+      const calls = []
+      const page = app.$mp.page
+      const origSetData = page.setData.bind(page)
+      page.setData = function (obj) {
+        calls.push(obj)
+        return origSetData(obj)
+      }
+      app.$delete(app.item, 'foo')
+      setTimeout(function () {
+        expect(calls.length).toBeGreaterThan(0)
+        expect(Object.assign.apply(null, [{}].concat(calls))).toEqual({
+          '$root.0.item.foo': ''
+        })
+        expect(page.data['$root']['0'].item.foo).toEqual('')
         done()
       }, 300)
     }, 300)

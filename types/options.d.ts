@@ -5,7 +5,8 @@ type Constructor = {
   new (...args: any[]): any;
 }
 
-export type Component = typeof Vue | ComponentOptions<Vue> | FunctionalComponentOptions;
+export type ComponentConstructor = { new (...args: any[]): any };
+export type Component = ComponentConstructor | ComponentOptions<any> | FunctionalComponentOptions;
 export type AsyncComponent = (
   resolve: (component: Component) => void,
   reject: (reason?: any) => void

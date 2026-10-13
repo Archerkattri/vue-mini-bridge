@@ -2,8 +2,8 @@ import Vue = require("../index");
 import { PluginFunction, PluginObject } from "../index";
 
 class Option {
-  prefix: string;
-  suffix: string;
+  declare prefix: string;
+  declare suffix: string;
 }
 
 const plugin: PluginObject<Option> = {

@@ -1,4 +1,5 @@
 const { createInstance } = require('../helpers/index')
+const { App } = require('../helpers/mp.runtime')
 
 // 生命周期
 describe('init mpvue with lifecycle', function () {
@@ -90,6 +91,15 @@ describe('init mpvue with lifecycle', function () {
 
   beforeEach(function () {
     onLifecycle.length = 0
+    App({
+      globalData: {
+        appOptions: {
+          path: 'pages/index/index',
+          scene: 1001,
+          query: {}
+        }
+      }
+    })
   })
 
   it('App', function () {
