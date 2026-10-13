@@ -1406,7 +1406,7 @@
   function checkComponents (options) {
     for (var key in options.components) {
       var lower = key.toLowerCase();
-      if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
+      if (isBuiltInTag(lower) || config.isReservedTag()) {
         warn$2(
           'Do not use built-in or reserved HTML elements as component ' +
           'id: ' + key
@@ -6172,7 +6172,7 @@
     var vnode, ns;
     if (typeof tag === 'string') {
       var Ctor;
-      ns = config.getTagNamespace(tag);
+      ns = config.getTagNamespace();
       if (isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
         // component
         vnode = createComponent(Ctor, data, context, children, tag);
