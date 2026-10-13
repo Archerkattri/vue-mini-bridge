@@ -1407,7 +1407,7 @@ var defaultStrat = function (parentVal, childVal) {
 function checkComponents (options) {
   for (var key in options.components) {
     var lower = key.toLowerCase();
-    if (isBuiltInTag(lower) || config.isReservedTag()) {
+    if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
       warn$2(
         'Do not use built-in or reserved HTML elements as component ' +
         'id: ' + key
@@ -5915,7 +5915,7 @@ function _createElement (
   var vnode, ns;
   if (typeof tag === 'string') {
     var Ctor;
-    ns = config.getTagNamespace();
+    ns = config.getTagNamespace(tag);
     if (isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag);

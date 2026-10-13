@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.10 — Unreleased
+
+- Preserve tag names when checking reserved elements and SVG namespaces during server rendering.
+
 ## 2.0.9 — 2026-10-12
 
 - Preserve deleted object properties when synchronizing mini-program page data.
