@@ -1,6 +1,6 @@
 # Citation metadata. GitHub renders this as a "Cite this repository" button
 # with APA / BibTeX export. Keep version and date-released in step with
-# each release (see packages/mpvue/package.json).
+# each source release (see packages/mpvue/package.json).
 cff-version: 1.2.0
 message: "If you use Vue Mini Bridge in your work, please cite it as below."
 type: software
@@ -13,8 +13,8 @@ authors:
     email: "krishiattriwork@gmail.com"
     orcid: "https://orcid.org/0009-0005-4695-6467"
     website: "https://github.com/Archerkattri"
-version: 2.0.8
-date-released: "2026-09-17"
+version: 2.0.10
+date-released: "2026-10-12"
 repository-code: "https://github.com/Archerkattri/vue-mini-bridge"
 url: "https://archerkattri.github.io/vue-mini-bridge/"
 license: MIT
