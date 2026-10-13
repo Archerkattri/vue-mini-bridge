@@ -13,6 +13,16 @@ wait on the noted dates or on a human voice.
   wechat-miniprogram, weapp, mpvue
 - npm keywords + docs-site homepages for search discovery
 - HelloGitHub submission: https://github.com/521xueweihan/HelloGitHub/issues/3720
+- README playground GIF and build/runtime/platform diagrams
+
+## Package alignment
+
+The GitHub source release `v2.0.10` is newer than npm: both npm packages
+still resolve to `2.0.9`. Do not describe `2.0.10` as an npm release.
+Publish it only after the package release workflow and tarball contents
+have been checked.
+
+The README and citation update is proposed in [PR #16](https://github.com/Archerkattri/vue-mini-bridge/pull/16). The profile showcase is proposed in [PR #5](https://github.com/Archerkattri/Archerkattri/pull/5).
 
 ## awesome-vue PR (blocked until ~2026-10-17)
 
