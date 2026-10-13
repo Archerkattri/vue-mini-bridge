@@ -29,6 +29,7 @@ Collected from the live `Meituan-DianPing/mpvue` repository on 2026-09-15. This 
 - The legacy Karma 1, PhantomJS, Selenium 2, Nightwatch, chromedriver, and `codecov.io` stack is removed from `devDependencies`.
 - `yarn audit --summary` reported 0 vulnerabilities across 564 audited packages on 2026-10-11. The audit covers the installed dependency graph represented by the lockfile; it is not a claim that platform IDEs or applications using the packages have no security issues.
 - Security updates include removing obsolete direct dependencies, upgrading `serialize-javascript` and fixing the Handlebars resolution, migrating Rollup, Webpack, Babel, and ESLint, and pinning patched transitives via `resolutions` (dot-prop, shelljs, trim-newlines, yargs-parser). Keep these overrides only while the corresponding dependency paths require them.
+- This review branch removes the unit-only suite under `test/unit` and compiler/runtime unit specs while retaining the SSR, Weex, MPVue, type, and build checks. The aggregate integration gate is being rerun against the current release branch before merge.
 - The obsolete CircleCI 1.0 config is removed; GitHub Actions runs the aggregate gate and `build/ci.sh` is a local alias for it.
 - Stray `console.log` calls in the mini-program data-diff hot path now go through the dev-only `warn()` channel, and dead commented-out debug lines are removed.
 - Touched runtime files use English comments (translated on touch per maintenance policy); the weex capture-phase notice uses `warn()` with a corrected message.

@@ -14,7 +14,8 @@ yarn install
 npm test
 ```
 
-`npm test` runs lint, flow, type tests, and the ssr, weex, and mpvue suites.
+`npm test` runs lint, Flow, type checks, and the SSR, Weex, and MPVue integration
+suites. The unit suite under `test/unit` is not included in this review branch.
 Run `npm run test:mp` for the fastest runtime/compiler feedback loop.
 
 ## Pull requests

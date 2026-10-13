@@ -14,7 +14,7 @@ module.exports = function (api) {
       ],
       require.resolve('@babel/preset-flow')
     ],
-    // Syntax-only: lets the linter parse the JSX in test/unit specs.
+    // Syntax-only: lets the linter parse JSX in platform integration specs.
     plugins: [require.resolve('@babel/plugin-syntax-jsx')],
     ignore: [/[\\/]dist[\\/]/, /[\\/]packages[\\/]/]
   }

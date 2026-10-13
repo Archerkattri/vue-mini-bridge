@@ -424,20 +424,4 @@ module.exports = [
       'jasmine/no-focused-tests': 2
     }
   },
-  {
-    files: ['test/unit/**/*.js'],
-    languageOptions: {
-      globals: Object.assign({}, globals.jasmine, {
-        waitForUpdate: 'writable',
-        triggerEvent: 'writable',
-        createTextVNode: 'writable'
-      })
-    },
-    plugins: {
-      jasmine: jasminePlugin
-    },
-    rules: {
-      'jasmine/no-focused-tests': 2
-    }
-  }
 ]

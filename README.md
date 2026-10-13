@@ -79,11 +79,49 @@ npm run test:ssr
 
 `npm test` runs the full check sequence. Build the mini-program packages with `npm run build:mpvue`; build the Weex packages with `npm run build:weex`.
 
+| Area | Status |
+| ---- | ------ |
+| Node.js runtime | 22, 24, and 26 tested (`engines: node >= 22`) |
+| Mini-program runtime (`vue-mini-bridge`) | Build and MPVue integration checks retained; unit suite is removed from this branch |
+| Template compiler (`vue-mini-bridge-template-compiler`) | Build and MPVue integration checks retained; unit suite is removed from this branch |
+| Target adapters | WeChat (`wx`), Baidu (`swan`), Toutiao (`tt`), Alipay (`my`) |
+| Aggregate `npm test` | Lint, Flow, type checks, SSR/Weex/MPVue integration checks; no unit suite |
+
 For upstream issue and pull-request review, dependency decisions, and deferred migrations, see [MAINTENANCE.md](MAINTENANCE.md).
 
 ## Attribution
 
-This repository preserves the original MIT license and source history. Vue Mini Bridge is independently maintained and is not affiliated with Meituan, Vue, or the platform vendors. Use GitHub’s **Cite this repository** button for the citation data in [CITATION.cff](CITATION.cff).
+`npm run test:mpvue` runs the MPVue compiler/runtime integration checks. Other
+focused checks include `npm run lint`, `npm run flow`, `npm run test:types`,
+`npm run build:mpvue`, `npm run test:weex`, and `npm run test:ssr`.
+
+Set `SOURCE_DATE_EPOCH` to pin the banner year for reproducible builds.
+
+## Relationship to upstream
+
+This repository continues [mpvue](https://github.com/Meituan-Dianping/mpvue)
+by Meituan, itself a fork of [vuejs/vue@2.4.1](https://github.com/vuejs/vue).
+The original MIT license and attribution are preserved in [`LICENSE`](LICENSE),
+and the historical source is available as the `upstream` Git remote. Vue Mini
+Bridge is not affiliated with Meituan, Vue, or any mini-program platform vendor.
+
+## Citation
+
+If you use Vue Mini Bridge in your work, please cite it. The easiest way
+is the **Cite this repository** button in the GitHub sidebar, which
+exports APA and BibTeX from [CITATION.cff](CITATION.cff). A ready-made
+BibTeX entry for this release:
+
+```bibtex
+@misc{Attri2026VueMiniBridge,
+  author = {Attri, Krishi},
+  title = {vue-mini-bridge},
+  year = {2026},
+  version = {2.0.10},
+  doi = {10.5281/zenodo.23330116},
+  url = {https://github.com/Archerkattri/vue-mini-bridge}
+}
+```
 
 ## License
 
