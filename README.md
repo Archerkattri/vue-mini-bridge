@@ -1,7 +1,7 @@
 # Vue Mini Bridge
 
 [![npm version](https://img.shields.io/npm/v/vue-mini-bridge.svg)](https://www.npmjs.com/package/vue-mini-bridge)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22821137.svg)](https://doi.org/10.5281/zenodo.22821137)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23330116.svg)](https://doi.org/10.5281/zenodo.23330116)
 [![CI](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/vue-mini-bridge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -95,16 +95,17 @@ npm run build:mpvue
 | Area | Status |
 | ---- | ------ |
 | Node.js runtime | 22 and 24 supported (`engines: node >= 22`) |
-| Mini-program runtime (`vue-mini-bridge`) | Maintained; covered by `npm run test:mp` |
-| Template compiler (`vue-mini-bridge-template-compiler`) | Maintained; covered by `npm run test:mp` |
+| Mini-program runtime (`vue-mini-bridge`) | Build and MPVue integration checks are retained; unit suite is not shipped on this review branch |
+| Template compiler (`vue-mini-bridge-template-compiler`) | Build and MPVue integration checks are retained; unit suite is not shipped on this review branch |
 | Target adapters | WeChat (`wx`), Baidu (`swan`), Toutiao (`tt`), Alipay (`my`) |
-| Aggregate `npm test` | Supported: lint, flow, types, ssr (92), weex (67), mpvue (76) |
+| Aggregate `npm test` | Lint, Flow, type checks, SSR/Weex/MPVue integration checks; no unit suite |
 
 ```sh
 npm test
 ```
 
-Focused checks also pass individually (`npm run lint`, `npm run flow`,
+`npm run test:mp` runs the MPVue compiler/runtime checks and generated site-data/artifact
+checks. Focused checks also run individually (`npm run lint`, `npm run flow`,
 `npm run build:mpvue`, `npm run test:mp`).
 
 Set `SOURCE_DATE_EPOCH` to pin the banner year for reproducible builds.
